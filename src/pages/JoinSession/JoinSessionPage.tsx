@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { createConnection } from "../../services/signalr";
+import { startConnection } from "../../services/signalr";
 import styles from "./JoinSessionPage.module.css";
 
 function JoinSessionPage() {
@@ -11,10 +11,24 @@ function JoinSessionPage() {
 
   const navigate = useNavigate();
 
+  const getOrCreatePlayerId = () => {
+    let playerId = sessionStorage.getItem("playerId");
+
+    if (!playerId) {
+      playerId = crypto.randomUUID();
+      sessionStorage.setItem("playerId", playerId);
+    }
+
+    return playerId;
+  };
+
   const handleJoin = async () => {
     setError("");
 
-    if (!nickname.trim() || !sessionCode.trim()) {
+    const trimmedNickname = nickname.trim();
+    const trimmedSessionCode = sessionCode.trim().toUpperCase();
+
+    if (!trimmedNickname || !trimmedSessionCode) {
       setError("Enter both name and session code.");
       return;
     }
@@ -22,22 +36,44 @@ function JoinSessionPage() {
     try {
       setIsJoining(true);
 
-      const connection = createConnection();
+      const playerId = getOrCreatePlayerId();
+      const connection = await startConnection();
 
-      if (connection.state === "Disconnected") {
-        await connection.start();
-      }
+      connection.off("WaitingRoomPlayersUpdated");
+      connection.off("ReceivePublicState");
+      connection.off("ReceivePrivateData");
+      connection.off("GameStarted");
+
+      connection.on("WaitingRoomPlayersUpdated", (payload) => {
+        sessionStorage.setItem(
+          "waitingRoomPlayers",
+          JSON.stringify(payload.players),
+        );
+      });
+
+      connection.on("ReceivePublicState", (payload) => {
+        sessionStorage.setItem("publicState", JSON.stringify(payload));
+      });
+
+      connection.on("ReceivePrivateData", (payload) => {
+        sessionStorage.setItem("privateData", JSON.stringify(payload));
+      });
+
+      connection.on("GameStarted", () => {
+        sessionStorage.setItem("gameStarted", "true");
+      });
 
       await connection.invoke(
         "JoinSession",
-        sessionCode.trim(),
-        nickname.trim(),
+        trimmedSessionCode,
+        playerId,
+        trimmedNickname,
       );
 
-      sessionStorage.setItem("nickname", nickname.trim());
-      sessionStorage.setItem("sessionCode", sessionCode.trim());
+      sessionStorage.setItem("nickname", trimmedNickname);
+      sessionStorage.setItem("sessionCode", trimmedSessionCode);
 
-      navigate(`/waiting-room/${sessionCode.trim()}`);
+      navigate(`/waiting-room/${trimmedSessionCode}`);
     } catch (err: any) {
       setError(err?.message || "Failed to join session.");
     } finally {

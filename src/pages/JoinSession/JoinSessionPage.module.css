@@ -1,10 +1,8 @@
 .page {
-  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #f4f6f8;
-  padding: 24px;
+  height: 100vh;
 }
 
 .card {
@@ -14,12 +12,14 @@
   border-radius: 14px;
   padding: 28px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  color: black;
 }
 
 .title {
   margin: 0 0 24px 0;
   text-align: center;
   font-size: 28px;
+  color: black;
 }
 
 .field {
@@ -30,12 +30,13 @@
   display: block;
   margin-bottom: 8px;
   font-weight: 600;
+  color: black;
 }
 
 .input {
   width: 100%;
   padding: 12px 14px;
-  border: 1px solid #cfd6dd;
+  border: 1px solid black;
   border-radius: 10px;
   font-size: 16px;
   box-sizing: border-box;

@@ -1,0 +1,172 @@
+.chatCard {
+  background: #1e293b;
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  height: 520px;
+  min-height: 520px;
+  min-width: 0;
+}
+
+.header {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 4px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.empty {
+  color: #94a3b8;
+  margin: auto 0;
+  text-align: center;
+}
+
+.messageRow {
+  display: flex;
+  width: 100%;
+}
+
+.groupStart {
+  margin-top: 10px;
+}
+
+.groupMiddle {
+  margin-top: 3px;
+}
+
+.ownRow {
+  justify-content: flex-end;
+}
+
+.otherRow {
+  justify-content: flex-start;
+}
+
+.messageContainer {
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+  max-width: 80%;
+}
+
+.messageMeta {
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+  opacity: 0.8;
+  padding: 0 6px;
+  margin-bottom: 4px;
+}
+
+.ownRow .messageMeta {
+  justify-content: flex-end;
+}
+
+.otherRow .messageMeta {
+  justify-content: flex-start;
+}
+
+.sender {
+  font-weight: 700;
+}
+
+.time {
+  white-space: nowrap;
+}
+
+.messageBubble {
+  border-radius: 16px;
+  padding: 10px 14px;
+  box-sizing: border-box;
+  width: fit-content;
+  max-width: 100%;
+  word-break: normal;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+  text-align: left;
+}
+
+.ownBubble {
+  background: #2563eb;
+  color: white;
+}
+
+.otherBubble {
+  background: #334155;
+  color: white;
+}
+
+/* Shape tuning for grouped bubbles */
+.ownBubbleStart {
+  border-top-right-radius: 16px;
+}
+
+.ownBubbleEnd {
+  border-bottom-right-radius: 6px;
+}
+
+.otherBubbleStart {
+  border-top-left-radius: 16px;
+}
+
+.otherBubbleEnd {
+  border-bottom-left-radius: 6px;
+}
+
+.messageText {
+  font-size: 15px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  text-align: left;
+}
+
+.inputArea {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.input {
+  flex: 1;
+  border: none;
+  outline: none;
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: #334155;
+  color: white;
+  font-size: 14px;
+  min-width: 0;
+}
+
+.input::placeholder {
+  color: #94a3b8;
+}
+
+.sendButton {
+  border: none;
+  border-radius: 12px;
+  padding: 0 18px;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.sendButton:hover {
+  opacity: 0.95;
+}
+
+.error {
+  color: #f87171;
+  margin-top: 8px;
+  font-size: 14px;
+}

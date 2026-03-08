@@ -1,10 +1,9 @@
 .page {
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #f4f6f8;
-  padding: 24px;
+  color: black;
 }
 
 .card {

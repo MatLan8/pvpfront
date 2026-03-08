@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { createConnection } from "../../services/signalr";
+import { startConnection } from "../../services/signalr";
 import styles from "./WaitingRoomPage.module.css";
 
 type WaitingRoomPayload = {
@@ -12,46 +12,117 @@ export default function WaitingRoomPage() {
   const { sessionCode } = useParams();
   const navigate = useNavigate();
 
-  const [players, setPlayers] = useState<string[]>([]);
+  const [players, setPlayers] = useState<string[]>(() => {
+    const stored = sessionStorage.getItem("waitingRoomPlayers");
+    return stored ? JSON.parse(stored) : [];
+  });
+
   const [error, setError] = useState("");
 
   const nickname = sessionStorage.getItem("nickname");
+  const playerId = sessionStorage.getItem("playerId");
 
   useEffect(() => {
-    if (!sessionCode || !nickname) {
+    if (!sessionCode || !nickname || !playerId) {
       navigate("/");
       return;
     }
 
-    const connection = createConnection();
+    const gameStarted = sessionStorage.getItem("gameStarted");
 
-    const handlePlayersUpdated = (payload: WaitingRoomPayload) => {
-      if (payload.sessionCode === sessionCode) {
-        setPlayers(payload.players);
-      }
-    };
+    if (gameStarted === "true") {
+      navigate(`/game/${sessionCode}`);
+      return;
+    }
 
-    const handleGameCompleted = () => {
-      console.log("Game completed");
-    };
+    let isMounted = true;
 
-    connection.on("WaitingRoomPlayersUpdated", handlePlayersUpdated);
-    connection.on("GameCompleted", handleGameCompleted);
-
-    connection.onreconnected(async () => {
+    const setup = async () => {
       try {
-        await connection.invoke("JoinSession", sessionCode, nickname);
+        const connection = await startConnection();
+
+        const handlePlayersUpdated = (payload: WaitingRoomPayload) => {
+          if (!isMounted) return;
+          if (payload.sessionCode !== sessionCode) return;
+
+          setPlayers(payload.players);
+          sessionStorage.setItem(
+            "waitingRoomPlayers",
+            JSON.stringify(payload.players),
+          );
+        };
+
+        const handleGameStarted = () => {
+          sessionStorage.setItem("gameStarted", "true");
+          navigate(`/game/${sessionCode}`);
+        };
+
+        connection.off("WaitingRoomPlayersUpdated");
+        connection.off("GameStarted");
+
+        connection.on("WaitingRoomPlayersUpdated", handlePlayersUpdated);
+        connection.on("GameStarted", handleGameStarted);
+
+        connection.onreconnected(async () => {
+          try {
+            const reconnectedConnection = await startConnection();
+
+            await reconnectedConnection.invoke(
+              "JoinSession",
+              sessionCode,
+              playerId,
+              nickname,
+            );
+
+            const latestWaitingState =
+              await reconnectedConnection.invoke<WaitingRoomPayload>(
+                "GetWaitingRoomState",
+                sessionCode,
+              );
+
+            if (!isMounted) return;
+
+            setPlayers(latestWaitingState.players);
+            sessionStorage.setItem(
+              "waitingRoomPlayers",
+              JSON.stringify(latestWaitingState.players),
+            );
+          } catch (err) {
+            console.error(err);
+            if (isMounted) {
+              setError("Failed to restore session after reconnect.");
+            }
+          }
+        });
+
+        await connection.invoke("JoinSession", sessionCode, playerId, nickname);
+
+        const latestWaitingState = await connection.invoke<WaitingRoomPayload>(
+          "GetWaitingRoomState",
+          sessionCode,
+        );
+
+        if (!isMounted) return;
+
+        setPlayers(latestWaitingState.players);
+        sessionStorage.setItem(
+          "waitingRoomPlayers",
+          JSON.stringify(latestWaitingState.players),
+        );
       } catch (err) {
         console.error(err);
-        setError("Failed to rejoin session after reconnect.");
+        if (isMounted) {
+          setError("Failed to load waiting room.");
+        }
       }
-    });
+    };
+
+    setup();
 
     return () => {
-      connection.off("WaitingRoomPlayersUpdated", handlePlayersUpdated);
-      connection.off("GameCompleted", handleGameCompleted);
+      isMounted = false;
     };
-  }, [sessionCode, nickname, navigate]);
+  }, [sessionCode, nickname, playerId, navigate]);
 
   return (
     <div className={styles.page}>
