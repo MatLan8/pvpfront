@@ -1,5 +1,7 @@
 import * as signalR from "@microsoft/signalr";
 
+const SIGNALR_URL = import.meta.env.VITE_SIGNALR_URL;
+
 let connection: signalR.HubConnection | null = null;
 let startPromise: Promise<signalR.HubConnection> | null = null;
 
@@ -7,7 +9,7 @@ export const createConnection = () => {
   if (connection) return connection;
 
   connection = new signalR.HubConnectionBuilder()
-    .withUrl("http://localhost:5179/hubs/game")
+    .withUrl(SIGNALR_URL)
     .withAutomaticReconnect()
     .build();
 
