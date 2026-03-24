@@ -16,63 +16,6 @@ function RegisterPage() {
 
   const userMutation = useRegisterUser();
 
-  // const handleRegister = async () => {
-  //   setError("");
-  //   setSuccess("");
-
-  //   const trimmedName = displayName.trim();
-  //   const trimmedEmail = email.trim();
-
-  //   if (!trimmedName || !trimmedEmail || !password || !repeatPassword) {
-  //     setError("All fields are required.");
-  //     return;
-  //   }
-
-  //   if (password !== repeatPassword) {
-  //     setError("Passwords do not match.");
-  //     return;
-  //   }
-
-  //   try {
-  //     setIsRegistering(true);
-
-  //     userMutation.mutate(
-  //       {
-  //         Email: trimmedEmail,
-  //         DisplayName: trimmedName,
-  //         Password: password,
-  //       },
-  //       {
-  //   onError: (err: any) => {
-  //     setError(err?.response?.data?.error || "Registration failed");
-  //   },
-  //       {
-  //         onSuccess: async () => {
-  //           setSuccess("Registration successful! You can now log in.");
-
-  //           // clear form
-  //           setDisplayName("");
-  //           setEmail("");
-  //           setPassword("");
-  //           setRepeatPassword("");
-
-  //           // optional redirect after delay
-  //           setTimeout(() => navigate("/login"), 1500);
-  //         },
-  //       },
-  //     );
-  //   } catch (err: any) {
-  //     setError(
-  //       err?.response?.data?.error ||
-  //         err?.response?.data?.title ||
-  //         err?.message ||
-  //         "Registration failed.",
-  //     );
-  //   } finally {
-  //     setIsRegistering(false);
-  //   }
-  // };
-
   const handleRegister = () => {
     setError("");
     setSuccess("");
