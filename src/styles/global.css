@@ -2,7 +2,7 @@
 
 :root {
   --primary: #1b1b1bff;
-  --secondary: #2c2c2cff;
+  --secondary: #0f172a;
   --light-1: #eaeaeaff;
   --gray: #737373ff;
   --accent-1: #ff6b6bff;
@@ -24,7 +24,6 @@ html {
 }
 
 #root {
-  max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
