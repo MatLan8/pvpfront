@@ -37,6 +37,32 @@
   margin-bottom: 10px;
 }
 
+.playerNameRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  font-weight: 600;
+}
+
+.disconnectedTag {
+  background: #7f1d1d;
+  color: #fecaca;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.playerMeta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
 .gamePanel {
   background: #1e293b;
   border-radius: 16px;
@@ -54,6 +80,80 @@
   color: #cbd5e1;
 }
 
+.gameInfoBox {
+  background: #334155;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+}
+
+.infoItem {
+  margin: 4px 0;
+  color: #e2e8f0;
+}
+
+.solvedSection {
+  margin-bottom: 24px;
+}
+
+.sectionTitle {
+  margin: 0 0 12px 0;
+  font-size: 20px;
+}
+
+.solvedGroups {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.solvedGroupCard {
+  background: #334155;
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.solvedWord {
+  background: #475569;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-weight: 600;
+}
+
+.selectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.readyButton {
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.readyButton:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.readyButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .wordsGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(140px, 220px));
@@ -62,11 +162,57 @@
 
 .wordCard {
   background: #334155;
+  color: white;
+  border: none;
   border-radius: 14px;
   padding: 24px 16px;
   font-size: 22px;
   font-weight: 600;
   text-align: center;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    background 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.wordCard:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: #475569;
+}
+
+.wordCardSelected {
+  background: #2563eb;
+}
+
+.wordCardSelected:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.wordCardLocked {
+  opacity: 0.7;
+}
+
+.selectionInfo {
+  margin-top: 18px;
+  background: #334155;
+  border-radius: 12px;
+  padding: 14px 16px;
+  color: #e2e8f0;
+}
+
+.selectionInfo p {
+  margin: 0 0 10px 0;
+}
+
+.selectionInfo p:last-child {
+  margin-bottom: 0;
+}
+
+.statusMessage {
+  color: #93c5fd;
+  margin-top: 16px;
+  font-weight: 500;
 }
 
 .empty {
@@ -76,4 +222,49 @@
 .error {
   color: #f87171;
   margin-top: 16px;
+}
+
+@media (max-width: 1200px) {
+  .layout {
+    grid-template-columns: 240px 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .wordsGrid {
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 16px;
+  }
+
+  .gamePanel,
+  .playersPanel {
+    padding: 18px;
+  }
+
+  .selectionHeader {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .wordsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .wordCard {
+    font-size: 18px;
+    padding: 20px 14px;
+  }
+
+  .title {
+    font-size: 28px;
+  }
 }
