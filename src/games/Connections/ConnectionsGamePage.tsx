@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { startConnection } from "../../services/signalr";
+import { useGameSession } from "../../hooks/useGameSession";
 import styles from "./ConnectionsGamePage.module.css";
 
 import GameChat from "../../components/GameChat/GameChat";
@@ -17,6 +18,11 @@ type GamePlayerState = {
   selectedCount: number;
 };
 
+type SolvedGroup = {
+  name: string;
+  words: string[];
+};
+
 type PublicState = {
   sessionCode: string;
   playerCount: number;
@@ -26,7 +32,7 @@ type PublicState = {
     status: "running" | "completed" | "failed";
     mistakeCount: number;
     maxMistakes: number;
-    solvedGroups: string[][];
+    solvedGroups: SolvedGroup[];
     players: GamePlayerState[];
   } | null;
 };
@@ -34,35 +40,37 @@ type PublicState = {
 type PrivateData = {
   visibleWords?: string[];
   VisibleWords?: string[];
+  selectedWords?: string[];
+  SelectedWords?: string[];
 };
 
 export default function ConnectionsGamePage() {
   const { sessionCode } = useParams();
-  const navigate = useNavigate();
 
   const nickname = sessionStorage.getItem("nickname");
   const playerId = sessionStorage.getItem("playerId");
 
-  const [publicState, setPublicState] = useState<PublicState | null>(() => {
-    const stored = sessionStorage.getItem("publicState");
-    return stored ? JSON.parse(stored) : null;
-  });
-
-  const [privateData, setPrivateData] = useState<PrivateData | null>(() => {
-    const stored = sessionStorage.getItem("privateData");
-    return stored ? JSON.parse(stored) : null;
+  const { publicState, privateData, error, setError } = useGameSession<
+    PublicState,
+    PrivateData
+  >({
+    sessionCode,
+    nickname,
+    playerId,
   });
 
   const [selectedWords, setSelectedWords] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [actionMessage, setActionMessage] = useState("");
-  const [error, setError] = useState("");
+
+  const gameState = publicState?.game ?? null;
 
   const visibleWords = useMemo(() => {
     return privateData?.visibleWords ?? privateData?.VisibleWords ?? [];
   }, [privateData]);
 
-  const gameState = publicState?.game ?? null;
+  const backendSelectedWords = useMemo(() => {
+    return privateData?.selectedWords ?? privateData?.SelectedWords ?? [];
+  }, [privateData]);
 
   const currentPlayerGameState = useMemo(() => {
     if (!gameState || !playerId) return null;
@@ -70,130 +78,12 @@ export default function ConnectionsGamePage() {
   }, [gameState, playerId]);
 
   const isReady = currentPlayerGameState?.isReady ?? false;
+  const mistakesLeft =
+    gameState != null ? gameState.maxMistakes - gameState.mistakeCount : null;
 
   useEffect(() => {
-    if (!sessionCode || !nickname || !playerId) {
-      navigate("/");
-      return;
-    }
-
-    let isMounted = true;
-
-    const setup = async () => {
-      try {
-        const connection = await startConnection();
-
-        const handlePublicState = (payload: PublicState) => {
-          if (!isMounted) return;
-
-          setPublicState(payload);
-          sessionStorage.setItem("publicState", JSON.stringify(payload));
-        };
-
-        const handlePrivateData = (payload: PrivateData) => {
-          if (!isMounted) return;
-
-          setPrivateData(payload);
-          sessionStorage.setItem("privateData", JSON.stringify(payload));
-        };
-
-        const handleActionAcknowledged = (payload: {
-          success: boolean;
-          message: string;
-        }) => {
-          if (!isMounted) return;
-
-          setActionMessage(payload.message);
-
-          if (!payload.success) {
-            setError(payload.message);
-          } else {
-            setError("");
-          }
-        };
-
-        const handleGameCompleted = () => {
-          if (!isMounted) return;
-          setActionMessage("Game completed.");
-        };
-
-        const handleGameFailed = () => {
-          if (!isMounted) return;
-          setActionMessage("Game failed.");
-        };
-
-        connection.off("ReceivePublicState");
-        connection.off("ReceivePrivateData");
-        connection.off("ActionAcknowledged");
-        connection.off("GameCompleted");
-        connection.off("GameFailed");
-
-        connection.on("ReceivePublicState", handlePublicState);
-        connection.on("ReceivePrivateData", handlePrivateData);
-        connection.on("ActionAcknowledged", handleActionAcknowledged);
-        connection.on("GameCompleted", handleGameCompleted);
-        connection.on("GameFailed", handleGameFailed);
-
-        connection.onreconnected(async () => {
-          try {
-            const reconnectedConnection = await startConnection();
-
-            await reconnectedConnection.invoke(
-              "JoinSession",
-              sessionCode,
-              playerId,
-              nickname,
-            );
-
-            const latestPublicState =
-              await reconnectedConnection.invoke<PublicState>(
-                "GetSessionState",
-                sessionCode,
-              );
-
-            if (!isMounted) return;
-
-            setPublicState(latestPublicState);
-            sessionStorage.setItem(
-              "publicState",
-              JSON.stringify(latestPublicState),
-            );
-          } catch (err) {
-            console.error(err);
-            if (isMounted) {
-              setError("Failed to restore game session after reconnect.");
-            }
-          }
-        });
-
-        await connection.invoke("JoinSession", sessionCode, playerId, nickname);
-
-        const latestPublicState = await connection.invoke<PublicState>(
-          "GetSessionState",
-          sessionCode,
-        );
-
-        if (!isMounted) return;
-
-        setPublicState(latestPublicState);
-        sessionStorage.setItem(
-          "publicState",
-          JSON.stringify(latestPublicState),
-        );
-      } catch (err) {
-        console.error(err);
-        if (isMounted) {
-          setError("Failed to load game room.");
-        }
-      }
-    };
-
-    setup();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [sessionCode, nickname, playerId, navigate]);
+    setSelectedWords(backendSelectedWords);
+  }, [backendSelectedWords]);
 
   useEffect(() => {
     const filteredSelections = selectedWords.filter((word) =>
@@ -206,9 +96,7 @@ export default function ConnectionsGamePage() {
   }, [visibleWords, selectedWords]);
 
   const toggleWordSelection = async (word: string) => {
-    if (!sessionCode) return;
-    if (isReady) return;
-    if (isSubmitting) return;
+    if (!sessionCode || isReady || isSubmitting) return;
 
     const nextSelection = selectedWords.includes(word)
       ? selectedWords.filter((w) => w !== word)
@@ -235,10 +123,14 @@ export default function ConnectionsGamePage() {
   };
 
   const handleReadyToggle = async () => {
-    if (!sessionCode) return;
-    if (isSubmitting) return;
-    if (!gameState) return;
-    if (gameState.status !== "running") return;
+    if (
+      !sessionCode ||
+      isSubmitting ||
+      !gameState ||
+      gameState.status !== "running"
+    ) {
+      return;
+    }
 
     try {
       setIsSubmitting(true);
@@ -250,12 +142,6 @@ export default function ConnectionsGamePage() {
           isReady: !isReady,
         },
       });
-
-      if (isReady) {
-        setActionMessage("You are unready.");
-      } else {
-        setActionMessage("You are ready.");
-      }
     } catch (err) {
       console.error(err);
       setError("Failed to update ready state.");
@@ -263,9 +149,6 @@ export default function ConnectionsGamePage() {
       setIsSubmitting(false);
     }
   };
-
-  const mistakesLeft =
-    gameState != null ? gameState.maxMistakes - gameState.mistakeCount : null;
 
   return (
     <div className={styles.page}>
@@ -276,12 +159,17 @@ export default function ConnectionsGamePage() {
           {publicState?.players?.length ? (
             <ul className={styles.playerList}>
               {publicState.players.map((player) => {
-                const gamePlayer = gameState?.players?.find(
+                const gamePlayer = gameState?.players.find(
                   (p) => p.playerId === player.playerId,
                 );
 
                 return (
-                  <li key={player.playerId} className={styles.playerItem}>
+                  <li
+                    key={player.playerId}
+                    className={`${styles.playerItem} ${
+                      gamePlayer?.isReady ? styles.playerItemReady : ""
+                    }`}
+                  >
                     <div className={styles.playerNameRow}>
                       <span>{player.nickname}</span>
                       {!player.isConnected && (
@@ -309,45 +197,24 @@ export default function ConnectionsGamePage() {
         </aside>
 
         <main className={styles.gamePanel}>
-          <h1 className={styles.title}>Connections</h1>
+          <div className={styles.topBar}>
+            <h1 className={styles.title}>Connections</h1>
 
-          {gameState && (
-            <div className={styles.gameInfoBox}>
-              <p className={styles.infoItem}>
-                <strong>Status:</strong> {gameState.status}
-              </p>
-              <p className={styles.infoItem}>
-                <strong>Mistakes:</strong> {gameState.mistakeCount} /{" "}
-                {gameState.maxMistakes}
-              </p>
-              <p className={styles.infoItem}>
-                <strong>Mistakes left:</strong> {mistakesLeft}
-              </p>
-            </div>
-          )}
-
-          {gameState?.solvedGroups?.length ? (
-            <div className={styles.solvedSection}>
-              <h2 className={styles.sectionTitle}>Solved Groups</h2>
-
-              <div className={styles.solvedGroups}>
-                {gameState.solvedGroups.map((group, index) => (
-                  <div key={index} className={styles.solvedGroupCard}>
-                    {group.map((word) => (
-                      <span key={word} className={styles.solvedWord}>
-                        {word}
-                      </span>
-                    ))}
-                  </div>
-                ))}
+            {gameState && (
+              <div className={styles.mistakesBadge}>
+                Mistakes left: {mistakesLeft}
               </div>
-            </div>
-          ) : null}
+            )}
+          </div>
+          <div className={styles.line} />
 
           <div className={styles.selectionHeader}>
-            <h2 className={styles.sectionTitle}>Your Visible Words</h2>
+            <h2 className={styles.sectionTitle}>Your remaining words</h2>
+
             <button
-              className={styles.readyButton}
+              className={`${styles.readyButton} ${
+                isReady ? styles.readyButtonUnready : styles.readyButtonReady
+              }`}
               onClick={handleReadyToggle}
               disabled={
                 isSubmitting || !gameState || gameState.status !== "running"
@@ -358,7 +225,7 @@ export default function ConnectionsGamePage() {
           </div>
 
           {visibleWords.length === 0 ? (
-            <p className={styles.empty}>No words received yet.</p>
+            <p className={styles.empty}>No words left.</p>
           ) : (
             <div className={styles.wordsGrid}>
               {visibleWords.map((word) => {
@@ -380,26 +247,41 @@ export default function ConnectionsGamePage() {
               })}
             </div>
           )}
+          <div className={styles.line} />
 
-          <div className={styles.selectionInfo}>
-            <p>
-              <strong>Your selected words:</strong>{" "}
-              {selectedWords.length > 0 ? selectedWords.join(", ") : "None"}
-            </p>
-            <p>
-              You can select any number of your words, including zero. Once all
-              players are ready, the backend checks whether the team selected
-              exactly 4 words total and whether they form a correct group.
-            </p>
-          </div>
+          {gameState?.solvedGroups?.length ? (
+            <div className={styles.solvedSection}>
+              <h2 className={styles.sectionTitle}>Solved Groups</h2>
 
-          {actionMessage && (
-            <p className={styles.statusMessage}>{actionMessage}</p>
-          )}
+              <div className={styles.solvedGroups}>
+                {gameState.solvedGroups.map((group, index) => (
+                  <div
+                    key={`${group.name}-${index}`}
+                    className={`${styles.solvedGroupCard} ${
+                      styles[`solvedGroupColor${index % 4}`]
+                    }`}
+                  >
+                    <div className={styles.solvedGroupTitle}>{group.name}</div>
+
+                    <div className={styles.solvedWordsRow}>
+                      {group.words.map((word) => (
+                        <span key={word} className={styles.solvedWord}>
+                          {word}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
           {error && <p className={styles.error}>{error}</p>}
         </main>
 
-        <GameChat sessionCode={sessionCode!} playerId={playerId!} />
+        <aside className={styles.chatPanel}>
+          <GameChat sessionCode={sessionCode!} playerId={playerId!} />
+        </aside>
       </div>
     </div>
   );
