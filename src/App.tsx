@@ -4,6 +4,7 @@ import WaitingRoomPage from "./pages/WaitingRoom/WaitingRoomPage";
 import ConnectionsGamePage from "./games/Connections/ConnectionsGamePage";
 import RegisterPage from "./pages/Register/RegisterPage";
 import LoginPage from "./pages/Login/LoginPage";
+import AiDashboardPage from "./pages/AiDashboard/AiDashboardPage"; 
 
 function App() {
   return (
@@ -13,6 +14,9 @@ function App() {
       <Route path="/game/:sessionCode" element={<ConnectionsGamePage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/login" element={<LoginPage />} />
+      
+      
+      <Route path="/aistats" element={<AiDashboardPage />} />
     </Routes>
   );
 }
