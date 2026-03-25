@@ -1,27 +1,53 @@
 .page {
-  min-height: 100vh;
-  background: #0f172a;
   color: white;
   padding: 24px;
   box-sizing: border-box;
+
+  transform: scale(1.25);
+  transform-origin: top left;
+
+  width: 80%; /* 1 / 1.25 = 0.8 to prevent overflow */
 }
 
 .layout {
   display: grid;
-  grid-template-columns: 260px 1fr 380px;
-  gap: 24px;
+  grid-template-columns: minmax(250px, 290px) minmax(0, 1fr) minmax(
+      320px,
+      380px
+    );
+  gap: 32px;
   align-items: start;
 }
 
-.playersPanel {
+.playersPanel,
+.chatPanel,
+.gamePanel {
   background: #1e293b;
-  border-radius: 16px;
+  border-radius: 18px;
+}
+
+.playersPanel,
+.chatPanel {
+  align-self: start;
+}
+
+.playersPanel,
+.chatPanel {
   padding: 20px;
 }
 
+.gamePanel {
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
 .panelTitle {
-  margin: 0 0 16px 0;
-  font-size: 20px;
+  margin: 0 0 18px 0;
+  font-size: 30px;
+  font-weight: 800;
+  text-align: center;
 }
 
 .playerList {
@@ -32,48 +58,306 @@
 
 .playerItem {
   background: #334155;
-  border-radius: 10px;
-  padding: 10px 12px;
-  margin-bottom: 10px;
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
 }
 
-.gamePanel {
-  background: #1e293b;
-  border-radius: 16px;
-  padding: 24px;
-  min-height: 400px;
+.playerItemReady {
+  background: #14532d;
+  border: 1px solid #22c55e;
+}
+
+.playerNameRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.disconnectedTag {
+  background: #7f1d1d;
+  color: #fecaca;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.playerMeta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+  font-size: 14px;
+  color: #cbd5e1;
+}
+
+.topBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
 }
 
 .title {
-  margin: 0 0 8px 0;
-  font-size: 32px;
+  margin: 0;
+  font-size: 56px;
+  line-height: 1;
+  font-weight: 900;
 }
 
-.subtitle {
-  margin: 0 0 20px 0;
-  color: #cbd5e1;
+.mistakesBadge {
+  background: #334155;
+  color: #e2e8f0;
+  border-radius: 999px;
+  padding: 12px 18px;
+  font-weight: 800;
+  font-size: 18px;
+  white-space: nowrap;
+}
+
+.selectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 800;
+  text-align: start !important;
+  margin-bottom: 10px;
+}
+
+.readyButton {
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 22px;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    opacity 0.2s ease,
+    transform 0.15s ease;
+}
+
+.readyButton:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.readyButtonReady {
+  background: #16a34a;
+}
+
+.readyButtonReady:hover:not(:disabled) {
+  background: #15803d;
+}
+
+.readyButtonUnready {
+  background: #dc2626;
+}
+
+.readyButtonUnready:hover:not(:disabled) {
+  background: #b91c1c;
+}
+
+.readyButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .wordsGrid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(140px, 220px));
-  gap: 16px;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  gap: 18px;
 }
 
 .wordCard {
   background: #334155;
-  border-radius: 14px;
-  padding: 24px 16px;
-  font-size: 22px;
-  font-weight: 600;
+  color: white;
+  border: none;
+  border-radius: 16px;
+  padding: 28px 18px;
+  font-size: 24px;
+  font-weight: 800;
   text-align: center;
+  cursor: pointer;
+  min-height: 96px;
+  transition:
+    transform 0.15s ease,
+    background 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.wordCard:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: #475569;
+}
+
+.wordCardSelected {
+  background: #2563eb;
+}
+
+.wordCardSelected:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.wordCardLocked {
+  opacity: 0.72;
+}
+
+.solvedSection {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.solvedGroups {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.solvedGroupCard {
+  border-radius: 16px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.solvedGroupTitle {
+  font-size: 20px;
+  font-weight: 900;
+  text-align: center;
+  letter-spacing: 0.2px;
+}
+
+.solvedWordsRow {
+  display: flex;
+  gap: 12px;
+}
+
+.solvedWord {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.22);
+  border-radius: 999px;
+  padding: 14px 12px;
+  font-weight: 900;
+  text-align: center;
+  min-height: 20px;
+  flex: 1;
+}
+
+.solvedGroupColor0 {
+  background: #f9df6d;
+  color: #1f2937;
+}
+
+.solvedGroupColor1 {
+  background: #a0c35a;
+  color: #1f2937;
+}
+
+.solvedGroupColor2 {
+  background: #b0c4ef;
+  color: #1f2937;
+}
+
+.solvedGroupColor3 {
+  background: #ba81c5;
+  color: #1f2937;
 }
 
 .empty {
-  color: #94a3b8;
+  color: white;
+  font-weight: 900;
+  font-size: 30px;
 }
 
 .error {
   color: #f87171;
-  margin-top: 16px;
+  margin-top: 4px;
+}
+
+.line {
+  display: flex;
+  width: auto;
+  height: 2px;
+  background-color: white;
+}
+
+@media (max-width: 1350px) {
+  .layout {
+    grid-template-columns: 250px 1fr 320px;
+    gap: 24px;
+  }
+
+  .title {
+    font-size: 46px;
+  }
+}
+
+@media (max-width: 1100px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .title {
+    font-size: 40px;
+  }
+}
+
+@media (max-width: 700px) {
+  .page {
+    padding: 14px;
+  }
+
+  .layout {
+    gap: 14px;
+  }
+
+  .gamePanel,
+  .playersPanel,
+  .chatPanel {
+    padding: 18px;
+  }
+
+  .topBar,
+  .selectionHeader {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .wordsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .solvedGroups {
+    grid-template-columns: 1fr;
+  }
+
+  .wordCard {
+    font-size: 20px;
+    min-height: 84px;
+    padding: 22px 14px;
+  }
+
+  .title {
+    font-size: 32px;
+  }
+
+  .mistakesBadge {
+    text-align: center;
+  }
 }
