@@ -10,14 +10,6 @@ import StartSessionPage from "./pages/StartSession/StartSessionPage";
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<JoinSessionPage />} />
-      <Route path="/waiting-room/:sessionCode" element={<WaitingRoomPage />} />
-      <Route path="/game/:sessionCode" element={<ConnectionsGamePage />} />
-      <Route path="/register" element={<RegisterPage />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/start-session" element={<StartSessionPage />} />
-    </Routes>
     <>
       <Routes>
         <Route path="/" element={<JoinSessionPage />} />
@@ -28,6 +20,7 @@ function App() {
         <Route path="/game/:sessionCode" element={<ConnectionsGamePage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/start-session" element={<StartSessionPage />} />
       </Routes>
       <ToastContainer
         position="top-center"
