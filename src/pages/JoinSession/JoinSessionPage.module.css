@@ -70,3 +70,9 @@
   color: #d93025;
   font-size: 14px;
 }
+
+.authButtons {
+  display: flex;
+  justify-content: center; /* centers horizontally */
+  gap: 10px; /* space between buttons */
+}

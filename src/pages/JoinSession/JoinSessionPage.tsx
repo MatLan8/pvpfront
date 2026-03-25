@@ -115,6 +115,24 @@ function JoinSessionPage() {
         </button>
 
         {error && <p className={styles.error}>{error}</p>}
+
+        <div style={{ textAlign: "center", margin: "20px 0", color: "#888" }}>
+          — Or Start Session —
+        </div>
+
+        {/* AUTH SECTION */}
+        <div className={styles.authButtons}>
+          <button className={styles.button} onClick={() => navigate("/login")}>
+            Login
+          </button>
+
+          <button
+            className={styles.button}
+            onClick={() => navigate("/register")}
+          >
+            Register
+          </button>
+        </div>
       </div>
     </div>
   );
