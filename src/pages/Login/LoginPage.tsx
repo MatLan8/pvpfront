@@ -48,7 +48,7 @@ function LoginPage() {
 
           setIsLoggingIn(false);
 
-          navigate("/"); // PAKEISTI KAI BUS HOME PAGE
+          navigate("/start-session"); 
         },
       },
     );
