@@ -1,0 +1,41 @@
+.timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.label {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.value {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.warning {
+  border-color: rgba(255, 196, 0, 0.5);
+}
+
+.danger {
+  border-color: rgba(255, 77, 77, 0.7);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
