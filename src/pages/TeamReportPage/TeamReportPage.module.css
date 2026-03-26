@@ -1,0 +1,120 @@
+.page {
+  min-height: 100vh;
+  background: #0f172a;
+  color: white;
+  padding: 32px;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.hero {
+  background: #1e293b;
+  border-radius: 20px;
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.eyebrow {
+  color: #22c55e;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.pageTitle {
+  margin: 0;
+  font-size: 36px;
+}
+
+.pageSubtitle {
+  color: #cbd5e1;
+}
+
+.scoreBadge {
+  background: #22c55e;
+  padding: 20px;
+  border-radius: 16px;
+  text-align: center;
+}
+
+.scoreLabel {
+  font-size: 14px;
+}
+
+.scoreValue {
+  font-size: 40px;
+  font-weight: bold;
+}
+
+.topSection {
+  display: flex;
+  gap: 24px;
+}
+
+.chartCard,
+.infoCard {
+  background: #1e293b;
+  border-radius: 20px;
+  padding: 20px;
+}
+
+.chartWrapper {
+  height: 400px;
+}
+
+.summaryColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.cardTitle {
+  margin-bottom: 10px;
+}
+
+.list {
+  padding-left: 20px;
+}
+
+.emptyText {
+  color: #94a3b8;
+}
+
+.error {
+  color: red;
+  text-align: center;
+  margin-top: 50px;
+}
+
+.navButtonContainer {
+  display: flex;
+  align-items: center;
+}
+
+.navButton {
+  background: #1d4ed8;
+  border: none;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 999px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.navButton:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+.navButton:active {
+  transform: translateY(0);
+}

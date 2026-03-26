@@ -8,6 +8,7 @@ import RegisterPage from "./pages/Register/RegisterPage";
 import LoginPage from "./pages/Login/LoginPage";
 import PlayerReportPage from "./pages/PlayerReport/PlayerReportPage";
 import StartSessionPage from "./pages/StartSession/StartSessionPage";
+import TeamReportPage from "./pages/TeamReportPage/TeamReportPage";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/report" element={<PlayerReportPage />} />
+        <Route path="/team-report" element={<TeamReportPage />} />
         <Route path="/start-session" element={<StartSessionPage />} />
       </Routes>
       <ToastContainer
