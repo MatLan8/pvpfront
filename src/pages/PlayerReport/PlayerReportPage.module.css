@@ -1,144 +1,321 @@
 .page {
-  height: 100vh;
-  justify-content: right;
-  align-items: center;
+  min-height: 100vh;
+  background: #0f172a;
   color: white;
+  padding: 32px;
+  box-sizing: border-box;
 }
 
-.card {
- width: 500px;
- height: auto;
- border-radius: 30px;
- padding: 10px 10px;
- margin: 20px;
- text-align: left;
- background: #0f172a;
- box-shadow: 15px 15px 30px rgb(25, 25, 25),
-             -15px -15px 30px rgb(60, 60, 60);
+.container {
+  max-width: 1500px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
 }
 
-.two{
-    display: flex;
-    justify-content: center;
-   align-items: center;
+.loadingPage {
+  min-height: 100vh;
+  background: #0f172a;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
 }
 
-.title {
-  margin: 0 0 20px 0;
-  text-align: center;
-  font-size: 28px;
-}
-.chart{
-    color: white;
+.loadingTitle {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 800;
 }
 
-.subtitle {
+.hero {
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  border: 1px solid #334155;
+  border-radius: 24px;
+  padding: 28px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+}
+
+.eyebrow {
+  margin: 0 0 8px 0;
+  color: #93c5fd;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.pageTitle {
+  margin: 0 0 10px 0;
+  font-size: 42px;
+  font-weight: 900;
+}
+
+.pageSubtitle {
+  margin: 0;
+  color: #cbd5e1;
+  font-size: 18px;
+  max-width: 850px;
+  line-height: 1.5;
+}
+
+.scoreBadge {
+  min-width: 180px;
+  background: #1d4ed8;
+  border-radius: 22px;
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.scoreLabel {
+  font-size: 14px;
+  font-weight: 700;
+  color: #dbeafe;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.scoreValue {
+  font-size: 54px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.topSection {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(360px, 0.85fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.chartCard,
+.infoCard,
+.skillCard {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 24px;
+  padding: 24px;
+}
+
+.chartWrapper {
+  width: 100%;
+  height: 420px;
+}
+
+.summaryColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.cardTitle {
+  margin: 0 0 16px 0;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.sectionHeading {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 900;
+}
+
+.skillsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.skillsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.skillCard:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
+.skillHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.skillTitle {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 800;
+}
+
+.skillScore {
+  min-width: 64px;
+  height: 64px;
+  border-radius: 999px;
+  background: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.warningBadge {
   margin: 0 0 14px 0;
-  font-size: 22px;
+  display: inline-block;
+  background: #7c2d12;
+  color: #fdba74;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-weight: 700;
+  font-size: 14px;
 }
 
-.empty {
-  color: #666;
+.skillBlock {
+  margin-top: 18px;
 }
 
-.playerList {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 20px 0;
+.subheading {
+  margin: 0 0 10px 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: #dbeafe;
 }
 
-.playerItem {
+.list {
+  margin: 0;
+  padding-left: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #e2e8f0;
+}
+
+.list li {
+  line-height: 1.5;
+}
+
+.evidenceList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.evidenceItem {
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 16px;
   padding: 12px 14px;
-  border: 1px solid #dbe2ea;
-  border-radius: 10px;
-  margin-bottom: 10px;
-  background: #ffffff;
 }
 
-.waitingText {
-  margin-top: 16px;
-  color: #555;
+.evidenceRef {
+  font-size: 13px;
+  font-weight: 800;
+  color: #93c5fd;
+  margin-bottom: 6px;
+}
+
+.evidenceQuote {
+  color: #e2e8f0;
+  line-height: 1.45;
+}
+
+.emptyText {
+  margin: 0;
+  color: #94a3b8;
 }
 
 .error {
-  margin-top: 16px;
-  color: #d93025;
-  font-size: 14px;
+  min-height: 100vh;
+  background: #0f172a;
+  color: #f87171;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 800;
+  padding: 24px;
+  text-align: center;
 }
-.button {
-  background-color: #04AA6D;
+
+@media (max-width: 1200px) {
+  .topSection {
+    grid-template-columns: 1fr;
+  }
+
+  .skillsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .skillCard:last-child:nth-child(odd) {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 700px) {
+  .page {
+    padding: 18px;
+  }
+
+  .hero {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pageTitle {
+    font-size: 32px;
+  }
+
+  .pageSubtitle {
+    font-size: 16px;
+  }
+
+  .scoreBadge {
+    min-width: unset;
+  }
+
+  .chartWrapper {
+    height: 320px;
+  }
+
+  .skillHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.navButtonContainer {
+  display: flex;
+  align-items: center;
+}
+
+.navButton {
+  background: #1d4ed8;
   border: none;
   color: white;
-  padding: 10px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 8px;
-  margin: 4px 2px;
+  padding: 12px 18px;
+  border-radius: 999px;
+  font-weight: 700;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-
-.sessionCode {
-    margin-top: 20px;
-    padding: 10px;
-    background-color: #1f2732;
-    border-radius: 5px;
-    text-align: center;
-    font-size: 1.2em;
+.navButton:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
 }
 
-.sessionCode strong {
-    font-weight: bold;
-    color: #ffffff;
-}
-
-/* From Uiverse.io by iZOXVL */ 
-.elegante {
-  padding: 15px 30px;
-  border: 2px solid #2c2c2c;
-  background-color: #1a1a1a;
-  color: #ffffff;
-  font-size: 1.2rem;
-  cursor: pointer;
-  border-radius: 30px;
-  transition: all 0.4s ease;
-  outline: none;
-  position: relative;
-  overflow: hidden;
-  font-weight: bold;
-}
-
-.elegante::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(
-    circle,
-    rgba(255, 255, 255, 0.25) 0%,
-    rgba(255, 255, 255, 0) 70%
-  );
-  transform: scale(0);
-  transition: transform 0.5s ease;
-}
-
-.elegante:hover::after {
-  transform: scale(4);
-}
-
-.elegante:hover {
-  border-color: #666666;
-  background: #292929;
-}
-
-.elegante:disabled{
-    pointer-events: none;
-    opacity: 0.5;
-}
-
-ul li{
-    font-weight:500;
+.navButton:active {
+  transform: translateY(0);
 }
