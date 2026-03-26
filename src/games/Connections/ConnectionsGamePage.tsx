@@ -137,6 +137,7 @@ export default function ConnectionsGamePage() {
 
   const isGameWon = gameState?.status === "completed";
   const isGameLost = gameState?.status === "failed";
+  const hasGameEnded = isGameWon || isGameLost || isGameTimeOver;
 
   const showWinModal = isGameWon && !isEndModalDismissed;
   const showLoseModal = isGameLost && !isEndModalDismissed;
@@ -174,6 +175,7 @@ export default function ConnectionsGamePage() {
   useEffect(() => {
     if (gameState?.status === "running") {
       setIsEndModalDismissed(false);
+      setGameTimeOver(false);
     }
   }, [gameState?.status]);
 
@@ -194,6 +196,7 @@ export default function ConnectionsGamePage() {
   useEffect(() => {
     if (!hasStarted) {
       setHasTimedOut(false);
+      setGameTimeOver(false);
       setServerRemainingSeconds(null);
       setServerTimerStartedAtUtc(null);
       setServerTimerEndsAtUtc(null);
@@ -247,7 +250,6 @@ export default function ConnectionsGamePage() {
         const handleGameTimedOut = () => {
           if (!isMounted) return;
           setHasTimedOut(true);
-
           setServerRemainingSeconds(0);
           setGameTimeOver(true);
           setError("Time is up. Game finished.");
@@ -412,7 +414,19 @@ export default function ConnectionsGamePage() {
 
         <main className={styles.gamePanel}>
           <div className={styles.topBar}>
-            <h1 className={styles.title}>Connections</h1>
+            <div className={styles.titleRow}>
+              <h1 className={styles.title}>Connections</h1>
+
+              {hasGameEnded && (
+                <button
+                  type="button"
+                  className={styles.reportModalButton}
+                  onClick={() => setIsEndModalDismissed(false)}
+                >
+                  View end modal
+                </button>
+              )}
+            </div>
 
             {hasStarted && (
               <div
@@ -532,6 +546,7 @@ export default function ConnectionsGamePage() {
           <GameChat sessionCode={sessionCode!} playerId={playerId!} />
         </aside>
       </div>
+
       <GameEndModal
         isOpen={showWinModal}
         result="win"

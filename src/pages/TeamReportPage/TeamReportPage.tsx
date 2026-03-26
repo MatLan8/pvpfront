@@ -44,7 +44,6 @@ function TeamReportPage() {
   return (
     <div className={styles.page}>
       <div className={styles.container}>
-        {/* HEADER */}
         <header className={styles.hero}>
           <div>
             <p className={styles.eyebrow}>Team Evaluation</p>
@@ -67,12 +66,11 @@ function TeamReportPage() {
           </div>
         </header>
 
-        {/* RADAR + SUMMARY */}
         <section className={styles.topSection}>
           <div className={styles.chartCard}>
             <h2 className={styles.cardTitle}>Team Skill Radar</h2>
             <div className={styles.chartWrapper}>
-              <ResponsiveContainer width="100%" height={420}>
+              <ResponsiveContainer width="100%" height={500}>
                 <RadarChart data={radarData}>
                   <PolarGrid />
                   <PolarAngleAxis
