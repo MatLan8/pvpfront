@@ -1,0 +1,41 @@
+========================================================================
+END USER LICENSE AGREEMENT (EULA) & AI PRIVACY POLICY
+System: AI-Driven Soft Skills Evaluator (Gamified Platform)
+Jurisdiction: European Union (Compliant with GDPR & EU AI Act 2026)
+========================================================================
+
+1. EXPLICIT CONSENT FOR AI PROFILING
+By accessing this platform, you are interacting with an Artificial 
+Intelligence system designed to analyze real-time communication. 
+By selecting "I Agree," you provide explicit consent for the AI to:
+   a) Read and analyze your in-game text messages.
+   b) Evaluate linguistic and behavioral markers.
+   c) Generate a personalized soft-skills profile based on this data.
+
+2. SCOPE OF ANALYSIS
+The AI model is strictly limited to evaluating the following five (5) 
+competencies. No shadow profiling or hidden assessments are conducted:
+- Communication
+- Teamwork
+- Problem-Solving
+- Leadership
+- Time Management
+
+3. THE CONSENT REPLICA & DATA RETENTION
+To comply with EU digital audit laws, your acceptance of these terms 
+generates a cryptographic "Consent Replica." This record, which includes 
+your unique User ID, a timestamp, and this document's version, is securely 
+stored in our database as permanent legal proof of your agreement.
+
+4. SECURITY & USER RIGHTS
+- SECURE PROCESSING: All client-side processing operates within a 
+  memory-safe WebAssembly (WASM) environment.
+- RIGHT TO WITHDRAW: You may revoke this consent at any time via your 
+  account settings or by clearing the '_eu_ai_consent_token' cookie. 
+- HUMAN OVERSIGHT: In accordance with the EU AI Act, you acknowledge 
+  that this is an automated assessment and you retain the right to 
+  request a manual, human review of the AI's findings.
+
+========================================================================
+AGREEMENT VERSION: 2026.1-EU-WASM
+========================================================================

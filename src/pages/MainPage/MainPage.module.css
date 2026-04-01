@@ -1,0 +1,253 @@
+/* =========================================================
+   PAGRINDINIS FAKTAS: Tamsi tema
+   ========================================================= */
+.pageWrapper {
+  background: linear-gradient(135deg, #0f172a, #064e3b, #020617);
+  min-height: 100vh;
+  color: #f8fafc;
+  font-family: system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* =========================================================
+   EULA MODALAS (Gatekeeper)
+   ========================================================= */
+.modalOverlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(2, 6, 23, 0.85);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  padding: 1rem;
+}
+
+.eulaCard {
+  background: #0f172a;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  padding: 2.5rem;
+  border-radius: 24px;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 0 50px rgba(16, 185, 129, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.eulaCard h2 {
+  margin: 1rem 0 0.5rem 0;
+  font-size: 1.5rem;
+}
+
+.eulaScrollBox {
+  background: #020617;
+  border: 1px solid #1e293b;
+  padding: 1.5rem;
+  height: 250px;
+  overflow-y: auto;
+  width: 100%;
+  border-radius: 12px;
+  margin: 1.5rem 0;
+  color: #cbd5e1;
+  text-align: left;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+}
+
+.eulaScrollBox pre {
+  white-space: pre-wrap;
+  font-family: inherit;
+  margin: 0;
+}
+
+/* Custom Scrollbar EULA langui */
+.eulaScrollBox::-webkit-scrollbar { width: 8px; }
+.eulaScrollBox::-webkit-scrollbar-track { background: transparent; }
+.eulaScrollBox::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+
+/* =========================================================
+   BLUR EFEKTAS (Kol nesutikta)
+   ========================================================= */
+.contentBlurred {
+  filter: blur(10px) grayscale(50%);
+  pointer-events: none;
+  user-select: none;
+  transition: all 0.5s ease;
+}
+.contentClear {
+  transition: all 0.5s ease;
+}
+
+/* =========================================================
+   HEADER IR NAVIGACIJA
+   ========================================================= */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 3rem;
+  background: rgba(15, 23, 42, 0.5);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.logoArea {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.iconBox {
+  background: rgba(16, 185, 129, 0.2);
+  padding: 0.75rem;
+  border-radius: 12px;
+  display: inline-flex;
+  color: #34d399;
+}
+
+.navArea {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* =========================================================
+   MYGTUKAI
+   ========================================================= */
+.btnPrimary {
+  background: #059669;
+  color: white;
+  border: none;
+  padding: 1.2rem 3.5rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border-radius: 16px;
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+  transition: 0.2s;
+  width: 100%;
+}
+
+.btnPrimary:hover:not(:disabled) {
+  background: #10b981;
+  transform: translateY(-2px);
+}
+
+.btnPrimary:disabled {
+  background: #1e293b;
+  color: #64748b;
+  cursor: not-allowed;
+  box-shadow: none;
+  border: 1px solid #334155;
+}
+
+.btnSecondary {
+  background: transparent;
+  border: 1px solid rgba(16, 185, 129, 0.5);
+  color: #a7f3d0;
+  padding: 0.5rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btnSecondary:hover {
+  background: rgba(16, 185, 129, 0.1);
+}
+
+/* =========================================================
+   HERO SEKCIJA
+   ========================================================= */
+.hero {
+  text-align: center;
+  padding: 6rem 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.heroTitle {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
+}
+
+.textEmerald {
+  color: #34d399;
+}
+
+.heroSubtitle {
+  font-size: 1.25rem;
+  color: #a7f3d0;
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+}
+
+.heroSteps {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 4rem;
+  opacity: 0.8;
+}
+
+.stepItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 500;
+}
+
+/* =========================================================
+   INFORMACINĖS SEKCIJOS
+   ========================================================= */
+.section {
+  padding: 5rem 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+.featureCard {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  padding: 1.5rem;
+  border-radius: 16px;
+  margin-bottom: 1rem;
+}
+
+.featureCard h4 {
+  margin: 1rem 0 0.5rem 0;
+  font-size: 1.1rem;
+}
+
+.featureCard p {
+  color: #94a3b8;
+  line-height: 1.6;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.contactBox {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 3rem;
+  border-radius: 32px;
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+}

@@ -9,7 +9,7 @@ import LoginPage from "./pages/Login/LoginPage";
 import PlayerReportPage from "./pages/PlayerReport/PlayerReportPage";
 import StartSessionPage from "./pages/StartSession/StartSessionPage";
 import TeamReportPage from "./pages/TeamReportPage/TeamReportPage";
-
+import MainPage from "./pages/MainPage/MainPage";
 function App() {
   return (
     <>
@@ -25,6 +25,7 @@ function App() {
         <Route path="/report" element={<PlayerReportPage />} />
         <Route path="/team-report" element={<TeamReportPage />} />
         <Route path="/start-session" element={<StartSessionPage />} />
+		<Route path="/main_page" element={<MainPage />} />
       </Routes>
       <ToastContainer
         position="top-center"
