@@ -10,6 +10,8 @@ import PlayerReportPage from "./pages/PlayerReport/PlayerReportPage";
 import StartSessionPage from "./pages/StartSession/StartSessionPage";
 import TeamReportPage from "./pages/TeamReportPage/TeamReportPage";
 import MainPage from "./pages/MainPage/MainPage";
+
+import LasersGamePage from "./games/Lasers/LasersGamePage";
 function App() {
   return (
     <>
@@ -19,13 +21,13 @@ function App() {
           path="/waiting-room/:sessionCode"
           element={<WaitingRoomPage />}
         />
-        <Route path="/game/:sessionCode" element={<ConnectionsGamePage />} />
+        <Route path="/game/:sessionCode" element={<LasersGamePage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/report" element={<PlayerReportPage />} />
         <Route path="/team-report" element={<TeamReportPage />} />
         <Route path="/start-session" element={<StartSessionPage />} />
-		<Route path="/mainpage" element={<MainPage />} />
+        <Route path="/mainpage" element={<MainPage />} />
       </Routes>
       <ToastContainer
         position="top-center"
