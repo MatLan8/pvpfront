@@ -1,5 +1,5 @@
 import React, { useState, useEffect, UIEvent } from 'react';
-import { useNavigate } from 'react-router-dom'; // Added this import
+import { useNavigate } from 'react-router-dom';
 import { 
   Gamepad2, MessageSquare, FileBarChart2, Mail, 
   Users, Brain, ShieldAlert 
@@ -7,7 +7,6 @@ import {
 import eulaText from './EULA_AI_RUST_VERSION.txt?raw';
 import styles from './MainPage.module.css';
 
-// Fixed the TryButton by adding the missing closing brace }
 export function TryButton() {
   const navigate = useNavigate();
   const handleStart = () => {
@@ -19,7 +18,7 @@ export function TryButton() {
       Try Now
     </button>
   );
-} // <--- This was missing!
+}
 
 interface ConsentReplica {
   userId: string;
@@ -29,7 +28,7 @@ interface ConsentReplica {
 }
 
 export default function JoinGameScreen() {
-  const navigate = useNavigate(); // Added navigate here so the button below works
+  const navigate = useNavigate();
   const [showEula, setShowEula] = useState<boolean>(false);
   const [hasAccepted, setHasAccepted] = useState<boolean>(false);
   const [canAgree, setCanAgree] = useState<boolean>(false);
@@ -50,9 +49,8 @@ export default function JoinGameScreen() {
     }
   };
 
-  // Logic for the START NOW button
   const handleStart = () => {
-    navigate(`/`);
+    navigate(`/game`);
   };
 
   const handleAgree = async () => {
@@ -64,25 +62,25 @@ export default function JoinGameScreen() {
     };
 
     try {
-      console.log("Saugoma EULA Replica į DB...", replica);
+      console.log("Saving EULA Replica to DB...", replica);
       document.cookie = "_eu_ai_consent=true; max-age=15552000; path=/; SameSite=Strict";
       setShowEula(false);
       setHasAccepted(true);
     } catch (error) {
-      alert("Klaida patvirtinant sutikimą.");
+      alert("Error confirming consent.");
     }
   };
 
   return (
     <div className={styles.pageWrapper}>
       
-      {/* 1. EULA MODALAS */}
+      {/* 1. EULA MODAL */}
       {showEula && (
         <div className={styles.modalOverlay}>
           <div className={styles.eulaCard}>
             <ShieldAlert size={48} color="#10b981" />
-            <h2>Duomenų Naudojimo Sutikimas</h2>
-            <p style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Versija: 2026.1-EU-AI-Act</p>
+            <h2>Data Usage Consent</h2>
+            <p style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Version: 2026.1-EU-AI-Act</p>
             
             <div className={styles.eulaScrollBox} onScroll={handleScroll}>
               <pre>{eulaText}</pre>
@@ -90,7 +88,7 @@ export default function JoinGameScreen() {
             
             {!canAgree && (
               <p style={{ color: '#f87171', fontSize: '0.85rem', marginBottom: '1rem' }}>
-                Nuslinkite tekstą iki apačios, kad patvirtintumėte
+                Please scroll to the bottom to confirm
               </p>
             )}
             
@@ -99,13 +97,13 @@ export default function JoinGameScreen() {
               onClick={handleAgree}
               disabled={!canAgree}
             >
-              Suprantu ir Sutinku
+              I Understand and Agree
             </button>
           </div>
         </div>
       )}
 
-      {/* 2. PAGRINDINIS PUSLAPIS */}
+      {/* 2. MAIN PAGE */}
       <div className={showEula ? styles.contentBlurred : styles.contentClear}>
         
         {/* Header */}
@@ -125,10 +123,10 @@ export default function JoinGameScreen() {
         {/* Hero */}
         <section className={styles.hero}>
           <h1 className={styles.heroTitle}>
-            Pamatykite komandos įgūdžius <span className={styles.textEmerald}>realiu laiku</span>
+            See team skills in <span className={styles.textEmerald}>real-time</span>
           </h1>
           <p className={styles.heroSubtitle}>
-            Dalyvaukite trumpuose komandiniuose žaidimuose, susirašinėkite ir akimirksniu gaukite DI analizę apie savo minkštuosius įgūdžius.
+            Participate in short team games, chat, and instantly receive AI analysis of your soft skills.
           </p>
           
           <button onClick={handleStart} className={styles.btnPrimary} style={{ maxWidth: '300px' }}>
@@ -148,21 +146,21 @@ export default function JoinGameScreen() {
         <section className={styles.section}>
           <div className={styles.grid2}>
             <div>
-              <h2 style={{ fontSize: '2rem', marginBottom: '1rem' }}>Minkštųjų įgūdžių matavimo iššūkis</h2>
+              <h2 style={{ fontSize: '2rem', marginBottom: '1rem' }}>The Challenge of Measuring Soft Skills</h2>
               <p style={{ color: '#94a3b8', marginBottom: '2rem', lineHeight: '1.6' }}>
-                Nors techninius įgūdžius išmatuoti lengva, minkštieji įgūdžiai dažnai lieka subjektyvūs. Mes tai keičiame pasitelkdami DI ir žaidimą.
+                While technical skills are easy to measure, soft skills often remain subjective. We are changing that using AI and gaming.
               </p>
               
               <div className={styles.featureCard}>
                 <Brain color="#34d399" />
-                <h4>DI valdoma analizė</h4>
-                <p>Analizuojame kalbinius ir elgsenos rodiklius realiu laiku.</p>
+                <h4>AI-driven Analysis</h4>
+                <p>We analyze linguistic and behavioral indicators in real-time.</p>
               </div>
               
               <div className={styles.featureCard}>
                 <Users color="#34d399" />
-                <h4>Įtraukianti patirtis</h4>
-                <p>Jokių testų – tik interaktyvus komandinis bendradarbiavimas.</p>
+                <h4>Immersive Experience</h4>
+                <p>No tests – just interactive team collaboration.</p>
               </div>
             </div>
 
@@ -176,8 +174,8 @@ export default function JoinGameScreen() {
         {/* Contact */}
         <section className={styles.section}>
           <div className={styles.contactBox}>
-            <h2>Pasiruošę atskleisti komandos potencialą?</h2>
-            <p style={{ color: '#94a3b8', margin: '1rem 0 2rem 0' }}>Turite klausimų? Susisiekime!</p>
+            <h2>Ready to unlock your team's potential?</h2>
+            <p style={{ color: '#94a3b8', margin: '1rem 0 2rem 0' }}>Have questions? Let's get in touch!</p>
             <a href="mailto:contact@teamskills.ai" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', color: '#34d399', fontSize: '1.2rem', textDecoration: 'none' }}>
               <Mail /> contact@teamskills.ai
             </a>
