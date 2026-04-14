@@ -1,10 +1,25 @@
 import React, { useState, useEffect, UIEvent } from 'react';
+import { useNavigate } from 'react-router-dom'; // Added this import
 import { 
   Gamepad2, MessageSquare, FileBarChart2, Mail, 
   Users, Brain, ShieldAlert 
 } from "lucide-react";
 import eulaText from './EULA_AI_RUST_VERSION.txt?raw';
-import styles from './MainPage.module.css'; // Svarbiausia eilutė!
+import styles from './MainPage.module.css';
+
+// Fixed the TryButton by adding the missing closing brace }
+export function TryButton() {
+  const navigate = useNavigate();
+  const handleStart = () => {
+    navigate(`/game`);
+  };
+  
+  return (
+    <button onClick={handleStart} className={styles.btnPrimary}>
+      Try Now
+    </button>
+  );
+} // <--- This was missing!
 
 interface ConsentReplica {
   userId: string;
@@ -14,6 +29,7 @@ interface ConsentReplica {
 }
 
 export default function JoinGameScreen() {
+  const navigate = useNavigate(); // Added navigate here so the button below works
   const [showEula, setShowEula] = useState<boolean>(false);
   const [hasAccepted, setHasAccepted] = useState<boolean>(false);
   const [canAgree, setCanAgree] = useState<boolean>(false);
@@ -32,6 +48,11 @@ export default function JoinGameScreen() {
     if (scrollHeight - scrollTop <= clientHeight + 2) {
       setCanAgree(true);
     }
+  };
+
+  // Logic for the START NOW button
+  const handleStart = () => {
+    navigate(`/`);
   };
 
   const handleAgree = async () => {
@@ -110,7 +131,7 @@ export default function JoinGameScreen() {
             Dalyvaukite trumpuose komandiniuose žaidimuose, susirašinėkite ir akimirksniu gaukite DI analizę apie savo minkštuosius įgūdžius.
           </p>
           
-          <button className={styles.btnPrimary} style={{ maxWidth: '300px' }}>
+          <button onClick={handleStart} className={styles.btnPrimary} style={{ maxWidth: '300px' }}>
             START NOW
           </button>
 
@@ -145,7 +166,6 @@ export default function JoinGameScreen() {
               </div>
             </div>
 
-            {/* Placeholder Image */}
             <div style={{ background: '#1e293b', border: '1px solid #334155', borderRadius: '24px', height: '400px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
               <Gamepad2 size={64} color="#34d399" opacity={0.5} />
               <p style={{ color: '#64748b', marginTop: '1rem' }}>Game Interface Preview</p>

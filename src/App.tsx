@@ -25,7 +25,7 @@ function App() {
         <Route path="/report" element={<PlayerReportPage />} />
         <Route path="/team-report" element={<TeamReportPage />} />
         <Route path="/start-session" element={<StartSessionPage />} />
-		<Route path="/main_page" element={<MainPage />} />
+		<Route path="/mainpage" element={<MainPage />} />
       </Routes>
       <ToastContainer
         position="top-center"
