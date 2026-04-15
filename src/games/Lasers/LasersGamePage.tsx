@@ -144,7 +144,9 @@ function normalizeMirrorType(raw: unknown): MirrorKind | null {
   return null;
 }
 
-function normalizeMirrors(raw: unknown): { position: Position; type: MirrorKind }[] {
+function normalizeMirrors(
+  raw: unknown,
+): { position: Position; type: MirrorKind }[] {
   if (!Array.isArray(raw)) return [];
   const out: { position: Position; type: MirrorKind }[] = [];
   for (const m of raw) {
@@ -175,9 +177,7 @@ const DIRECTION_BY_INDEX: Record<number, "Up" | "Down" | "Left" | "Right"> = {
   3: "Right",
 };
 
-function parseDirection(
-  d: unknown,
-): "Up" | "Down" | "Left" | "Right" | null {
+function parseDirection(d: unknown): "Up" | "Down" | "Left" | "Right" | null {
   if (d == null) return null;
   if (typeof d === "number") return DIRECTION_BY_INDEX[d] ?? null;
   if (typeof d === "string") {
@@ -187,7 +187,9 @@ function parseDirection(
   return null;
 }
 
-function directionToEntryEdge(dir: "Up" | "Down" | "Left" | "Right"): EntryEdge {
+function directionToEntryEdge(
+  dir: "Up" | "Down" | "Left" | "Right",
+): EntryEdge {
   switch (dir) {
     case "Down":
       return "top";
@@ -469,7 +471,9 @@ export default function LasersGamePage() {
       normalizedPrivate.laserDirection &&
       zoneSet.has(posKey(normalizedPrivate.laserStart))
     ) {
-      const edge = directionToEntryEdge(normalizedPrivate.laserDirection as "Up" | "Down" | "Left" | "Right");
+      const edge = directionToEntryEdge(
+        normalizedPrivate.laserDirection as "Up" | "Down" | "Left" | "Right",
+      );
       const key = posKey(normalizedPrivate.laserStart);
       setPersistentEntryEdges((prev) => ({ ...prev, [key]: edge }));
     }
@@ -529,7 +533,13 @@ export default function LasersGamePage() {
   };
 
   const handleRemoveMirror = async (localX: number, localY: number) => {
-    if (!sessionCode || !gameState || isInteractionLocked || isReady || isSubmitting) {
+    if (
+      !sessionCode ||
+      !gameState ||
+      isInteractionLocked ||
+      isReady ||
+      isSubmitting
+    ) {
       return;
     }
 
@@ -565,11 +575,7 @@ export default function LasersGamePage() {
   };
 
   const onPaletteDragStart = (e: React.DragEvent, mirrorType: MirrorKind) => {
-    if (
-      isInteractionLocked ||
-      isReady ||
-      mirrorCount >= MIRRORS_PER_PLAYER
-    ) {
+    if (isInteractionLocked || isReady || mirrorCount >= MIRRORS_PER_PLAYER) {
       e.preventDefault();
       return;
     }
@@ -591,8 +597,7 @@ export default function LasersGamePage() {
     const segments = indices.map((idx) => {
       const curr = path[idx].position;
       const prev = idx > 0 ? path[idx - 1].position : null;
-      const next =
-        idx + 1 < path.length ? path[idx + 1].position : null;
+      const next = idx + 1 < path.length ? path[idx + 1].position : null;
 
       let entry: EntryEdge;
       if (prev && !posEqual(prev, curr)) {
@@ -805,6 +810,22 @@ export default function LasersGamePage() {
                 >
                   {isReady ? "Unready" : "Ready"}
                 </button>
+
+                <div className={styles.zoneIndicatorWrap}>
+                  <p className={styles.zoneIndicatorLabel}>Your quadrant</p>
+                  <div className={styles.zoneIndicator}>
+                    {[0, 1, 2, 3].map((zi) => (
+                      <div
+                        key={zi}
+                        className={`${styles.zoneIndicatorCell} ${
+                          zi === zoneIndicatorActiveIndex
+                            ? styles.zoneIndicatorActive
+                            : ""
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
               </div>
 
               <div className={styles.gridContainer}>
@@ -844,7 +865,9 @@ export default function LasersGamePage() {
                         onDrop={(e) => {
                           e.preventDefault();
                           setDropTarget(null);
-                          const t = e.dataTransfer.getData(DRAG_TYPE) as MirrorKind;
+                          const t = e.dataTransfer.getData(
+                            DRAG_TYPE,
+                          ) as MirrorKind;
                           if (t !== "LeftTurn" && t !== "RightTurn") return;
                           void handlePlaceMirror(lx, ly, t);
                         }}
@@ -883,7 +906,9 @@ export default function LasersGamePage() {
                 </div>
 
                 <div className={styles.paletteRow}>
-                  <p className={styles.paletteLabel}>Drag a mirror into a cell</p>
+                  <p className={styles.paletteLabel}>
+                    Drag a mirror into a cell
+                  </p>
                   <div className={styles.paletteMirrors}>
                     <div
                       className={`${styles.paletteMirror} ${
@@ -932,22 +957,6 @@ export default function LasersGamePage() {
                       <span className={styles.paletteMirrorCaption}>
                         Right turn
                       </span>
-                    </div>
-                  </div>
-
-                  <div className={styles.zoneIndicatorWrap}>
-                    <p className={styles.zoneIndicatorLabel}>Your quadrant</p>
-                    <div className={styles.zoneIndicator}>
-                      {[0, 1, 2, 3].map((zi) => (
-                        <div
-                          key={zi}
-                          className={`${styles.zoneIndicatorCell} ${
-                            zi === zoneIndicatorActiveIndex
-                              ? styles.zoneIndicatorActive
-                              : ""
-                          }`}
-                        />
-                      ))}
                     </div>
                   </div>
                 </div>
