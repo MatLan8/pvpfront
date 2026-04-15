@@ -152,3 +152,21 @@
     pointer-events: none;
     opacity: 0.5;
 }
+
+.logoutBtn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+
+  background: transparent;
+  border: 1px solid #334155;
+  color: #cbd5e1;
+  padding: 6px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logoutBtn:hover {
+  background: #1e293b;
+}
