@@ -7,9 +7,10 @@ import styles from "./Modals.module.css";
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
+  openRegister: () => void;
 }
 
-function LoginModal({ isOpen, onClose }: LoginModalProps) {
+function LoginModal({ isOpen, onClose, openRegister }: LoginModalProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -119,7 +120,7 @@ function LoginModal({ isOpen, onClose }: LoginModalProps) {
             className={styles.link}
             onClick={() => {
               onClose();
-              navigate("/register");
+              setTimeout(() => openRegister(), 0);
             }}
           >
             Register

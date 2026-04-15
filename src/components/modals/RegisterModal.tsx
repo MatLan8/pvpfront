@@ -7,9 +7,10 @@ import styles from "./Modals.module.css";
 interface RegisterModalProps {
   isOpen: boolean;
   onClose: () => void;
+  openLogin: () => void;
 }
 
-function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
+function RegisterModal({ isOpen, onClose, openLogin }: RegisterModalProps) {
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -70,8 +71,10 @@ function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
           setIsRegistering(false);
 
           setTimeout(() => {
+            // onClose();
+            // navigate("/login");
             onClose();
-            navigate("/login");
+            setTimeout(() => openLogin(), 0);
           }, 1200);
         },
       },
@@ -163,7 +166,7 @@ function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
             className={styles.link}
             onClick={() => {
               onClose();
-              navigate("/login");
+              setTimeout(() => openLogin(), 0);
             }}
           >
             Login

@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import eulaText from "./EULA_AI_RUST_VERSION.txt?raw";
 import styles from "./MainPage.module.css";
+import LoginModal from "../../components/modals/LoginModal";
+import RegisterModal from "../../components/modals/RegisterModal";
 
 export function TryButton() {
   const navigate = useNavigate();
@@ -38,6 +40,9 @@ export default function JoinGameScreen() {
   const [showEula, setShowEula] = useState<boolean>(false);
   const [, setHasAccepted] = useState<boolean>(false);
   const [canAgree, setCanAgree] = useState<boolean>(false);
+
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
 
   useEffect(() => {
     const consent = document.cookie
@@ -130,10 +135,29 @@ export default function JoinGameScreen() {
             TeamSkills AI
           </div>
           <div className={styles.navArea}>
-            <a href="#" style={{ color: "#cbd5e1", textDecoration: "none" }}>
+            {/* <a href="#" style={{ color: "#cbd5e1", textDecoration: "none" }}>
               Login
             </a>
-            <button className={styles.btnSecondary}>Register</button>
+            <button className={styles.btnSecondary}>Register</button> */}
+            <button
+              onClick={() => setIsLoginOpen(true)}
+              style={{
+                background: "none",
+                border: "none",
+                color: "#cbd5e1",
+                cursor: "pointer",
+                fontSize: "14px",
+              }}
+            >
+              Login
+            </button>
+
+            <button
+              className={styles.btnSecondary}
+              onClick={() => setIsRegisterOpen(true)}
+            >
+              Register
+            </button>
           </div>
         </header>
 
@@ -252,6 +276,23 @@ export default function JoinGameScreen() {
           </div>
         </section>
       </div>
+      <LoginModal
+        isOpen={isLoginOpen}
+        onClose={() => setIsLoginOpen(false)}
+        openRegister={() => {
+          setIsLoginOpen(false);
+          setIsRegisterOpen(true);
+        }}
+      />
+
+      <RegisterModal
+        isOpen={isRegisterOpen}
+        onClose={() => setIsRegisterOpen(false)}
+        openLogin={() => {
+          setIsRegisterOpen(false);
+          setIsLoginOpen(true);
+        }}
+      />
     </div>
   );
 }
