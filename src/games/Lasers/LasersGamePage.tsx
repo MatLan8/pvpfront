@@ -7,259 +7,51 @@ import {
 } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { startConnection } from "../../services/signalr";
-import { useGameSession } from "../../hooks/useGameSession";
+import { useGameSessionContext } from "../../contexts/GameSessionContext";
 import { useGameTimer } from "../../hooks/useGameTimer";
 import { useGameEndState } from "../../hooks/useGameEndState";
-import type { BasePublicState } from "../../types/gameSession";
 import styles from "./LaserGamePage.module.css";
 
 import GameEndModals from "../../components/GameEndModals/GameEndModals";
 import GameChat from "../../components/GameChat/GameChat";
 import GameSessionTimer from "../../components/GameSessionTimer/GameSessionTimer";
 
-const MIRRORS_PER_PLAYER = 3;
-/** Cells per side of each player's zone (backend grid is 6x6). */
-const ZONE_SIZE = 3;
-const DRAG_TYPE = "application/x-laser-mirror";
-
-const ZONE_NAMES = ["top left", "top right", "bottom left", "bottom right"] as const;
-
-type MirrorKind = "LeftTurn" | "RightTurn";
-
-type Position = { x: number; y: number };
-
-type LaserGamePlayerState = {
-  playerId: string;
-  mirrorCount: number;
-  zoneIndex: number;
-};
-
-type LaserGamePublic = {
-  status: "running" | "completed" | "failed";
-  players: LaserGamePlayerState[];
-  hitCheckpoints: number;
-  laserStart: Position | null;
-  laserDirection: "Up" | "Down" | "Left" | "Right" | null;
-  laserPath: LaserStepNorm[];
-  totalCheckpoints: number;
-};
-
-type PublicState = BasePublicState<LaserGamePublic>;
-
-type PrivateDataRaw = {
-  checkpoints?: unknown;
-  Checkpoints?: unknown;
-  mirrors?: unknown;
-  Mirrors?: unknown;
-  zoneIndex?: number;
-  ZoneIndex?: number;
-  zoneCells?: unknown;
-  ZoneCells?: unknown;
-};
-
-type LaserStepNorm = {
-  position: Position;
-  axis: "Horizontal" | "Vertical";
-};
-
-type EntryEdge = "top" | "bottom" | "left" | "right";
-
-function pickPosition(raw: unknown): Position | null {
-  if (!raw || typeof raw !== "object") return null;
-  const o = raw as Record<string, unknown>;
-  const x = o.x ?? o.X;
-  const y = o.y ?? o.Y;
-  if (typeof x === "number" && typeof y === "number") return { x, y };
-  return null;
-}
-
-function posKey(p: Position): string {
-  return `${p.x},${p.y}`;
-}
-
-function posEqual(a: Position, b: Position): boolean {
-  return a.x === b.x && a.y === b.y;
-}
-
-function normalizePlayers(raw: unknown): LaserGamePlayerState[] {
-  if (raw == null) return [];
-  const arr = Array.isArray(raw) ? raw : [...(raw as Iterable<unknown>)];
-  return arr.map((item) => {
-    const o = item as Record<string, unknown>;
-    const playerId = String(o.playerId ?? o.PlayerId ?? "");
-    const mirrorCount = Number(o.mirrorCount ?? o.MirrorCount ?? 0);
-    const zoneIndex = Number(o.zoneIndex ?? o.ZoneIndex ?? 0);
-    return { playerId, mirrorCount, zoneIndex };
-  });
-}
-
-function normalizeAxis(raw: unknown): "Horizontal" | "Vertical" {
-  if (typeof raw === "number") return raw === 1 ? "Vertical" : "Horizontal";
-  if (typeof raw === "string") {
-    return raw.toLowerCase() === "vertical" ? "Vertical" : "Horizontal";
-  }
-  return "Horizontal";
-}
-
-function normalizeLaserPath(raw: unknown): LaserStepNorm[] {
-  if (!Array.isArray(raw)) return [];
-  const out: LaserStepNorm[] = [];
-  for (const step of raw) {
-    if (!step || typeof step !== "object") continue;
-    const o = step as Record<string, unknown>;
-    const pos = pickPosition(o.position ?? o.Position);
-    if (!pos) continue;
-    const axisRaw = o.axis ?? o.Axis;
-    out.push({ position: pos, axis: normalizeAxis(axisRaw) });
-  }
-  return out;
-}
-
-function normalizeCheckpoints(raw: unknown): Position[] {
-  if (!Array.isArray(raw)) return [];
-  const out: Position[] = [];
-  for (const c of raw) {
-    if (!c || typeof c !== "object") continue;
-    const o = c as Record<string, unknown>;
-    const p = pickPosition(o.position ?? o.Position);
-    if (p) out.push(p);
-  }
-  return out;
-}
-
-function normalizeMirrorType(raw: unknown): MirrorKind | null {
-  if (typeof raw === "number") {
-    if (raw === 1) return "LeftTurn";
-    if (raw === 2) return "RightTurn";
-    return null;
-  }
-  const s = String(raw);
-  if (s === "LeftTurn" || s === "RightTurn") return s;
-  return null;
-}
-
-function normalizeMirrors(
-  raw: unknown,
-): { position: Position; type: MirrorKind }[] {
-  if (!Array.isArray(raw)) return [];
-  const out: { position: Position; type: MirrorKind }[] = [];
-  for (const m of raw) {
-    if (!m || typeof m !== "object") continue;
-    const o = m as Record<string, unknown>;
-    const p = pickPosition(o.position ?? o.Position);
-    if (!p) continue;
-    const t = normalizeMirrorType(o.type ?? o.Type);
-    if (t) out.push({ position: p, type: t });
-  }
-  return out;
-}
-
-function normalizeZoneCells(raw: unknown): Position[] {
-  if (!Array.isArray(raw)) return [];
-  const out: Position[] = [];
-  for (const c of raw) {
-    const p = pickPosition(c);
-    if (p) out.push(p);
-  }
-  return out;
-}
-
-const DIRECTION_BY_INDEX: Record<number, "Up" | "Down" | "Left" | "Right"> = {
-  0: "Up",
-  1: "Down",
-  2: "Left",
-  3: "Right",
-};
-
-function parseDirection(d: unknown): "Up" | "Down" | "Left" | "Right" | null {
-  if (d == null) return null;
-  if (typeof d === "number") return DIRECTION_BY_INDEX[d] ?? null;
-  if (typeof d === "string") {
-    const u = d.charAt(0).toUpperCase() + d.slice(1).toLowerCase();
-    if (u === "Up" || u === "Down" || u === "Left" || u === "Right") return u;
-  }
-  return null;
-}
-
-function directionToEntryEdge(
-  dir: "Up" | "Down" | "Left" | "Right",
-): EntryEdge {
-  switch (dir) {
-    case "Down":
-      return "top";
-    case "Up":
-      return "bottom";
-    case "Right":
-      return "left";
-    case "Left":
-      return "right";
-    default:
-      return "top";
-  }
-}
-
-function vectorToEntryEdge(dx: number, dy: number): EntryEdge {
-  if (dx === 1) return "left";
-  if (dx === -1) return "right";
-  if (dy === 1) return "top";
-  if (dy === -1) return "bottom";
-  return "top";
-}
-
-function vectorToExitEdge(dx: number, dy: number): EntryEdge {
-  if (dx === 1) return "right";
-  if (dx === -1) return "left";
-  if (dy === 1) return "bottom";
-  if (dy === -1) return "top";
-  return "right";
-}
-
-function edgeMidpoint(edge: EntryEdge): { x1: string; y1: string } {
-  switch (edge) {
-    case "top":
-      return { x1: "50", y1: "0" };
-    case "bottom":
-      return { x1: "50", y1: "100" };
-    case "left":
-      return { x1: "0", y1: "50" };
-    case "right":
-      return { x1: "100", y1: "50" };
-    default:
-      return { x1: "50", y1: "0" };
-  }
-}
-
-function cellContainsCheckpoint(
-  gx: number,
-  gy: number,
-  checkpoints: Position[],
-): boolean {
-  return checkpoints.some((c) => c.x === gx && c.y === gy);
-}
-
-function mirrorAtCell(
-  gx: number,
-  gy: number,
-  mirrors: { position: Position; type: MirrorKind }[],
-): { position: Position; type: MirrorKind } | undefined {
-  return mirrors.find((m) => m.position.x === gx && m.position.y === gy);
-}
+import {
+  buildLaserEntryEdgeMap,
+  buildLocalCells,
+  cellContainsCheckpoint,
+  computeZoneOrigin,
+  DRAG_TYPE,
+  edgeMidpoint,
+  findPathIndicesForCell,
+  getSegmentEntryExit,
+  mirrorAtCell,
+  MIRRORS_PER_PLAYER,
+  normalizeLaserGamePublic,
+  normalizeLasersPrivate,
+  posKey,
+  ZONE_NAMES,
+  ZONE_SIZE,
+  type LaserGamePublic,
+  type MirrorKind,
+  type PrivateDataRaw,
+  type PublicState,
+} from "./Helpers";
 
 export default function LasersGamePage() {
   const { sessionCode } = useParams();
   const navigate = useNavigate();
 
-  const nickname = sessionStorage.getItem("nickname");
   const playerId = sessionStorage.getItem("playerId");
 
-  const { publicState, privateData, error, setError } = useGameSession<
-    PublicState,
-    PrivateDataRaw
-  >({
-    sessionCode,
-    nickname,
-    playerId,
-  });
+  const {
+    publicState: publicStateRaw,
+    privateData: privateDataRaw,
+    error,
+    setError,
+  } = useGameSessionContext();
+  const publicState = publicStateRaw as PublicState | null;
+  const privateData = privateDataRaw as PrivateDataRaw | null;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [dropTarget, setDropTarget] = useState<string | null>(null);
@@ -267,29 +59,10 @@ export default function LasersGamePage() {
   const hasStarted = publicState?.hasStarted === true;
   const gameStateRaw = hasStarted ? (publicState?.game ?? null) : null;
 
-  const gameState = useMemo((): LaserGamePublic | null => {
-    if (!gameStateRaw) return null;
-    const g = gameStateRaw as Record<string, unknown>;
-    const statusRaw = (g.status ?? g.Status ?? "running") as string;
-    const status =
-      statusRaw === "failed" || statusRaw === "completed"
-        ? statusRaw
-        : "running";
-    const players = normalizePlayers(g.players ?? g.Players);
-    const laserStart = pickPosition(g.laserStart ?? g.LaserStart);
-    const laserDirection = parseDirection(g.laserDirection ?? g.LaserDirection);
-    const laserPath = normalizeLaserPath(g.laserPath ?? g.LaserPath);
-    const checkpointsPerPlayer = 3;
-    return {
-      status,
-      players,
-      hitCheckpoints: Number(g.hitCheckpoints ?? g.HitCheckpoints ?? 0),
-      laserStart,
-      laserDirection,
-      laserPath,
-      totalCheckpoints: players.length * checkpointsPerPlayer,
-    };
-  }, [gameStateRaw]);
+  const gameState = useMemo(
+    (): LaserGamePublic | null => normalizeLaserGamePublic(gameStateRaw),
+    [gameStateRaw],
+  );
 
   const isGameRunning = gameState?.status === "running";
 
@@ -320,42 +93,19 @@ export default function LasersGamePage() {
   });
 
   const gamePlayers = useMemo(
-    () => normalizePlayers(gameState?.players),
+    () => gameState?.players ?? [],
     [gameState?.players],
   );
 
-  const normalizedPrivate = useMemo(() => {
-    const p = privateData;
-    if (!p || !hasStarted) {
-      return {
-        checkpoints: [] as Position[],
-        mirrors: [] as { position: Position; type: MirrorKind }[],
-        zoneIndex: 0,
-        zoneCells: [] as Position[],
-      };
-    }
+  const normalizedPrivate = useMemo(
+    () => normalizeLasersPrivate(privateData, hasStarted),
+    [privateData, hasStarted],
+  );
 
-    const checkpoints = normalizeCheckpoints(p.checkpoints ?? p.Checkpoints);
-    const mirrors = normalizeMirrors(p.mirrors ?? p.Mirrors);
-    const zoneIndex = Number(p.zoneIndex ?? p.ZoneIndex ?? 0);
-    const zoneCells = normalizeZoneCells(p.zoneCells ?? p.ZoneCells);
-
-    return {
-      checkpoints,
-      mirrors,
-      zoneIndex,
-      zoneCells,
-    };
-  }, [privateData, hasStarted]);
-
-  const zoneOrigin = useMemo(() => {
-    const cells = normalizedPrivate.zoneCells;
-    if (cells.length === 0) return { x: 0, y: 0 };
-    return {
-      x: Math.min(...cells.map((c) => c.x)),
-      y: Math.min(...cells.map((c) => c.y)),
-    };
-  }, [normalizedPrivate.zoneCells]);
+  const zoneOrigin = useMemo(
+    () => computeZoneOrigin(normalizedPrivate.zoneCells),
+    [normalizedPrivate.zoneCells],
+  );
 
   const currentPlayerGameState = useMemo(() => {
     if (!playerId) return null;
@@ -369,30 +119,12 @@ export default function LasersGamePage() {
 
   const isInteractionLocked = !hasStarted || !isGameRunning || hasTimedOut;
 
-  /** Entry edge for the global laser start cell, only when it lies in this player's zone. */
-  const laserEntryEdgeByCellKey = useMemo(() => {
-    const out: Record<string, EntryEdge> = {};
-    const gs = gameState;
-    if (
-      !gs?.laserStart ||
-      !gs.laserDirection ||
-      normalizedPrivate.zoneCells.length === 0
-    ) {
-      return out;
-    }
-    const zoneSet = new Set(normalizedPrivate.zoneCells.map(posKey));
-    const start = gs.laserStart;
-    if (!zoneSet.has(posKey(start))) return out;
-    out[posKey(start)] = directionToEntryEdge(gs.laserDirection);
-    return out;
-  }, [
-    gameState?.laserStart,
-    gameState?.laserDirection,
-    normalizedPrivate.zoneCells,
-  ]);
+  const laserEntryEdgeByCellKey = useMemo(
+    () => buildLaserEntryEdgeMap(gameState, normalizedPrivate.zoneCells),
+    [gameState, normalizedPrivate.zoneCells],
+  );
 
-  const zoneDisplayName =
-    ZONE_NAMES[normalizedPrivate.zoneIndex] ?? "";
+  const zoneDisplayName = ZONE_NAMES[normalizedPrivate.zoneIndex] ?? "";
 
   const submitAction = useCallback(
     async (type: string, data: object) => {
@@ -470,31 +202,17 @@ export default function LasersGamePage() {
 
   const renderLaserInCell = (gx: number, gy: number) => {
     const path = gameState?.laserPath ?? [];
-    const indices: number[] = [];
-    for (let i = 0; i < path.length; i++) {
-      const p = path[i].position;
-      if (p.x === gx && p.y === gy) indices.push(i);
-    }
+    const indices = findPathIndicesForCell(path, gx, gy);
     if (indices.length === 0) return null;
 
+    const laserDirection = gameState?.laserDirection ?? null;
+
     const segments = indices.map((idx) => {
-      const curr = path[idx].position;
-      const prev = idx > 0 ? path[idx - 1].position : null;
-      const next = idx + 1 < path.length ? path[idx + 1].position : null;
-
-      let entry: EntryEdge;
-      if (prev && !posEqual(prev, curr)) {
-        entry = vectorToEntryEdge(curr.x - prev.x, curr.y - prev.y);
-      } else {
-        const d = gameState?.laserDirection ?? null;
-        entry = d ? directionToEntryEdge(d) : "top";
-      }
-
+      const { entry, exit } = getSegmentEntryExit(path, idx, laserDirection);
       const { x1: ex, y1: ey } = edgeMidpoint(entry);
 
       let exitLine: ReactNode = null;
-      if (next && !posEqual(next, curr)) {
-        const exit = vectorToExitEdge(next.x - curr.x, next.y - curr.y);
+      if (exit) {
         const { x1: nx, y1: ny } = edgeMidpoint(exit);
         exitLine = (
           <line
@@ -554,20 +272,10 @@ export default function LasersGamePage() {
 
   const zoneIndicatorActiveIndex = normalizedPrivate.zoneIndex;
 
-  const localCells = useMemo(() => {
-    const list: { lx: number; ly: number; gx: number; gy: number }[] = [];
-    for (let ly = 0; ly < ZONE_SIZE; ly++) {
-      for (let lx = 0; lx < ZONE_SIZE; lx++) {
-        list.push({
-          lx,
-          ly,
-          gx: zoneOrigin.x + lx,
-          gy: zoneOrigin.y + ly,
-        });
-      }
-    }
-    return list;
-  }, [zoneOrigin.x, zoneOrigin.y]);
+  const localCells = useMemo(
+    () => buildLocalCells(zoneOrigin, ZONE_SIZE),
+    [zoneOrigin.x, zoneOrigin.y],
+  );
 
   return (
     <div className={styles.page}>
@@ -655,46 +363,6 @@ export default function LasersGamePage() {
             </div>
           ) : (
             <>
-              <div className={styles.selectionHeader}>
-                <div>
-                  <h2 className={styles.sectionTitle}>Your zone</h2>
-                  <p
-                    style={{
-                      margin: 0,
-                      color: "#94a3b8",
-                      fontWeight: 600,
-                      textAlign: "start",
-                    }}
-                  >
-                    {zoneDisplayName ? (
-                      <>
-                        {zoneDisplayName}
-                        {" "}
-                        &middot;{" "}
-                      </>
-                    ) : null}
-                    Checkpoints hit: {gameState.hitCheckpoints} /{" "}
-                    {gameState.totalCheckpoints}
-                  </p>
-                </div>
-
-                <div className={styles.zoneIndicatorWrap}>
-                  <p className={styles.zoneIndicatorLabel}>Your quadrant</p>
-                  <div className={styles.zoneIndicator}>
-                    {[0, 1, 2, 3].map((zi) => (
-                      <div
-                        key={zi}
-                        className={`${styles.zoneIndicatorCell} ${
-                          zi === zoneIndicatorActiveIndex
-                            ? styles.zoneIndicatorActive
-                            : ""
-                        }`}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
-
               <div className={styles.gridContainer}>
                 <div className={styles.gameGrid}>
                   {localCells.map(({ lx, ly, gx, gy }) => {
@@ -770,20 +438,54 @@ export default function LasersGamePage() {
                 </div>
 
                 <div className={styles.paletteRow}>
+                  <div className={styles.selectionHeader}>
+                    <div className={styles.zoneSelectionHeader}>
+                      <div>
+                        <h2 className={styles.sectionTitle}>Your zone</h2>
+                        <p
+                          style={{
+                            margin: 0,
+                            color: "#94a3b8",
+                            fontWeight: 600,
+                            textAlign: "start",
+                          }}
+                        >
+                          {zoneDisplayName ? (
+                            <>{zoneDisplayName} &middot; </>
+                          ) : null}
+                          Checkpoints hit: {gameState.hitCheckpoints} /{" "}
+                          {gameState.totalCheckpoints}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className={styles.zoneIndicatorWrap}>
+                      <div className={styles.zoneIndicator}>
+                        {[0, 1, 2, 3].map((zi) => (
+                          <div
+                            key={zi}
+                            className={`${styles.zoneIndicatorCell} ${
+                              zi === zoneIndicatorActiveIndex
+                                ? styles.zoneIndicatorActive
+                                : ""
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                   <p className={styles.paletteLabel}>
                     Drag a mirror into a cell
                   </p>
                   <div className={styles.paletteMirrors}>
                     <div
                       className={`${styles.paletteMirror} ${
-                        isInteractionLocked ||
-                        mirrorCount >= MIRRORS_PER_PLAYER
+                        isInteractionLocked || mirrorCount >= MIRRORS_PER_PLAYER
                           ? styles.paletteMirrorDisabled
                           : ""
                       }`}
                       draggable={
-                        !isInteractionLocked &&
-                        mirrorCount < MIRRORS_PER_PLAYER
+                        !isInteractionLocked && mirrorCount < MIRRORS_PER_PLAYER
                       }
                       onDragStart={(e) => onPaletteDragStart(e, "LeftTurn")}
                     >
@@ -798,14 +500,12 @@ export default function LasersGamePage() {
                     </div>
                     <div
                       className={`${styles.paletteMirror} ${
-                        isInteractionLocked ||
-                        mirrorCount >= MIRRORS_PER_PLAYER
+                        isInteractionLocked || mirrorCount >= MIRRORS_PER_PLAYER
                           ? styles.paletteMirrorDisabled
                           : ""
                       }`}
                       draggable={
-                        !isInteractionLocked &&
-                        mirrorCount < MIRRORS_PER_PLAYER
+                        !isInteractionLocked && mirrorCount < MIRRORS_PER_PLAYER
                       }
                       onDragStart={(e) => onPaletteDragStart(e, "RightTurn")}
                     >
@@ -842,8 +542,8 @@ export default function LasersGamePage() {
         winMessage="Your team guided the laser through every checkpoint. Great teamwork."
         loseTitle="Game ended"
         loseMessage=""
-        timeoutTitle="You ran out of time"
-        timeoutMessage="The laser game ended because time ran out."
+        timeoutTitle="Time over"
+        timeoutMessage="You ran out of time."
       />
     </div>
   );

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { startConnection } from "../../services/signalr";
-import { useGameSession } from "../../hooks/useGameSession";
+import { useGameSessionContext } from "../../contexts/GameSessionContext";
 import { useGameTimer } from "../../hooks/useGameTimer";
 import { useGameEndState } from "../../hooks/useGameEndState";
 import type { BasePublicState } from "../../types/gameSession";
@@ -43,17 +43,12 @@ export default function ConnectionsGamePage() {
   const { sessionCode } = useParams();
   const navigate = useNavigate();
 
-  const nickname = sessionStorage.getItem("nickname");
   const playerId = sessionStorage.getItem("playerId");
 
-  const { publicState, privateData, error, setError } = useGameSession<
-    PublicState,
-    PrivateData
-  >({
-    sessionCode,
-    nickname,
-    playerId,
-  });
+  const { publicState: publicStateRaw, privateData: privateDataRaw, error, setError } =
+    useGameSessionContext();
+  const publicState = publicStateRaw as PublicState | null;
+  const privateData = privateDataRaw as PrivateData | null;
 
   const [selectedWords, setSelectedWords] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);

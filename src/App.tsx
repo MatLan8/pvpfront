@@ -10,7 +10,7 @@ import StartSessionPage from "./pages/StartSession/StartSessionPage";
 import TeamReportPage from "./pages/TeamReportPage/TeamReportPage";
 import MainPage from "./pages/MainPage/MainPage";
 
-import LasersGamePage from "./games/Lasers/LasersGamePage";
+import GameSessionRouter from "./games/GameSessionRouter";
 function App() {
   return (
     <>
@@ -20,7 +20,7 @@ function App() {
           path="/waiting-room/:sessionCode"
           element={<WaitingRoomPage />}
         />
-        <Route path="/game/:sessionCode" element={<LasersGamePage />} />
+        <Route path="/game/:sessionCode" element={<GameSessionRouter />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/report" element={<PlayerReportPage />} />
