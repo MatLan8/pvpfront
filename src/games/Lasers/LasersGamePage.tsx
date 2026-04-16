@@ -1,9 +1,7 @@
 import {
   Fragment,
   useCallback,
-  useEffect,
   useMemo,
-  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -19,8 +17,12 @@ import GameEndModals from "../../components/GameEndModals/GameEndModals";
 import GameChat from "../../components/GameChat/GameChat";
 import GameSessionTimer from "../../components/GameSessionTimer/GameSessionTimer";
 
-const MIRRORS_PER_PLAYER = 2;
+const MIRRORS_PER_PLAYER = 3;
+/** Cells per side of each player's zone (backend grid is 6x6). */
+const ZONE_SIZE = 3;
 const DRAG_TYPE = "application/x-laser-mirror";
+
+const ZONE_NAMES = ["top left", "top right", "bottom left", "bottom right"] as const;
 
 type MirrorKind = "LeftTurn" | "RightTurn";
 
@@ -28,17 +30,18 @@ type Position = { x: number; y: number };
 
 type LaserGamePlayerState = {
   playerId: string;
-  isReady: boolean;
   mirrorCount: number;
   zoneIndex: number;
 };
 
 type LaserGamePublic = {
   status: "running" | "completed" | "failed";
-  attempts: number;
-  maxAttempts: number;
   players: LaserGamePlayerState[];
   hitCheckpoints: number;
+  laserStart: Position | null;
+  laserDirection: "Up" | "Down" | "Left" | "Right" | null;
+  laserPath: LaserStepNorm[];
+  totalCheckpoints: number;
 };
 
 type PublicState = BasePublicState<LaserGamePublic>;
@@ -48,16 +51,8 @@ type PrivateDataRaw = {
   Checkpoints?: unknown;
   mirrors?: unknown;
   Mirrors?: unknown;
-  laserStart?: unknown;
-  LaserStart?: unknown;
-  laserDirection?: string;
-  LaserDirection?: string;
-  laserPath?: unknown;
-  LaserPath?: unknown;
   zoneIndex?: number;
   ZoneIndex?: number;
-  zoneName?: string;
-  ZoneName?: string;
   zoneCells?: unknown;
   ZoneCells?: unknown;
 };
@@ -92,10 +87,9 @@ function normalizePlayers(raw: unknown): LaserGamePlayerState[] {
   return arr.map((item) => {
     const o = item as Record<string, unknown>;
     const playerId = String(o.playerId ?? o.PlayerId ?? "");
-    const isReady = Boolean(o.isReady ?? o.IsReady);
     const mirrorCount = Number(o.mirrorCount ?? o.MirrorCount ?? 0);
     const zoneIndex = Number(o.zoneIndex ?? o.ZoneIndex ?? 0);
-    return { playerId, isReady, mirrorCount, zoneIndex };
+    return { playerId, mirrorCount, zoneIndex };
   });
 }
 
@@ -251,37 +245,6 @@ function mirrorAtCell(
   return mirrors.find((m) => m.position.x === gx && m.position.y === gy);
 }
 
-function computeNewEntryEdges(
-  path: LaserStepNorm[],
-  zoneCells: Position[],
-  laserStart: Position | null,
-  laserDir: string | null,
-): Record<string, EntryEdge> {
-  const zoneSet = new Set(zoneCells.map(posKey));
-  const dir = parseDirection(laserDir);
-  const out: Record<string, EntryEdge> = {};
-
-  for (let i = 0; i < path.length; i++) {
-    const curr = path[i].position;
-    if (!zoneSet.has(posKey(curr))) continue;
-
-    const key = posKey(curr);
-
-    if (i > 0) {
-      const prev = path[i - 1].position;
-      const dx = curr.x - prev.x;
-      const dy = curr.y - prev.y;
-      if (dx !== 0 || dy !== 0) {
-        out[key] = vectorToEntryEdge(dx, dy);
-      }
-    } else if (laserStart && posEqual(laserStart, curr) && dir) {
-      out[key] = directionToEntryEdge(dir);
-    }
-    break;
-  }
-  return out;
-}
-
 export default function LasersGamePage() {
   const { sessionCode } = useParams();
   const navigate = useNavigate();
@@ -299,37 +262,32 @@ export default function LasersGamePage() {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showLaserPath, setShowLaserPath] = useState(true);
   const [dropTarget, setDropTarget] = useState<string | null>(null);
-
-  const lastPathSignatureRef = useRef<string>("");
-  const [persistentEntryEdges, setPersistentEntryEdges] = useState<
-    Record<string, EntryEdge>
-  >({});
 
   const hasStarted = publicState?.hasStarted === true;
   const gameStateRaw = hasStarted ? (publicState?.game ?? null) : null;
 
   const gameState = useMemo((): LaserGamePublic | null => {
     if (!gameStateRaw) return null;
-    const g = gameStateRaw as LaserGamePublic & {
-      Status?: string;
-      Attempts?: number;
-      MaxAttempts?: number;
-      HitCheckpoints?: number;
-      Players?: unknown;
-    };
+    const g = gameStateRaw as Record<string, unknown>;
     const statusRaw = (g.status ?? g.Status ?? "running") as string;
     const status =
       statusRaw === "failed" || statusRaw === "completed"
         ? statusRaw
         : "running";
+    const players = normalizePlayers(g.players ?? g.Players);
+    const laserStart = pickPosition(g.laserStart ?? g.LaserStart);
+    const laserDirection = parseDirection(g.laserDirection ?? g.LaserDirection);
+    const laserPath = normalizeLaserPath(g.laserPath ?? g.LaserPath);
+    const checkpointsPerPlayer = 3;
     return {
       status,
-      attempts: Number(g.attempts ?? g.Attempts ?? 0),
-      maxAttempts: Number(g.maxAttempts ?? g.MaxAttempts ?? 3),
-      players: normalizePlayers(g.players ?? g.Players),
+      players,
       hitCheckpoints: Number(g.hitCheckpoints ?? g.HitCheckpoints ?? 0),
+      laserStart,
+      laserDirection,
+      laserPath,
+      totalCheckpoints: players.length * checkpointsPerPlayer,
     };
   }, [gameStateRaw]);
 
@@ -353,7 +311,6 @@ export default function LasersGamePage() {
   const {
     hasGameEnded,
     showWinModal,
-    showLoseModal,
     showLoseTimeModal,
     dismissEndModal,
     reopenEndModal,
@@ -373,32 +330,20 @@ export default function LasersGamePage() {
       return {
         checkpoints: [] as Position[],
         mirrors: [] as { position: Position; type: MirrorKind }[],
-        laserStart: null as Position | null,
-        laserDirection: null as string | null,
-        laserPath: [] as LaserStepNorm[],
         zoneIndex: 0,
-        zoneName: "",
         zoneCells: [] as Position[],
       };
     }
 
     const checkpoints = normalizeCheckpoints(p.checkpoints ?? p.Checkpoints);
     const mirrors = normalizeMirrors(p.mirrors ?? p.Mirrors);
-    const laserStart = pickPosition(p.laserStart ?? p.LaserStart);
-    const laserDirection = parseDirection(p.laserDirection ?? p.LaserDirection);
-    const laserPath = normalizeLaserPath(p.laserPath ?? p.LaserPath);
     const zoneIndex = Number(p.zoneIndex ?? p.ZoneIndex ?? 0);
-    const zoneName = String(p.zoneName ?? p.ZoneName ?? "");
     const zoneCells = normalizeZoneCells(p.zoneCells ?? p.ZoneCells);
 
     return {
       checkpoints,
       mirrors,
-      laserStart,
-      laserDirection,
-      laserPath,
       zoneIndex,
-      zoneName,
       zoneCells,
     };
   }, [privateData, hasStarted]);
@@ -417,72 +362,37 @@ export default function LasersGamePage() {
     return gamePlayers.find((p) => p.playerId === playerId) ?? null;
   }, [gamePlayers, playerId]);
 
-  const isReady = currentPlayerGameState?.isReady ?? false;
-  const mirrorCountPublic = currentPlayerGameState?.mirrorCount ?? 0;
   const mirrorCount =
-    normalizedPrivate.mirrors.length > 0
+    privateData && hasStarted
       ? normalizedPrivate.mirrors.length
-      : mirrorCountPublic;
-
-  const attempts = gameState?.attempts ?? 0;
-  const maxAttempts = gameState?.maxAttempts ?? 3;
-  const attemptsLeft = Math.max(0, maxAttempts - attempts);
+      : (currentPlayerGameState?.mirrorCount ?? 0);
 
   const isInteractionLocked = !hasStarted || !isGameRunning || hasTimedOut;
 
-  useEffect(() => {
-    const path = normalizedPrivate.laserPath;
-    const sig = JSON.stringify(
-      path.map((s) => [s.position.x, s.position.y, s.axis]),
-    );
-    if (path.length > 0) {
-      if (sig !== lastPathSignatureRef.current) {
-        lastPathSignatureRef.current = sig;
-      }
-      // Always show when we have a path: mirror placement sets visibility false;
-      // if the next path matches the previous signature, we must still turn it on.
-      setShowLaserPath(true);
-    }
-    if (path.length === 0) {
-      lastPathSignatureRef.current = "";
-    }
-  }, [normalizedPrivate.laserPath]);
-
-  useEffect(() => {
-    if (normalizedPrivate.zoneCells.length === 0) return;
-
-    const zoneSet = new Set(normalizedPrivate.zoneCells.map(posKey));
-
-    if (normalizedPrivate.laserPath.length > 0) {
-      const added = computeNewEntryEdges(
-        normalizedPrivate.laserPath,
-        normalizedPrivate.zoneCells,
-        normalizedPrivate.laserStart,
-        normalizedPrivate.laserDirection,
-      );
-      if (Object.keys(added).length > 0) {
-        setPersistentEntryEdges((prev) => ({ ...prev, ...added }));
-      }
-      return;
-    }
-
+  /** Entry edge for the global laser start cell, only when it lies in this player's zone. */
+  const laserEntryEdgeByCellKey = useMemo(() => {
+    const out: Record<string, EntryEdge> = {};
+    const gs = gameState;
     if (
-      normalizedPrivate.laserStart &&
-      normalizedPrivate.laserDirection &&
-      zoneSet.has(posKey(normalizedPrivate.laserStart))
+      !gs?.laserStart ||
+      !gs.laserDirection ||
+      normalizedPrivate.zoneCells.length === 0
     ) {
-      const edge = directionToEntryEdge(
-        normalizedPrivate.laserDirection as "Up" | "Down" | "Left" | "Right",
-      );
-      const key = posKey(normalizedPrivate.laserStart);
-      setPersistentEntryEdges((prev) => ({ ...prev, [key]: edge }));
+      return out;
     }
+    const zoneSet = new Set(normalizedPrivate.zoneCells.map(posKey));
+    const start = gs.laserStart;
+    if (!zoneSet.has(posKey(start))) return out;
+    out[posKey(start)] = directionToEntryEdge(gs.laserDirection);
+    return out;
   }, [
-    normalizedPrivate.laserPath,
+    gameState?.laserStart,
+    gameState?.laserDirection,
     normalizedPrivate.zoneCells,
-    normalizedPrivate.laserStart,
-    normalizedPrivate.laserDirection,
   ]);
+
+  const zoneDisplayName =
+    ZONE_NAMES[normalizedPrivate.zoneIndex] ?? "";
 
   const submitAction = useCallback(
     async (type: string, data: object) => {
@@ -502,7 +412,6 @@ export default function LasersGamePage() {
       !sessionCode ||
       !gameState ||
       isInteractionLocked ||
-      isReady ||
       isSubmitting ||
       mirrorCount >= MIRRORS_PER_PLAYER
     ) {
@@ -518,7 +427,6 @@ export default function LasersGamePage() {
 
     try {
       setIsSubmitting(true);
-      setShowLaserPath(false);
       await submitAction("place_mirror", {
         x: gx,
         y: gy,
@@ -533,13 +441,7 @@ export default function LasersGamePage() {
   };
 
   const handleRemoveMirror = async (localX: number, localY: number) => {
-    if (
-      !sessionCode ||
-      !gameState ||
-      isInteractionLocked ||
-      isReady ||
-      isSubmitting
-    ) {
+    if (!sessionCode || !gameState || isInteractionLocked || isSubmitting) {
       return;
     }
 
@@ -548,7 +450,6 @@ export default function LasersGamePage() {
 
     try {
       setIsSubmitting(true);
-      setShowLaserPath(false);
       await submitAction("remove_mirror", { x: gx, y: gy });
     } catch (err) {
       console.error(err);
@@ -558,24 +459,8 @@ export default function LasersGamePage() {
     }
   };
 
-  const handleReadyToggle = async () => {
-    if (!sessionCode || isSubmitting || !gameState || isInteractionLocked) {
-      return;
-    }
-
-    try {
-      setIsSubmitting(true);
-      await submitAction("set_ready", { isReady: !isReady });
-    } catch (err) {
-      console.error(err);
-      setError("Failed to update ready state.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   const onPaletteDragStart = (e: React.DragEvent, mirrorType: MirrorKind) => {
-    if (isInteractionLocked || isReady || mirrorCount >= MIRRORS_PER_PLAYER) {
+    if (isInteractionLocked || mirrorCount >= MIRRORS_PER_PLAYER) {
       e.preventDefault();
       return;
     }
@@ -584,9 +469,7 @@ export default function LasersGamePage() {
   };
 
   const renderLaserInCell = (gx: number, gy: number) => {
-    if (!showLaserPath) return null;
-
-    const path = normalizedPrivate.laserPath;
+    const path = gameState?.laserPath ?? [];
     const indices: number[] = [];
     for (let i = 0; i < path.length; i++) {
       const p = path[i].position;
@@ -603,7 +486,7 @@ export default function LasersGamePage() {
       if (prev && !posEqual(prev, curr)) {
         entry = vectorToEntryEdge(curr.x - prev.x, curr.y - prev.y);
       } else {
-        const d = parseDirection(normalizedPrivate.laserDirection);
+        const d = gameState?.laserDirection ?? null;
         entry = d ? directionToEntryEdge(d) : "top";
       }
 
@@ -656,7 +539,7 @@ export default function LasersGamePage() {
 
   const renderEntryMarker = (gx: number, gy: number) => {
     const key = posKey({ x: gx, y: gy });
-    const edge = persistentEntryEdges[key];
+    const edge = laserEntryEdgeByCellKey[key];
     if (!edge) return null;
     const cls =
       edge === "top"
@@ -671,12 +554,20 @@ export default function LasersGamePage() {
 
   const zoneIndicatorActiveIndex = normalizedPrivate.zoneIndex;
 
-  const localCells: { lx: number; ly: number; gx: number; gy: number }[] = [
-    { lx: 0, ly: 0, gx: zoneOrigin.x, gy: zoneOrigin.y },
-    { lx: 1, ly: 0, gx: zoneOrigin.x + 1, gy: zoneOrigin.y },
-    { lx: 0, ly: 1, gx: zoneOrigin.x, gy: zoneOrigin.y + 1 },
-    { lx: 1, ly: 1, gx: zoneOrigin.x + 1, gy: zoneOrigin.y + 1 },
-  ];
+  const localCells = useMemo(() => {
+    const list: { lx: number; ly: number; gx: number; gy: number }[] = [];
+    for (let ly = 0; ly < ZONE_SIZE; ly++) {
+      for (let lx = 0; lx < ZONE_SIZE; lx++) {
+        list.push({
+          lx,
+          ly,
+          gx: zoneOrigin.x + lx,
+          gy: zoneOrigin.y + ly,
+        });
+      }
+    }
+    return list;
+  }, [zoneOrigin.x, zoneOrigin.y]);
 
   return (
     <div className={styles.page}>
@@ -692,12 +583,7 @@ export default function LasersGamePage() {
                 );
 
                 return (
-                  <li
-                    key={player.playerId}
-                    className={`${styles.playerItem} ${
-                      gamePlayer?.isReady ? styles.playerItemReady : ""
-                    }`}
-                  >
+                  <li key={player.playerId} className={styles.playerItem}>
                     <div className={styles.playerNameRow}>
                       <span>{player.nickname}</span>
                       {!player.isConnected && (
@@ -709,9 +595,6 @@ export default function LasersGamePage() {
 
                     {hasStarted && gamePlayer && (
                       <div className={styles.playerMeta}>
-                        <span>
-                          {gamePlayer.isReady ? "Ready" : "Not ready"}
-                        </span>
                         <span>Mirrors: {gamePlayer.mirrorCount}</span>
                       </div>
                     )}
@@ -759,12 +642,6 @@ export default function LasersGamePage() {
                     onExpired={handleTimerExpired}
                   />
                 )}
-
-                {gameState && (
-                  <div className={styles.attemptsBadge}>
-                    Attempts left: {attemptsLeft}
-                  </div>
-                )}
               </div>
             )}
           </div>
@@ -781,35 +658,25 @@ export default function LasersGamePage() {
               <div className={styles.selectionHeader}>
                 <div>
                   <h2 className={styles.sectionTitle}>Your zone</h2>
-                  {normalizedPrivate.zoneName ? (
-                    <p
-                      style={{
-                        margin: 0,
-                        color: "#94a3b8",
-                        fontWeight: 600,
-                        textAlign: "start",
-                      }}
-                    >
-                      {normalizedPrivate.zoneName.replace(/-/g, " ")}
+                  <p
+                    style={{
+                      margin: 0,
+                      color: "#94a3b8",
+                      fontWeight: 600,
+                      textAlign: "start",
+                    }}
+                  >
+                    {zoneDisplayName ? (
                       <>
+                        {zoneDisplayName}
                         {" "}
-                        &middot; Checkpoints hit: {gameState.hitCheckpoints} / 8
+                        &middot;{" "}
                       </>
-                    </p>
-                  ) : null}
+                    ) : null}
+                    Checkpoints hit: {gameState.hitCheckpoints} /{" "}
+                    {gameState.totalCheckpoints}
+                  </p>
                 </div>
-
-                <button
-                  className={`${styles.readyButton} ${
-                    isReady
-                      ? styles.readyButtonUnready
-                      : styles.readyButtonReady
-                  }`}
-                  onClick={handleReadyToggle}
-                  disabled={isSubmitting || isInteractionLocked}
-                >
-                  {isReady ? "Unready" : "Ready"}
-                </button>
 
                 <div className={styles.zoneIndicatorWrap}>
                   <p className={styles.zoneIndicatorLabel}>Your quadrant</p>
@@ -849,7 +716,6 @@ export default function LasersGamePage() {
                         onDragOver={(e) => {
                           if (
                             isInteractionLocked ||
-                            isReady ||
                             mir ||
                             mirrorCount >= MIRRORS_PER_PLAYER
                           ) {
@@ -888,9 +754,7 @@ export default function LasersGamePage() {
                               type="button"
                               className={styles.mirrorRemoveBtn}
                               title="Remove mirror"
-                              disabled={
-                                isInteractionLocked || isReady || isSubmitting
-                              }
+                              disabled={isInteractionLocked || isSubmitting}
                               onClick={(ev) => {
                                 ev.stopPropagation();
                                 void handleRemoveMirror(lx, ly);
@@ -913,14 +777,12 @@ export default function LasersGamePage() {
                     <div
                       className={`${styles.paletteMirror} ${
                         isInteractionLocked ||
-                        isReady ||
                         mirrorCount >= MIRRORS_PER_PLAYER
                           ? styles.paletteMirrorDisabled
                           : ""
                       }`}
                       draggable={
                         !isInteractionLocked &&
-                        !isReady &&
                         mirrorCount < MIRRORS_PER_PLAYER
                       }
                       onDragStart={(e) => onPaletteDragStart(e, "LeftTurn")}
@@ -937,14 +799,12 @@ export default function LasersGamePage() {
                     <div
                       className={`${styles.paletteMirror} ${
                         isInteractionLocked ||
-                        isReady ||
                         mirrorCount >= MIRRORS_PER_PLAYER
                           ? styles.paletteMirrorDisabled
                           : ""
                       }`}
                       draggable={
                         !isInteractionLocked &&
-                        !isReady &&
                         mirrorCount < MIRRORS_PER_PLAYER
                       }
                       onDragStart={(e) => onPaletteDragStart(e, "RightTurn")}
@@ -974,14 +834,14 @@ export default function LasersGamePage() {
 
       <GameEndModals
         showWinModal={showWinModal}
-        showLoseModal={showLoseModal}
+        showLoseModal={false}
         showLoseTimeModal={showLoseTimeModal}
         onDismiss={dismissEndModal}
         onViewReport={() => navigate(`/report`)}
         winTitle="All checkpoints hit!"
         winMessage="Your team guided the laser through every checkpoint. Great teamwork."
-        loseTitle="No attempts left"
-        loseMessage="The team ran out of attempts. You can close this window for now."
+        loseTitle="Game ended"
+        loseMessage=""
         timeoutTitle="You ran out of time"
         timeoutMessage="The laser game ended because time ran out."
       />

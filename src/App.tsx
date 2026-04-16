@@ -3,7 +3,6 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import JoinSessionPage from "./pages/JoinSession/JoinSessionPage";
 import WaitingRoomPage from "./pages/WaitingRoom/WaitingRoomPage";
-import ConnectionsGamePage from "./games/Connections/ConnectionsGamePage";
 import RegisterPage from "./pages/Register/RegisterPage";
 import LoginPage from "./pages/Login/LoginPage";
 import PlayerReportPage from "./pages/PlayerReport/PlayerReportPage";
