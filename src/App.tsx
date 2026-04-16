@@ -1,7 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import JoinSessionPage from "./pages/JoinSession/JoinSessionPage";
 import WaitingRoomPage from "./pages/WaitingRoom/WaitingRoomPage";
 import RegisterPage from "./pages/Register/RegisterPage";
 import LoginPage from "./pages/Login/LoginPage";
@@ -15,7 +14,6 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path="/" element={<JoinSessionPage />} />
         <Route
           path="/waiting-room/:sessionCode"
           element={<WaitingRoomPage />}
@@ -26,7 +24,7 @@ function App() {
         <Route path="/report" element={<PlayerReportPage />} />
         <Route path="/team-report" element={<TeamReportPage />} />
         <Route path="/start-session" element={<StartSessionPage />} />
-        <Route path="/mainpage" element={<MainPage />} />
+        <Route path="/" element={<MainPage />} />
       </Routes>
       <ToastContainer
         position="top-center"
