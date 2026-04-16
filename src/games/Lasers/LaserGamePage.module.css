@@ -103,11 +103,15 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-direction: row;
   gap: 16px;
+  width: 100%;
+  margin-bottom: 10px;
 }
 
 .zoneSelectionHeader {
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
 }
 
@@ -170,13 +174,14 @@
   flex-direction: row;
   gap: 20px;
   align-items: flex-start;
+  width: 100%;
 }
 
 .gameGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  width: 100%;
-  max-width: 480px;
+  flex: 1 1 0;
+  min-width: 0;
   aspect-ratio: 1;
   gap: 0;
   border: 2px solid #64748b;
@@ -347,23 +352,22 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 24px;
-  width: 100%;
-  max-width: 520px;
+  flex: 1 1 0;
+  min-width: 0;
+  text-align: start;
 }
 
 .paletteLabel {
-  font-size: 14px;
-  font-weight: 700;
-  color: #94a3b8;
-  width: 100%;
   margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  text-align: start !important;
 }
 
 .paletteMirrors {
   display: flex;
   gap: 16px;
-  align-items: center;
-  flex-direction: column;
+  flex-direction: row;
 }
 
 .paletteMirror {
@@ -390,8 +394,8 @@
 }
 
 .paletteMirrorPreview {
-  width: 112px;
-  height: 112px;
+  width: 8rem;
+  height: 8rem;
   position: relative;
   background: #1e293b;
   border-radius: 8px;
@@ -420,6 +424,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  margin-left: auto;
 }
 
 .zoneIndicatorLabel {

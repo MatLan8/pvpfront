@@ -6,8 +6,8 @@ export const ZONE_SIZE = 3;
 export const DRAG_TYPE = "application/x-laser-mirror";
 
 export const ZONE_NAMES = [
-  "top left",
-  "top right",
-  "bottom left",
-  "bottom right",
+  "Top left",
+  "Top right",
+  "Bottom left",
+  "Bottom right",
 ] as const;

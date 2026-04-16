@@ -440,22 +440,22 @@ export default function LasersGamePage() {
                 <div className={styles.paletteRow}>
                   <div className={styles.selectionHeader}>
                     <div className={styles.zoneSelectionHeader}>
-                      <div>
-                        <h2 className={styles.sectionTitle}>Your zone</h2>
-                        <p
-                          style={{
-                            margin: 0,
-                            color: "#94a3b8",
-                            fontWeight: 600,
-                            textAlign: "start",
-                          }}
-                        >
-                          {zoneDisplayName ? (
-                            <>{zoneDisplayName} &middot; </>
-                          ) : null}
-                          Checkpoints hit: {gameState.hitCheckpoints} /{" "}
-                          {gameState.totalCheckpoints}
-                        </p>
+                      <h2 className={styles.sectionTitle}>Your zone</h2>
+                      <div
+                        style={{
+                          margin: 0,
+                          color: "#94a3b8",
+                          fontWeight: 600,
+                          textAlign: "start",
+                          display: "flex",
+                          flexDirection: "column",
+                        }}
+                      >
+                        <text>
+                          {zoneDisplayName ? <>{zoneDisplayName}</> : null}
+                        </text>
+                        Checkpoints hit: {gameState.hitCheckpoints} /{" "}
+                        {gameState.totalCheckpoints}
                       </div>
                     </div>
 
