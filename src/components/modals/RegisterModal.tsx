@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { X, Mail, Lock, User } from "lucide-react";
 import { useRegisterUser } from "../../api/useRegisterUser";
 import styles from "./Modals.module.css";
@@ -19,7 +18,6 @@ function RegisterModal({ isOpen, onClose, openLogin }: RegisterModalProps) {
   const [success, setSuccess] = useState("");
   const [isRegistering, setIsRegistering] = useState(false);
 
-  const navigate = useNavigate();
   const userMutation = useRegisterUser();
 
   const handleRegister = () => {

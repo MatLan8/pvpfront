@@ -37,7 +37,6 @@ interface ConsentReplica {
 }
 
 export default function JoinGameScreen() {
-  const navigate = useNavigate();
   const [showEula, setShowEula] = useState<boolean>(false);
   const [, setHasAccepted] = useState<boolean>(false);
   const [canAgree, setCanAgree] = useState<boolean>(false);
