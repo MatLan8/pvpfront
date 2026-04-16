@@ -1,18 +1,15 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { startConnection } from "../../services/signalr";
-import { useGameSession } from "../../hooks/useGameSession";
+import { useGameSessionContext } from "../../contexts/GameSessionContext";
+import { useGameTimer } from "../../hooks/useGameTimer";
+import { useGameEndState } from "../../hooks/useGameEndState";
+import type { BasePublicState } from "../../types/gameSession";
 import styles from "./ConnectionsGamePage.module.css";
 
-import GameEndModal from "../../components/GameEndModal/GameEndModal";
+import GameEndModals from "../../components/GameEndModals/GameEndModals";
 import GameChat from "../../components/GameChat/GameChat";
 import GameSessionTimer from "../../components/GameSessionTimer/GameSessionTimer";
-
-type PublicPlayer = {
-  playerId: string;
-  nickname: string;
-  isConnected: boolean;
-};
 
 type GamePlayerState = {
   playerId: string;
@@ -25,25 +22,15 @@ type SolvedGroup = {
   words: string[];
 };
 
-type PublicState = {
-  sessionCode: string;
-  playerCount: number;
-  players: PublicPlayer[];
-  hasStarted: boolean;
-  remainingSeconds?: number;
-  RemainingSeconds?: number;
-  timerStartedAtUtc?: string;
-  TimerStartedAtUtc?: string;
-  timerEndsAtUtc?: string;
-  TimerEndsAtUtc?: string;
-  game: {
-    status: "running" | "completed" | "failed";
-    mistakeCount: number;
-    maxMistakes: number;
-    solvedGroups: SolvedGroup[];
-    players: GamePlayerState[];
-  } | null;
+type ConnectionsGame = {
+  status: "running" | "completed" | "failed";
+  mistakeCount: number;
+  maxMistakes: number;
+  solvedGroups: SolvedGroup[];
+  players: GamePlayerState[];
 };
+
+type PublicState = BasePublicState<ConnectionsGame>;
 
 type PrivateData = {
   visibleWords?: string[];
@@ -52,67 +39,50 @@ type PrivateData = {
   SelectedWords?: string[];
 };
 
-type TimerUpdatedPayload = {
-  remainingSeconds?: number;
-  RemainingSeconds?: number;
-  timerStartedAtUtc?: string;
-  TimerStartedAtUtc?: string;
-  timerEndsAtUtc?: string;
-  TimerEndsAtUtc?: string;
-};
-
 export default function ConnectionsGamePage() {
   const { sessionCode } = useParams();
   const navigate = useNavigate();
-  const [isEndModalDismissed, setIsEndModalDismissed] = useState(false);
 
-  const nickname = sessionStorage.getItem("nickname");
   const playerId = sessionStorage.getItem("playerId");
 
-  const { publicState, privateData, error, setError } = useGameSession<
-    PublicState,
-    PrivateData
-  >({
-    sessionCode,
-    nickname,
-    playerId,
-  });
+  const { publicState: publicStateRaw, privateData: privateDataRaw, error, setError } =
+    useGameSessionContext();
+  const publicState = publicStateRaw as PublicState | null;
+  const privateData = privateDataRaw as PrivateData | null;
 
   const [selectedWords, setSelectedWords] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isGameTimeOver, setGameTimeOver] = useState(false);
-
-  const [serverRemainingSeconds, setServerRemainingSeconds] = useState<
-    number | null
-  >(null);
-  const [serverTimerStartedAtUtc, setServerTimerStartedAtUtc] = useState<
-    string | null
-  >(null);
-  const [serverTimerEndsAtUtc, setServerTimerEndsAtUtc] = useState<
-    string | null
-  >(null);
-  const [hasTimedOut, setHasTimedOut] = useState(false);
 
   const hasStarted = publicState?.hasStarted === true;
   const gameState = hasStarted ? (publicState?.game ?? null) : null;
   const isGameRunning = gameState?.status === "running";
 
-  const timerRemainingSecondsFromState =
-    publicState?.remainingSeconds ?? publicState?.RemainingSeconds ?? null;
+  const {
+    timerRemainingSeconds,
+    timerStartedAtUtc,
+    timerEndsAtUtc,
+    hasTimedOut,
+    isGameTimeOver,
+    handleTimerExpired,
+  } = useGameTimer({
+    sessionCode,
+    hasStarted,
+    isGameRunning,
+    publicState,
+    setError,
+  });
 
-  const timerStartedAtUtcFromState =
-    publicState?.timerStartedAtUtc ?? publicState?.TimerStartedAtUtc ?? null;
-
-  const timerEndsAtUtcFromState =
-    publicState?.timerEndsAtUtc ?? publicState?.TimerEndsAtUtc ?? null;
-
-  const timerRemainingSeconds =
-    serverRemainingSeconds ?? timerRemainingSecondsFromState;
-
-  const timerStartedAtUtc =
-    serverTimerStartedAtUtc ?? timerStartedAtUtcFromState;
-
-  const timerEndsAtUtc = serverTimerEndsAtUtc ?? timerEndsAtUtcFromState;
+  const {
+    hasGameEnded,
+    showWinModal,
+    showLoseModal,
+    showLoseTimeModal,
+    dismissEndModal,
+    reopenEndModal,
+  } = useGameEndState({
+    gameStatus: gameState?.status ?? null,
+    isGameTimeOver,
+  });
 
   const currentPlayerGameState = useMemo(() => {
     if (!gameState || !playerId) return null;
@@ -135,50 +105,6 @@ export default function ConnectionsGamePage() {
 
   const isInteractionLocked = !hasStarted || !isGameRunning || hasTimedOut;
 
-  const isGameWon = gameState?.status === "completed";
-  const isGameLost = gameState?.status === "failed";
-  const hasGameEnded = isGameWon || isGameLost || isGameTimeOver;
-
-  const showWinModal = isGameWon && !isEndModalDismissed;
-  const showLoseModal = isGameLost && !isEndModalDismissed;
-  const showLoseTimeModal = isGameTimeOver && !isEndModalDismissed;
-
-  const fetchRemainingTime = useCallback(async () => {
-    if (!sessionCode || !hasStarted || !isGameRunning) return;
-
-    try {
-      const connection = await startConnection();
-      const remaining = await connection.invoke(
-        "GetRemainingTime",
-        sessionCode,
-      );
-
-      if (typeof remaining === "number") {
-        const safeRemaining = Math.max(0, remaining);
-        setServerRemainingSeconds(safeRemaining);
-
-        if (safeRemaining <= 0) {
-          setHasTimedOut(true);
-        }
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  }, [sessionCode, hasStarted, isGameRunning]);
-
-  const handleTimerExpired = useCallback(() => {
-    setHasTimedOut(true);
-    setServerRemainingSeconds(0);
-    setError("Time is up. Waiting for the server to finalize the match.");
-  }, [setError]);
-
-  useEffect(() => {
-    if (gameState?.status === "running") {
-      setIsEndModalDismissed(false);
-      setGameTimeOver(false);
-    }
-  }, [gameState?.status]);
-
   useEffect(() => {
     setSelectedWords(backendSelectedWords);
   }, [backendSelectedWords]);
@@ -195,118 +121,9 @@ export default function ConnectionsGamePage() {
 
   useEffect(() => {
     if (!hasStarted) {
-      setHasTimedOut(false);
-      setGameTimeOver(false);
-      setServerRemainingSeconds(null);
-      setServerTimerStartedAtUtc(null);
-      setServerTimerEndsAtUtc(null);
       setSelectedWords([]);
-      return;
     }
-
-    if (!isGameRunning) {
-      setHasTimedOut(false);
-    }
-  }, [hasStarted, isGameRunning]);
-
-  useEffect(() => {
-    if (!sessionCode) return;
-
-    let isMounted = true;
-    let dispose: (() => void) | undefined;
-
-    const bindRealtimeEvents = async () => {
-      try {
-        const connection = await startConnection();
-
-        const handleTimerUpdated = (payload: TimerUpdatedPayload) => {
-          if (!isMounted) return;
-
-          const nextRemaining =
-            payload?.remainingSeconds ?? payload?.RemainingSeconds ?? null;
-          const nextStartedAt =
-            payload?.timerStartedAtUtc ?? payload?.TimerStartedAtUtc ?? null;
-          const nextEndsAt =
-            payload?.timerEndsAtUtc ?? payload?.TimerEndsAtUtc ?? null;
-
-          if (typeof nextRemaining === "number") {
-            const safeRemaining = Math.max(0, nextRemaining);
-            setServerRemainingSeconds(safeRemaining);
-
-            if (safeRemaining <= 0) {
-              setHasTimedOut(true);
-            }
-          }
-
-          if (typeof nextStartedAt === "string") {
-            setServerTimerStartedAtUtc(nextStartedAt);
-          }
-
-          if (typeof nextEndsAt === "string") {
-            setServerTimerEndsAtUtc(nextEndsAt);
-          }
-        };
-
-        const handleGameTimedOut = () => {
-          if (!isMounted) return;
-          setHasTimedOut(true);
-          setServerRemainingSeconds(0);
-          setGameTimeOver(true);
-          setError("Time is up. Game finished.");
-        };
-
-        const handleGameCompleted = () => {
-          if (!isMounted) return;
-          setHasTimedOut(false);
-        };
-
-        const handleGameFailed = () => {
-          if (!isMounted) return;
-          setHasTimedOut(false);
-        };
-
-        connection.off("TimerUpdated");
-        connection.off("GameTimedOut");
-        connection.off("GameCompleted");
-        connection.off("GameFailed");
-
-        connection.on("TimerUpdated", handleTimerUpdated);
-        connection.on("GameTimedOut", handleGameTimedOut);
-        connection.on("GameCompleted", handleGameCompleted);
-        connection.on("GameFailed", handleGameFailed);
-
-        dispose = () => {
-          connection.off("TimerUpdated", handleTimerUpdated);
-          connection.off("GameTimedOut", handleGameTimedOut);
-          connection.off("GameCompleted", handleGameCompleted);
-          connection.off("GameFailed", handleGameFailed);
-        };
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    void bindRealtimeEvents();
-
-    return () => {
-      isMounted = false;
-      dispose?.();
-    };
-  }, [sessionCode, setError]);
-
-  useEffect(() => {
-    if (!hasStarted || !isGameRunning) return;
-
-    void fetchRemainingTime();
-
-    const intervalId = window.setInterval(() => {
-      void fetchRemainingTime();
-    }, 1000);
-
-    return () => {
-      window.clearInterval(intervalId);
-    };
-  }, [hasStarted, isGameRunning, fetchRemainingTime]);
+  }, [hasStarted]);
 
   const toggleWordSelection = async (word: string) => {
     if (
@@ -421,7 +238,7 @@ export default function ConnectionsGamePage() {
                 <button
                   type="button"
                   className={styles.reportModalButton}
-                  onClick={() => setIsEndModalDismissed(false)}
+                  onClick={() => reopenEndModal()}
                 >
                   View end modal
                 </button>
@@ -547,38 +364,12 @@ export default function ConnectionsGamePage() {
         </aside>
       </div>
 
-      <GameEndModal
-        isOpen={showWinModal}
-        result="win"
-        title="You solved all groups!"
-        message="Great teamwork. Your team completed the Connections game successfully."
-        primaryButtonText="Close"
-        onPrimaryClick={() => setIsEndModalDismissed(true)}
-        secondaryButtonText="View report"
-        onSecondaryClick={() => navigate(`/report`)}
-        showConfetti
-      />
-
-      <GameEndModal
-        isOpen={showLoseModal}
-        result="lose"
-        title="You ran out of mistakes"
-        message="Your team did not solve all groups. You can close this window for now."
-        primaryButtonText="Close"
-        onPrimaryClick={() => setIsEndModalDismissed(true)}
-        secondaryButtonText="View report"
-        onSecondaryClick={() => navigate(`/report`)}
-      />
-
-      <GameEndModal
-        isOpen={showLoseTimeModal}
-        result="lose"
-        title="You ran out of time"
-        message="Your team did not solve all groups in time. You can close this window for now."
-        primaryButtonText="Close"
-        onPrimaryClick={() => setIsEndModalDismissed(true)}
-        secondaryButtonText="View report"
-        onSecondaryClick={() => navigate(`/report`)}
+      <GameEndModals
+        showWinModal={showWinModal}
+        showLoseModal={showLoseModal}
+        showLoseTimeModal={showLoseTimeModal}
+        onDismiss={dismissEndModal}
+        onViewReport={() => navigate(`/report`)}
       />
     </div>
   );
