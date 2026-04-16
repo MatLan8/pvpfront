@@ -14,6 +14,7 @@ import eulaText from "./EULA_AI_RUST_VERSION.txt?raw";
 import styles from "./MainPage.module.css";
 import LoginModal from "../../components/modals/LoginModal";
 import RegisterModal from "../../components/modals/RegisterModal";
+import JoinSessionModal from "../../components/modals/JoinSessionModal";
 
 export function TryButton() {
   const navigate = useNavigate();
@@ -43,6 +44,7 @@ export default function JoinGameScreen() {
 
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+  const [isJoinOpen, setIsJoinOpen] = useState(false);
 
   useEffect(() => {
     const consent = document.cookie
@@ -60,10 +62,6 @@ export default function JoinGameScreen() {
     if (scrollHeight - scrollTop <= clientHeight + 2) {
       setCanAgree(true);
     }
-  };
-
-  const handleStart = () => {
-    navigate(`/game`);
   };
 
   const handleAgree = async () => {
@@ -173,7 +171,7 @@ export default function JoinGameScreen() {
           </p>
 
           <button
-            onClick={handleStart}
+            onClick={() => setIsJoinOpen(true)}
             className={styles.btnPrimary}
             style={{ maxWidth: "300px" }}
           >
@@ -292,6 +290,11 @@ export default function JoinGameScreen() {
           setIsRegisterOpen(false);
           setIsLoginOpen(true);
         }}
+      />
+
+      <JoinSessionModal
+        isOpen={isJoinOpen}
+        onClose={() => setIsJoinOpen(false)}
       />
     </div>
   );
