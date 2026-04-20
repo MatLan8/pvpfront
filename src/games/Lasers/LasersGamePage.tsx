@@ -15,6 +15,8 @@ import styles from "./LaserGamePage.module.css";
 import GameEndModals from "../../components/GameEndModals/GameEndModals";
 import GameChat from "../../components/GameChat/GameChat";
 import GameSessionTimer from "../../components/GameSessionTimer/GameSessionTimer";
+import IconTeam from "../../assets/players_icon.png";
+import GameHeader from "../../components/GameHeader/GameHeader";
 
 import {
   buildLaserEntryEdgeMap,
@@ -278,273 +280,284 @@ export default function LasersGamePage() {
   );
 
   return (
-    <div className={styles.page}>
-      <div className={styles.layout}>
-        <aside className={styles.playersPanel}>
-          <h2 className={styles.panelTitle}>Players</h2>
+    <div>
+      <GameHeader sessionCode={sessionCode!} />
 
-          {publicState?.players?.length ? (
-            <ul className={styles.playerList}>
-              {publicState.players.map((player) => {
-                const gamePlayer = gamePlayers.find(
-                  (p) => p.playerId === player.playerId,
-                );
+      <div className={styles.page}>
+        <div className={styles.layout}>
+          <aside className={styles.playersPanel}>
+            <div className={styles.label}>
+              <img src={IconTeam} alt="team" width="25" height="25" />
+              <h5 className={styles.panelTitle}>Players</h5>
 
-                return (
-                  <li key={player.playerId} className={styles.playerItem}>
-                    <div className={styles.playerNameRow}>
-                      <span>{player.nickname}</span>
-                      {!player.isConnected && (
-                        <span className={styles.disconnectedTag}>
-                          Disconnected
-                        </span>
-                      )}
-                    </div>
+            </div>
+            <hr />
 
-                    {hasStarted && gamePlayer && (
-                      <div className={styles.playerMeta}>
-                        <span>Mirrors: {gamePlayer.mirrorCount}</span>
+            {publicState?.players?.length ? (
+              <ul className={styles.playerList}>
+                {publicState.players.map((player) => {
+                  const gamePlayer = gamePlayers.find(
+                    (p) => p.playerId === player.playerId,
+                  );
+
+                  return (
+                    <li key={player.playerId} className={styles.playerItem}>
+                      <div className={styles.playerNameRow}>
+                        <span>{player.nickname}</span>
+                        {!player.isConnected && (
+                          <span className={styles.disconnectedTag}>
+                            Disconnected
+                          </span>
+                        )}
                       </div>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          ) : (
-            <p className={styles.empty}>No players found.</p>
-          )}
-        </aside>
 
-        <main className={styles.gamePanel}>
-          <div className={styles.topBar}>
-            <div className={styles.titleRow}>
-              <h1 className={styles.title}>Lasers</h1>
+                      {hasStarted && gamePlayer && (
+                        <div className={styles.playerMeta}>
+                          <span>Mirrors: {gamePlayer.mirrorCount}</span>
+                        </div>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : (
+              <p className={styles.empty}>No players found.</p>
+            )}
+          </aside>
 
-              {hasGameEnded && (
-                <button
-                  type="button"
-                  className={styles.reportModalButton}
-                  onClick={() => reopenEndModal()}
+          <main className={styles.gamePanel}>
+            <div className={styles.topBar}>
+              <div className={styles.titleRow}>
+                <h1 className={styles.title}>Lasers</h1>
+
+                {hasGameEnded && (
+                  <button
+                    type="button"
+                    className={styles.reportModalButton}
+                    onClick={() => reopenEndModal()}
+                  >
+                    View end modal
+                  </button>
+                )}
+              </div>
+
+              {hasStarted && (
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "12px",
+                    flexWrap: "wrap",
+                  }}
                 >
-                  View end modal
-                </button>
+                  {isGameRunning && (
+                    <GameSessionTimer
+                      key={`${sessionCode ?? "session"}-${publicState?.hasStarted ? "started" : "waiting"}`}
+                      remainingSeconds={timerRemainingSeconds}
+                      startedAtUtc={timerStartedAtUtc}
+                      endsAtUtc={timerEndsAtUtc}
+                      isRunning={!hasTimedOut}
+                      onExpired={handleTimerExpired}
+                    />
+                  )}
+                </div>
               )}
             </div>
 
-            {hasStarted && (
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "12px",
-                  flexWrap: "wrap",
-                }}
-              >
-                {isGameRunning && (
-                  <GameSessionTimer
-                    key={`${sessionCode ?? "session"}-${publicState?.hasStarted ? "started" : "waiting"}`}
-                    remainingSeconds={timerRemainingSeconds}
-                    startedAtUtc={timerStartedAtUtc}
-                    endsAtUtc={timerEndsAtUtc}
-                    isRunning={!hasTimedOut}
-                    onExpired={handleTimerExpired}
-                  />
-                )}
+            <div className={styles.line} />
+
+            {!hasStarted || !gameState ? (
+              <div>
+                <h2 className={styles.sectionTitle}>Waiting room</h2>
+                <p className={styles.empty}>Waiting for the game to start.</p>
               </div>
-            )}
-          </div>
+            ) : (
+              <>
+                <div className={styles.gridContainer}>
+                  <div className={styles.gameGrid}>
+                    {localCells.map(({ lx, ly, gx, gy }) => {
+                      const cellKey = `${lx}-${ly}`;
+                      const cp = cellContainsCheckpoint(
+                        gx,
+                        gy,
+                        normalizedPrivate.checkpoints,
+                      );
+                      const mir = mirrorAtCell(gx, gy, normalizedPrivate.mirrors);
+                      const dropHighlight = dropTarget === cellKey;
 
-          <div className={styles.line} />
-
-          {!hasStarted || !gameState ? (
-            <div>
-              <h2 className={styles.sectionTitle}>Waiting room</h2>
-              <p className={styles.empty}>Waiting for the game to start.</p>
-            </div>
-          ) : (
-            <>
-              <div className={styles.gridContainer}>
-                <div className={styles.gameGrid}>
-                  {localCells.map(({ lx, ly, gx, gy }) => {
-                    const cellKey = `${lx}-${ly}`;
-                    const cp = cellContainsCheckpoint(
-                      gx,
-                      gy,
-                      normalizedPrivate.checkpoints,
-                    );
-                    const mir = mirrorAtCell(gx, gy, normalizedPrivate.mirrors);
-                    const dropHighlight = dropTarget === cellKey;
-
-                    return (
-                      <div
-                        key={cellKey}
-                        className={`${styles.gridCell} ${
-                          dropHighlight ? styles.gridCellDropOver : ""
-                        }`}
-                        onDragOver={(e) => {
-                          if (
-                            isInteractionLocked ||
-                            mir ||
-                            mirrorCount >= MIRRORS_PER_PLAYER
-                          ) {
-                            return;
-                          }
-                          e.preventDefault();
-                          e.dataTransfer.dropEffect = "copy";
-                          setDropTarget(cellKey);
-                        }}
-                        onDragLeave={() => {
-                          setDropTarget((t) => (t === cellKey ? null : t));
-                        }}
-                        onDrop={(e) => {
-                          e.preventDefault();
-                          setDropTarget(null);
-                          const t = e.dataTransfer.getData(
-                            DRAG_TYPE,
-                          ) as MirrorKind;
-                          if (t !== "LeftTurn" && t !== "RightTurn") return;
-                          void handlePlaceMirror(lx, ly, t);
-                        }}
-                      >
-                        {renderEntryMarker(gx, gy)}
-                        {cp ? <div className={styles.checkpoint} /> : null}
-                        {renderLaserInCell(gx, gy)}
-                        {mir ? (
-                          <>
-                            <div
-                              className={`${styles.mirror} ${
-                                mir.type === "LeftTurn"
+                      return (
+                        <div
+                          key={cellKey}
+                          className={`${styles.gridCell} ${dropHighlight ? styles.gridCellDropOver : ""
+                            }`}
+                          onDragOver={(e) => {
+                            if (
+                              isInteractionLocked ||
+                              mir ||
+                              mirrorCount >= MIRRORS_PER_PLAYER
+                            ) {
+                              return;
+                            }
+                            e.preventDefault();
+                            e.dataTransfer.dropEffect = "copy";
+                            setDropTarget(cellKey);
+                          }}
+                          onDragLeave={() => {
+                            setDropTarget((t) => (t === cellKey ? null : t));
+                          }}
+                          onDrop={(e) => {
+                            e.preventDefault();
+                            setDropTarget(null);
+                            const t = e.dataTransfer.getData(
+                              DRAG_TYPE,
+                            ) as MirrorKind;
+                            if (t !== "LeftTurn" && t !== "RightTurn") return;
+                            void handlePlaceMirror(lx, ly, t);
+                          }}
+                        >
+                          {renderEntryMarker(gx, gy)}
+                          {cp ? <div className={styles.checkpoint} /> : null}
+                          {renderLaserInCell(gx, gy)}
+                          {mir ? (
+                            <>
+                              <div
+                                className={`${styles.mirror} ${mir.type === "LeftTurn"
                                   ? styles.mirrorLeftTurn
                                   : styles.mirrorRightTurn
-                              }`}
-                            />
-                            <button
-                              type="button"
-                              className={styles.mirrorRemoveBtn}
-                              title="Remove mirror"
-                              disabled={isInteractionLocked || isSubmitting}
-                              onClick={(ev) => {
-                                ev.stopPropagation();
-                                void handleRemoveMirror(lx, ly);
-                              }}
-                            >
-                              ×
-                            </button>
-                          </>
-                        ) : null}
-                      </div>
-                    );
-                  })}
-                </div>
+                                  }`}
+                              />
+                              <button
+                                type="button"
+                                className={styles.mirrorRemoveBtn}
+                                title="Remove mirror"
+                                disabled={isInteractionLocked || isSubmitting}
+                                onClick={(ev) => {
+                                  ev.stopPropagation();
+                                  void handleRemoveMirror(lx, ly);
+                                }}
+                              >
+                                ×
+                              </button>
+                            </>
+                          ) : null}
+                        </div>
+                      );
+                    })}
+                  </div>
 
-                <div className={styles.paletteRow}>
-                  <div className={styles.selectionHeader}>
-                    <div className={styles.zoneSelectionHeader}>
-                      <h2 className={styles.sectionTitle}>Your zone</h2>
-                      <div
-                        style={{
-                          margin: 0,
-                          color: "#94a3b8",
-                          fontWeight: 600,
-                          textAlign: "start",
-                          display: "flex",
-                          flexDirection: "column",
-                        }}
-                      >
-                        <text>
-                          {zoneDisplayName ? <>{zoneDisplayName}</> : null}
-                        </text>
-                        Checkpoints hit: {gameState.hitCheckpoints} /{" "}
-                        {gameState.totalCheckpoints}
-                      </div>
-                    </div>
+                  <div className={styles.paletteRow}>
+                    <div className={styles.selectionHeader}>
+                      <div className={styles.zoneSelectionHeader}>
+                        <h2 className={styles.sectionTitle}>Your zone</h2>
+                        <div
+                          style={{
+                            margin: 0,
+                            color: "#D6D6D6",
+                            fontWeight: 400,
+                            textAlign: "start",
+                            display: "flex",
+                            flexDirection: "column",
+                          }}
+                        >
+                          <text>
+                            {zoneDisplayName ? <>{zoneDisplayName}</> : null}
 
-                    <div className={styles.zoneIndicatorWrap}>
-                      <div className={styles.zoneIndicator}>
-                        {[0, 1, 2, 3].map((zi) => (
-                          <div
-                            key={zi}
-                            className={`${styles.zoneIndicatorCell} ${
-                              zi === zoneIndicatorActiveIndex
+                          </text>
+                          Checkpoints hit:
+                          <text style={{
+                            fontWeight: 600
+                          }}>
+                            {gameState.hitCheckpoints} /{" "}
+                            {gameState.totalCheckpoints}
+                          </text>
+
+                        </div>
+                      </div>
+
+                      <div className={styles.zoneIndicatorWrap}>
+                        <div className={styles.zoneIndicator}>
+                          {[0, 1, 2, 3].map((zi) => (
+                            <div
+                              key={zi}
+                              className={`${styles.zoneIndicatorCell} ${zi === zoneIndicatorActiveIndex
                                 ? styles.zoneIndicatorActive
                                 : ""
-                            }`}
+                                }`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <p className={styles.paletteLabel}>
+                      Drag a mirror into a cell
+                    </p>
+                    <div className={styles.paletteMirrors}>
+                      <div
+                        className={`${styles.paletteMirror} ${isInteractionLocked || mirrorCount >= MIRRORS_PER_PLAYER
+                          ? styles.paletteMirrorDisabled
+                          : ""
+                          }`}
+                        draggable={
+                          !isInteractionLocked && mirrorCount < MIRRORS_PER_PLAYER
+                        }
+                        onDragStart={(e) => onPaletteDragStart(e, "LeftTurn")}
+                      >
+                        <div className={styles.paletteMirrorPreview}>
+                          <div
+                            className={`${styles.paletteLine} ${styles.mirrorLeftTurn}`}
                           />
-                        ))}
+                        </div>
+                        <span className={styles.paletteMirrorCaption}>
+                          Left turn
+                        </span>
                       </div>
-                    </div>
-                  </div>
-                  <p className={styles.paletteLabel}>
-                    Drag a mirror into a cell
-                  </p>
-                  <div className={styles.paletteMirrors}>
-                    <div
-                      className={`${styles.paletteMirror} ${
-                        isInteractionLocked || mirrorCount >= MIRRORS_PER_PLAYER
+                      <div
+                        className={`${styles.paletteMirror} ${isInteractionLocked || mirrorCount >= MIRRORS_PER_PLAYER
                           ? styles.paletteMirrorDisabled
                           : ""
-                      }`}
-                      draggable={
-                        !isInteractionLocked && mirrorCount < MIRRORS_PER_PLAYER
-                      }
-                      onDragStart={(e) => onPaletteDragStart(e, "LeftTurn")}
-                    >
-                      <div className={styles.paletteMirrorPreview}>
-                        <div
-                          className={`${styles.paletteLine} ${styles.mirrorLeftTurn}`}
-                        />
+                          }`}
+                        draggable={
+                          !isInteractionLocked && mirrorCount < MIRRORS_PER_PLAYER
+                        }
+                        onDragStart={(e) => onPaletteDragStart(e, "RightTurn")}
+                      >
+                        <div className={styles.paletteMirrorPreview}>
+                          <div
+                            className={`${styles.paletteLine} ${styles.mirrorRightTurn}`}
+                          />
+                        </div>
+                        <span className={styles.paletteMirrorCaption}>
+                          Right turn
+                        </span>
                       </div>
-                      <span className={styles.paletteMirrorCaption}>
-                        Left turn
-                      </span>
-                    </div>
-                    <div
-                      className={`${styles.paletteMirror} ${
-                        isInteractionLocked || mirrorCount >= MIRRORS_PER_PLAYER
-                          ? styles.paletteMirrorDisabled
-                          : ""
-                      }`}
-                      draggable={
-                        !isInteractionLocked && mirrorCount < MIRRORS_PER_PLAYER
-                      }
-                      onDragStart={(e) => onPaletteDragStart(e, "RightTurn")}
-                    >
-                      <div className={styles.paletteMirrorPreview}>
-                        <div
-                          className={`${styles.paletteLine} ${styles.mirrorRightTurn}`}
-                        />
-                      </div>
-                      <span className={styles.paletteMirrorCaption}>
-                        Right turn
-                      </span>
                     </div>
                   </div>
                 </div>
-              </div>
-            </>
-          )}
+              </>
+            )}
 
-          {error && <p className={styles.error}>{error}</p>}
-        </main>
+            {error && <p className={styles.error}>{error}</p>}
+          </main>
 
-        <aside className={styles.chatPanel}>
-          <GameChat sessionCode={sessionCode!} playerId={playerId!} />
-        </aside>
+          <aside className={styles.chatPanel}>
+            <GameChat sessionCode={sessionCode!} playerId={playerId!} />
+          </aside>
+        </div>
+
+        <GameEndModals
+          showWinModal={showWinModal}
+          showLoseModal={false}
+          showLoseTimeModal={showLoseTimeModal}
+          onDismiss={dismissEndModal}
+          onViewReport={() => navigate(`/report`)}
+          winTitle="All checkpoints hit!"
+          winMessage="Your team guided the laser through every checkpoint. Great teamwork."
+          loseTitle="Game ended"
+          loseMessage=""
+          timeoutTitle="Time over"
+          timeoutMessage="You ran out of time."
+        />
       </div>
-
-      <GameEndModals
-        showWinModal={showWinModal}
-        showLoseModal={false}
-        showLoseTimeModal={showLoseTimeModal}
-        onDismiss={dismissEndModal}
-        onViewReport={() => navigate(`/report`)}
-        winTitle="All checkpoints hit!"
-        winMessage="Your team guided the laser through every checkpoint. Great teamwork."
-        loseTitle="Game ended"
-        loseMessage=""
-        timeoutTitle="Time over"
-        timeoutMessage="You ran out of time."
-      />
     </div>
   );
 }

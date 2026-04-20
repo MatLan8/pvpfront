@@ -1,18 +1,33 @@
-.chatCard {
-  background: #1e293b;
-  border-radius: 16px;
-  padding: 16px;
+.label {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  height: auto;
+  justify-content: start;
+  align-content: center;
+  align-self: flex-start;
+}
+
+.box {
   display: flex;
   flex-direction: column;
+  justify-content: flex-end;
   height: 520px;
   min-height: 520px;
   min-width: 0;
 }
 
+hr {
+  border-width: 0.5px;
+  color: #059669;
+  margin-block: 20px;
+}
+
 .header {
+  padding: 0;
+  margin-block: 0;
   font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 12px;
+  font-weight: 400;
 }
 
 .messages {
@@ -76,7 +91,7 @@
 }
 
 .sender {
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .time {
@@ -96,12 +111,12 @@
 }
 
 .ownBubble {
-  background: #2563eb;
+  background: #059669;
   color: white;
 }
 
 .otherBubble {
-  background: #334155;
+  background: #213443;
   color: white;
 }
 
@@ -133,15 +148,26 @@
   display: flex;
   gap: 10px;
   margin-top: 12px;
+  align-self: stretch;
+}
+
+.line {
+  display: flex;
+  width: auto;
+  height: 1px;
+  background-color: var(--light-green);
+  margin-block: 20px;
 }
 
 .input {
   flex: 1;
-  border: none;
+  border: solid;
+  border-color: var(--light-grey);
+  border-width: thin;
   outline: none;
-  border-radius: 12px;
+  border-radius: 10px;
   padding: 12px 14px;
-  background: #334155;
+  background: var(--dark-grey);
   color: white;
   font-size: 14px;
   min-width: 0;
@@ -154,19 +180,54 @@
 .sendButton {
   border: none;
   border-radius: 12px;
-  padding: 0 18px;
-  background: #2563eb;
+  padding: 12px;
+  background: var(--light-green);
   color: white;
   cursor: pointer;
   font-weight: 600;
+  transition:
+    background 0.2s ease,
+    opacity 0.2s ease,
+    transform 0.15s ease;
 }
 
 .sendButton:hover {
-  opacity: 0.95;
+  background: #2abd8c;
+}
+
+.sendButton:hover:not(:disabled) {
+  transform: translateY(-1px);
 }
 
 .error {
   color: #f87171;
   margin-top: 8px;
   font-size: 14px;
+}
+
+
+/* CSS Smooth Blink Animation */
+.blinkSmooth {
+  font-size: 12px;
+  color: #059669;
+  font-weight: bold;
+  display: block;
+  text-align: center;
+  animation: blinkSmooth 3s infinite;
+  margin: 0;
+  padding-top: 6px;
+}
+
+@keyframes blinkSmooth {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }

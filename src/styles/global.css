@@ -10,11 +10,17 @@
   --red: #ff0000ff;
   --green: #007f00ff;
   --dark: #101014ff;
+  --dark-green: #064D3B;
+  --dark-blue: #0E1B2B;
+  --light-green: #059669;
+  --dark-grey: #213443;
+  --light-grey: #45556c;
 }
 
 body {
   background-color: var(--secondary) !important;
-  height: 100vh;
+  background: linear-gradient(160deg, rgba(14, 27, 43, 1) 20%, rgb(4, 51, 39) 50%, rgba(14, 27, 43, 1) 80%) !important;
+  /* height: 100vh; */
   margin: 0;
   padding: 0;
 }

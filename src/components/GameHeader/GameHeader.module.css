@@ -1,0 +1,25 @@
+header {
+    background-color: #072b28e1;
+
+    border-bottom: solid thin;
+    border-color: var(--light-green);
+    color: white;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+}
+
+.name {
+    padding-left: 40px;
+    font-size: 16px;
+    padding-right: 15px;
+    border-right: solid thin;
+}
+
+.code {
+    /* margin-left: auto; */
+    /* padding-right: 40px; */
+    font-size: 15px;
+    padding-left: 15px;
+}
