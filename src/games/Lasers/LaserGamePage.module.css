@@ -2,14 +2,30 @@
   color: white;
   padding: 24px;
   box-sizing: border-box;
+  background: #0E1B2B;
+  background: linear-gradient(160deg, rgba(14, 27, 43, 1) 20%, rgb(4, 51, 39) 50%, rgba(14, 27, 43, 1) 80%);
+  height: 100vh;
+}
+
+hr {
+  border-width: 0.5px;
+  color: #059669;
+  margin-block: 20px;
+}
+
+.label {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  height: auto;
+  justify-content: start;
+  align-content: center;
 }
 
 .layout {
   display: grid;
-  grid-template-columns: minmax(250px, 290px) minmax(0, 1fr) minmax(
-      320px,
-      380px
-    );
+  grid-template-columns: minmax(250px, 290px) minmax(0, 1fr) minmax(320px,
+      380px);
   gap: 32px;
   align-items: start;
 }
@@ -17,8 +33,12 @@
 .playersPanel,
 .chatPanel,
 .gamePanel {
-  background: #1e293b;
+  background: #072b28e1;
   border-radius: 18px;
+  border-color: #059669;
+  border-width: 0.1px;
+  border-style: solid;
+  backdrop-filter: blur(500px);
 }
 
 .playersPanel,
@@ -39,10 +59,10 @@
 }
 
 .panelTitle {
-  margin: 0 0 18px 0;
-  font-size: 30px;
-  font-weight: 800;
-  text-align: center;
+  margin-block: auto;
+  font-size: 20px;
+  font-weight: 400;
+  /* text-align: center; */
 }
 
 .playerList {
@@ -52,10 +72,13 @@
 }
 
 .playerItem {
-  background: #334155;
+  background: #213443;
   border-radius: 14px;
   padding: 14px 16px;
   margin-bottom: 12px;
+  border: solid;
+  border-color: var(--light-grey);
+  border-width: thin;
 }
 
 .playerNameRow {
@@ -63,7 +86,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 12px;
-  font-weight: 700;
+  font-weight: 300;
   font-size: 18px;
 }
 
@@ -94,9 +117,9 @@
 
 .title {
   margin: 0;
-  font-size: 56px;
+  font-size: 26px;
   line-height: 1;
-  font-weight: 900;
+  font-weight: 400;
 }
 
 .selectionHeader {
@@ -118,7 +141,7 @@
 .sectionTitle {
   margin: 0;
   font-size: 26px;
-  font-weight: 800;
+  font-weight: 500;
   text-align: start !important;
   margin-bottom: 10px;
 }
@@ -137,8 +160,8 @@
 .line {
   display: flex;
   width: auto;
-  height: 2px;
-  background-color: white;
+  height: 0.5px;
+  background-color: #059669;
 }
 
 .titleRow {
@@ -149,13 +172,13 @@
 }
 
 .reportModalButton {
-  background: #2563eb;
+  background: var(--light-green);
   color: white;
   border: none;
   border-radius: 12px;
   padding: 10px 16px;
-  font-size: 15px;
-  font-weight: 800;
+  font-size: 16px;
+  font-weight: 500;
   cursor: pointer;
   transition:
     background 0.2s ease,
@@ -164,9 +187,10 @@
 }
 
 .reportModalButton:hover {
-  background: #1d4ed8;
+  background: #2abd8c;
   transform: translateY(-1px);
 }
+
 
 /* Laser grid */
 .gridContainer {
@@ -360,7 +384,7 @@
 .paletteLabel {
   margin: 0;
   font-size: 18px;
-  font-weight: 800;
+  font-weight: 500;
   text-align: start !important;
 }
 
@@ -375,8 +399,8 @@
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  padding: 12px 16px;
-  background: #334155;
+  padding: 10px 14px;
+  background: var(--dark-grey);
   border-radius: 12px;
   border: 2px solid #475569;
   cursor: grab;
@@ -394,8 +418,8 @@
 }
 
 .paletteMirrorPreview {
-  width: 8rem;
-  height: 8rem;
+  width: 6rem;
+  height: 6rem;
   position: relative;
   background: #1e293b;
   border-radius: 8px;
@@ -416,7 +440,7 @@
 
 .paletteMirrorCaption {
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 500;
   color: #cbd5e1;
 }
 
@@ -446,7 +470,7 @@
 }
 
 .zoneIndicatorCell {
-  background: #334155;
+  background: var(--dark-grey);
   border-radius: 4px;
 }
 
@@ -461,19 +485,29 @@
     gap: 24px;
   }
 
-  .title {
-    font-size: 46px;
+  .paletteMirrorPreview {
+    width: 6rem;
+    height: 6rem;
   }
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1250px) {
+  .layout {
+    grid-template-columns: 220px 1fr 280px;
+    gap: 24px;
+  }
+
+  .paletteMirrorPreview {
+    width: 4.5rem;
+    height: 4.5rem;
+  }
+}
+
+@media (max-width: 1090px) {
   .layout {
     grid-template-columns: 1fr;
   }
 
-  .title {
-    font-size: 40px;
-  }
 }
 
 @media (max-width: 700px) {
@@ -482,7 +516,7 @@
   }
 
   .layout {
-    gap: 14px;
+    gap: 44px;
   }
 
   .gamePanel,
@@ -498,7 +532,4 @@
     align-items: stretch;
   }
 
-  .title {
-    font-size: 32px;
-  }
 }

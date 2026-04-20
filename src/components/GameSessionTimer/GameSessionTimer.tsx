@@ -41,7 +41,7 @@ export default function GameSessionTimer({
 
   return (
     <div className={styles.timer}>
-      <span className={styles.label}>Time left</span>
+      <span className={styles.label}>Time left:</span>
       <span className={styles.value}>{formatTime(remainingSeconds ?? 0)}</span>
     </div>
   );
