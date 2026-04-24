@@ -1,0 +1,375 @@
+.whole {
+  min-height: 100vh;
+  background: #0E1B2B;
+  background: linear-gradient(160deg, rgba(14, 27, 43, 1) 20%, rgb(4, 51, 39) 50%, rgba(14, 27, 43, 1) 80%);
+}
+
+.page {
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 24px;
+  align-items: start;
+}
+
+.playersPanel,
+.chatPanel {
+  align-self: start;
+  background: #072b28e1;
+  border-radius: 18px;
+  border: 1px solid #059669;
+  backdrop-filter: blur(500px);
+  padding: 20px;
+}
+
+.gamePanel {
+  background: #072b28e1;
+  border-radius: 18px;
+  border: 1px solid #059669;
+  backdrop-filter: blur(500px);
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.topBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.line {
+  height: 1px;
+  background: #059669;
+}
+
+.sectionTitle {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+/* Timeline Grid */
+.timelineSection {
+  background: #131b2b;
+  border: 1px solid #23314a;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.slotCounter {
+  font-size: 11px;
+  color: #94a3b8;
+  background: #0a0f18;
+  padding: 4px 10px;
+  border-radius: 12px;
+  border: 1px solid #23314a;
+}
+
+.timelineGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.slot {
+  aspect-ratio: 3/4;
+  min-height: 90px;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.slot.empty {
+  border: 2px dashed #23314a;
+  background: rgba(10, 15, 24, 0.5);
+}
+
+.slot.empty:hover {
+  border-color: #10b981;
+}
+
+.slot.filled {
+  border: 2px solid #334155;
+  background: #0f172a;
+}
+
+.slotNumber {
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  font-size: 9px;
+  font-family: monospace;
+  color: #475569;
+  font-weight: bold;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+}
+
+.card h4 {
+  font-size: 9px;
+  font-weight: bold;
+  color: #10b981;
+  margin: 0 0 4px 0;
+  text-transform: uppercase;
+}
+
+.card p {
+  font-size: 8px;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.emptyPlaceholder {
+  font-size: 12px;
+  color: #475569;
+}
+
+/* Player Hand */
+.handSection {
+  background: #131b2b;
+  border: 1px solid #23314a;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.handHeader {
+  margin-bottom: 10px;
+}
+
+.handTitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: #34d399;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.handCards {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.handCard {
+  min-width: 100px;
+  max-width: 100px;
+  padding: 8px;
+  border-radius: 6px;
+  border: 2px solid #334155;
+  background: #1a2333;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.handCard:hover {
+  border-color: #10b981;
+}
+
+.handCard.selected {
+  border-color: #10b981;
+  background: #0f172a;
+  transform: translateY(-2px);
+}
+
+.cardImagePlaceholder {
+  width: 100%;
+  height: 40px;
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 6px;
+}
+
+.cardImagePlaceholderText {
+  font-size: 9px;
+  color: #475569;
+  transform: rotate(-15deg);
+  font-family: monospace;
+}
+
+.cardTitle {
+  font-size: 10px;
+  font-weight: bold;
+  color: white;
+  margin: 0 0 2px 0;
+}
+
+.cardDescription {
+  font-size: 9px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.emptyHand {
+  color: #64748b;
+  font-size: 12px;
+  padding: 8px;
+}
+
+/* Verify Button */
+.verifySection {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #23314a;
+  display: flex;
+  justify-content: center;
+}
+
+.verifyButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s;
+  cursor: pointer;
+  border: none;
+}
+
+.verifyButton.enabled {
+  background: #059669;
+  color: white;
+}
+
+.verifyButton.disabled {
+  background: #0a0f18;
+  color: #475569;
+  border: 1px solid #23314a;
+  cursor: not-allowed;
+}
+
+.verifyButton:disabled {
+  opacity: 0.7;
+}
+
+/* Lives & Timer */
+.timerLives {
+  display: flex;
+  gap: 20px;
+}
+
+.timerBlock,
+.livesBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.timerLabel,
+.livesLabel {
+  font-size: 10px;
+  color: #64748b;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.timerValue {
+  font-family: monospace;
+  font-size: 18px;
+  color: #fb7185;
+}
+
+.livesValue {
+  display: flex;
+  gap: 4px;
+}
+
+.heart {
+  font-size: 16px;
+}
+
+.heartFilled {
+  color: #e11d48;
+}
+
+.heartEmpty {
+  color: #23314a;
+}
+
+/* Waiting & Error */
+.waitingMessage,
+.empty {
+  color: #e2e8f0;
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
+  padding: 40px;
+}
+
+.error {
+  color: #f87171;
+  font-size: 14px;
+  text-align: center;
+  padding: 8px;
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .page {
+    padding: 14px;
+  }
+
+  .timelineGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

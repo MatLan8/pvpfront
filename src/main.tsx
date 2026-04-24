@@ -20,6 +20,20 @@ const queryClient = new QueryClient({
   }),
 });
 
+// Debug helper - exposes jumpToGame globally for testing
+// Usage in console: window.jumpToGame("SESSION_CODE", 2)
+import { startConnection } from "./services/signalr";
+(window as unknown as { jumpToGame: (code: string, index: number) => Promise<void> }).jumpToGame = async (code: string, index: number) => {
+  try {
+    const conn = await startConnection();
+    await conn.invoke("JumpToGame", code, index);
+    console.log("Jumped to game " + (index + 1));
+  } catch (err) {
+    console.error("JumpToGame failed:", err);
+    alert("JumpToGame error: " + (err as Error).message);
+  }
+};
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>

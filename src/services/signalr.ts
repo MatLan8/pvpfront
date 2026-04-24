@@ -47,3 +47,12 @@ export const startConnection = async () => {
     startPromise = null;
   }
 };
+
+/**
+ * Debug helper to jump to a specific game (0=first, 1=second, 2=third)
+ * Example: await jumpToGame("SESSION_CODE", 2) to jump to game 3 (SolveTheStory)
+ */
+export const jumpToGame = async (sessionCode: string, gameIndex: number) => {
+  const conn = await startConnection();
+  return await conn.invoke("JumpToGame", sessionCode, gameIndex);
+};

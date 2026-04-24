@@ -1,0 +1,3 @@
+window.jumpToGame("code_6_symbols", num of game)
+exhample
+window.jumpToGame("WUXKJG", 2)

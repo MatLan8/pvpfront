@@ -1,24 +1,29 @@
 .page {
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
+  padding: 40px 16px;
   color: black;
+  box-sizing: border-box;
 }
 
 .card {
   width: 100%;
   max-width: 520px;
-  background: white;
+  background: white !important;
   border-radius: 14px;
   padding: 28px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  color: black !important;
+  box-sizing: border-box;
 }
 
 .title {
   margin: 0 0 20px 0;
   text-align: center;
   font-size: 28px;
+  color: black !important;
 }
 
 .infoBox {
@@ -32,15 +37,18 @@
 .infoItem {
   margin: 6px 0;
   font-size: 15px;
+  color: black !important;
 }
 
 .infoLabel {
   font-weight: 700;
+  color: black !important;
 }
 
 .subtitle {
   margin: 0 0 14px 0;
   font-size: 22px;
+  color: black !important;
 }
 
 .empty {
@@ -59,6 +67,7 @@
   border-radius: 10px;
   margin-bottom: 10px;
   background: #ffffff;
+  color: black !important;
 }
 
 .waitingText {

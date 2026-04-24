@@ -1,6 +1,7 @@
 import { GameSessionProvider, useGameSessionContext } from "../contexts/GameSessionContext";
 import ConnectionsGamePage from "./Connections/ConnectionsGamePage";
 import LasersGamePage from "./Lasers/LasersGamePage";
+import SolveTheStoryGamePage from "./SolveTheStory/SolveTheStoryGamePage";
 
 function GameSessionSwitch() {
   const { publicState, error } = useGameSessionContext();
@@ -56,6 +57,10 @@ function GameSessionSwitch() {
 
   if (gameType === "Connections") {
     return <ConnectionsGamePage />;
+  }
+
+  if (gameType === "SolveTheStory") {
+    return <SolveTheStoryGamePage />;
   }
 
   return (
