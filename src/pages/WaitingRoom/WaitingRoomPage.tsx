@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { startConnection } from "../../services/signalr";
 import styles from "./WaitingRoomPage.module.css";
+import Header from "../../components/GameHeader/GameHeader";
 
 type WaitingRoomPayload = {
   sessionCode: string;
@@ -125,39 +126,44 @@ export default function WaitingRoomPage() {
   }, [sessionCode, nickname, playerId, navigate]);
 
   return (
-    <div className={styles.page}>
-      <div className={styles.card}>
-        <h1 className={styles.title}>Waiting Room</h1>
+    <div className={styles.whole}>
+      <Header sessionCode={sessionCode!} />
+      <div className={styles.page}>
 
-        <div className={styles.infoBox}>
-          <p className={styles.infoItem}>
-            <span className={styles.infoLabel}>Session:</span> {sessionCode}
+        <div className={styles.card}>
+          <h1 className={styles.title}>Waiting Room</h1>
+
+          <div className={styles.infoBox}>
+            <p className={styles.infoItem}>
+              <span className={styles.infoLabel}>Session:</span> {sessionCode}
+            </p>
+            <p className={styles.infoItem}>
+              <span className={styles.infoLabel}>You:</span> {nickname}
+            </p>
+          </div>
+
+          <h2 className={styles.subtitle}>Players</h2>
+
+          {players.length === 0 ? (
+            <p className={styles.empty}>No players yet...</p>
+          ) : (
+            <ul className={styles.playerList}>
+              {players.map((player, index) => (
+                <li key={`${player}-${index}`} className={styles.playerItem}>
+                  {player}
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <p className={styles.waitingText}>
+            Waiting for more players to join...
           </p>
-          <p className={styles.infoItem}>
-            <span className={styles.infoLabel}>You:</span> {nickname}
-          </p>
+
+          {error && <p className={styles.error}>{error}</p>}
         </div>
-
-        <h2 className={styles.subtitle}>Players</h2>
-
-        {players.length === 0 ? (
-          <p className={styles.empty}>No players yet...</p>
-        ) : (
-          <ul className={styles.playerList}>
-            {players.map((player, index) => (
-              <li key={`${player}-${index}`} className={styles.playerItem}>
-                {player}
-              </li>
-            ))}
-          </ul>
-        )}
-
-        <p className={styles.waitingText}>
-          Waiting for more players to join...
-        </p>
-
-        {error && <p className={styles.error}>{error}</p>}
       </div>
     </div>
+
   );
 }
