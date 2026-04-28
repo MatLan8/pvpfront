@@ -1,6 +1,7 @@
 import { GameSessionProvider, useGameSessionContext } from "../contexts/GameSessionContext";
 import ConnectionsGamePage from "./Connections/ConnectionsGamePage";
 import LasersGamePage from "./Lasers/LasersGamePage";
+import WordleGamePage from "./Wordle/WordleGamePage";
 
 function GameSessionSwitch() {
   const { publicState, error } = useGameSessionContext();
@@ -56,6 +57,10 @@ function GameSessionSwitch() {
 
   if (gameType === "Connections") {
     return <ConnectionsGamePage />;
+  }
+
+  if (gameType === "Wordle") {
+    return <WordleGamePage />;
   }
 
   return (
