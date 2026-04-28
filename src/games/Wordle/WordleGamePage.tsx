@@ -14,13 +14,23 @@ import GameSessionTimer from "../../components/GameSessionTimer/GameSessionTimer
 import GameHeader from "../../components/GameHeader/GameHeader";
 import IconTeam from "../../assets/players_icon.png";
 
-const MAX_GUESSES = 2;
-
 type LetterResult = "absent" | "present" | "correct";
 
 type GuessResultNorm = {
   word: string;
   states: LetterResult[];
+};
+
+const MAX_GUESSES = 2;
+
+const KEYBOARD_ROW_1 = "QWERTYUIOP".split("");
+const KEYBOARD_ROW_2 = "ASDFGHJKL".split("");
+const KEYBOARD_ROW_3 = "ZXCVBNM".split("");
+
+const LETTER_PRIORITY: Record<LetterResult, number> = {
+  absent: 0,
+  present: 1,
+  correct: 2,
 };
 
 type WordleGamePlayerState = {
@@ -106,7 +116,10 @@ function normalizeWordlePrivate(
 
 function tileClassForResult(
   r: LetterResult,
-): typeof styles.tileCorrect | typeof styles.tilePresent | typeof styles.tileAbsent {
+):
+  | typeof styles.tileCorrect
+  | typeof styles.tilePresent
+  | typeof styles.tileAbsent {
   if (r === "correct") return styles.tileCorrect;
   if (r === "present") return styles.tilePresent;
   return styles.tileAbsent;
@@ -120,6 +133,24 @@ function isTypingTarget(el: EventTarget | null): boolean {
   return false;
 }
 
+function keyboardLetterStates(
+  guesses: GuessResultNorm[],
+): Map<string, LetterResult> {
+  const map = new Map<string, LetterResult>();
+  for (const guess of guesses) {
+    for (let i = 0; i < 5; i++) {
+      const ch = (guess.word[i] ?? "").toUpperCase();
+      if (!/^[A-Z]$/.test(ch)) continue;
+      const st = guess.states[i] ?? "absent";
+      const prev = map.get(ch);
+      if (prev === undefined || LETTER_PRIORITY[st] > LETTER_PRIORITY[prev]) {
+        map.set(ch, st);
+      }
+    }
+  }
+  return map;
+}
+
 export default function WordleGamePage() {
   const { sessionCode } = useParams();
   const navigate = useNavigate();
@@ -128,7 +159,6 @@ export default function WordleGamePage() {
   const {
     publicState: publicStateRaw,
     privateData: privateDataRaw,
-    error,
     setError,
   } = useGameSessionContext();
   const publicState = publicStateRaw as PublicState | null;
@@ -202,6 +232,24 @@ export default function WordleGamePage() {
     setDraft("");
   }, [guessCount]);
 
+  const keyboardStates = useMemo(
+    () => keyboardLetterStates(guesses),
+    [guesses],
+  );
+
+  const appendLetter = useCallback(
+    (letter: string) => {
+      const L = letter.toUpperCase();
+      if (!/^[A-Z]$/.test(L)) return;
+      setDraft((d) => (canType && d.length < 5 ? d + L : d));
+    },
+    [canType],
+  );
+
+  const removeLastLetter = useCallback(() => {
+    setDraft((d) => d.slice(0, -1));
+  }, []);
+
   const submitGuess = useCallback(async () => {
     const trimmed = draft.trim().toUpperCase();
     if (trimmed.length !== 5 || !/^[A-Z]{5}$/.test(trimmed)) {
@@ -261,19 +309,19 @@ export default function WordleGamePage() {
 
       if (e.key === "Backspace") {
         e.preventDefault();
-        setDraft((d) => d.slice(0, -1));
+        removeLastLetter();
         return;
       }
 
       if (e.key.length === 1 && /^[a-zA-Z]$/.test(e.key)) {
         e.preventDefault();
-        setDraft((d) => (d.length < 5 ? d + e.key.toUpperCase() : d));
+        appendLetter(e.key);
       }
     };
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [canType, submitGuess]);
+  }, [canType, submitGuess, appendLetter, removeLastLetter]);
 
   return (
     <div className={styles.whole}>
@@ -295,10 +343,7 @@ export default function WordleGamePage() {
                   );
                   const guessesUsed =
                     gamePlayer != null
-                      ? Math.max(
-                          0,
-                          MAX_GUESSES - gamePlayer.remainingGuesses,
-                        )
+                      ? Math.max(0, MAX_GUESSES - gamePlayer.remainingGuesses)
                       : null;
 
                   return (
@@ -409,7 +454,8 @@ export default function WordleGamePage() {
 
                             if (isDraftRow) {
                               const ch = draft[col] ?? "";
-                              const isCaretCol = col === draft.length && draft.length < 5;
+                              const isCaretCol =
+                                col === draft.length && draft.length < 5;
                               return (
                                 <div
                                   key={col}
@@ -434,15 +480,50 @@ export default function WordleGamePage() {
                     })}
                   </div>
 
+                  <div
+                    className={styles.keyboard}
+                    role="group"
+                    aria-label="On-screen keyboard"
+                  >
+                    {[KEYBOARD_ROW_1, KEYBOARD_ROW_2, KEYBOARD_ROW_3].map(
+                      (row, ri) => (
+                        <div key={ri} className={styles.keyboardRow}>
+                          {row.map((letter) => {
+                            const st = keyboardStates.get(letter);
+                            const stateClass =
+                              st === "correct"
+                                ? styles.keyboardKeyCorrect
+                                : st === "present"
+                                  ? styles.keyboardKeyPresent
+                                  : st === "absent"
+                                    ? styles.keyboardKeyAbsent
+                                    : styles.keyboardKeyDefault;
+                            const keyDisabled =
+                              !canType || isSubmitting || draft.length >= 5;
+                            return (
+                              <button
+                                key={letter}
+                                type="button"
+                                className={`${styles.keyboardKey} ${stateClass}`}
+                                aria-label={`Letter ${letter}`}
+                                disabled={keyDisabled}
+                                onMouseDown={(e) => e.preventDefault()}
+                                onClick={() => appendLetter(letter)}
+                              >
+                                {letter}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      ),
+                    )}
+                  </div>
+
                   <div className={styles.guessRow}>
                     <button
                       type="button"
                       className={styles.guessButton}
-                      disabled={
-                        isInteractionLocked ||
-                        isSubmitting ||
-                        !canType
-                      }
+                      disabled={isInteractionLocked || isSubmitting || !canType}
                       onClick={() => void submitGuess()}
                     >
                       Guess
@@ -452,7 +533,6 @@ export default function WordleGamePage() {
               </>
             )}
 
-            {error ? <p className={styles.error}>{error}</p> : null}
           </main>
 
           <aside className={styles.chatPanel}>
