@@ -1,0 +1,2 @@
+changeGame("SESSIONCODE", 2)
+*plice it in js when session is live
