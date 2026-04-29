@@ -3,6 +3,7 @@ import { useGetUser } from "../../api/useGetUser";
 import { useStartSession } from "../../api/useStartSession";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import SessionModal from "../../components/modals/SessionModal";
 
 function StartSession() {
   const navigate = useNavigate();
@@ -15,6 +16,8 @@ function StartSession() {
 
   const { data: user, isLoading, error, refetch } = useGetUser(userId);
   const { mutate, isPending } = useStartSession();
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>{error.message}</div>;
@@ -33,12 +36,28 @@ function StartSession() {
     navigate("/mainpage");
   };
 
+  // const handleStartSession = () => {
+  //   mutate(
+  //     { LeaderId: userId },
+  //     {
+  //       onSuccess: (data) => {
+  //         setSessionCode(data.sessionCode);
+  //         refetch();
+  //       },
+  //       onError: (error) => {
+  //         console.error("Failed to start session:", error.Error);
+  //         alert(`Failed to start session: ${error.Error}`);
+  //       },
+  //     },
+  //   );
+  // };
   const handleStartSession = () => {
     mutate(
       { LeaderId: userId },
       {
         onSuccess: (data) => {
           setSessionCode(data.sessionCode);
+          setIsModalOpen(true);
           refetch();
         },
         onError: (error) => {
@@ -82,7 +101,7 @@ function StartSession() {
           </span>
         </button>
       </div>
-      {sessionCode && (
+      {/* {sessionCode && (
         <div className={styles.code}>
           <div className={styles.card}>
             <p>
@@ -93,7 +112,13 @@ function StartSession() {
             </button>
           </div>
         </div>
-      )}
+      )} */}
+      <SessionModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        sessionCode={sessionCode}
+        onJoin={handleJoinGame}
+      />
     </div>
   );
 }
