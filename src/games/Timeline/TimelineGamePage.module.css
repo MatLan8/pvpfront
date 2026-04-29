@@ -1,37 +1,65 @@
 .page {
+  color: white;
   padding: 24px;
+  box-sizing: border-box;
+  background: #0E1B2B;
+  background: linear-gradient(160deg, rgba(14, 27, 43, 1) 20%, rgb(4, 51, 39) 50%, rgba(14, 27, 43, 1) 80%);
   min-height: calc(100vh - 64px);
-  background-color: #0f172a;
 }
 
 .layout {
   display: grid;
-  grid-template-columns: 240px 1fr 320px;
-  gap: 20px;
+  grid-template-columns: minmax(250px, 290px) minmax(0, 1fr) minmax(320px, 380px);
+  gap: 32px;
+  align-items: start;
   max-width: 1600px;
   margin: 0 auto;
 }
 
-/* Players Panel */
-.playersPanel {
-  background: #1e293b;
-  border-radius: 12px;
-  padding: 16px;
-  height: fit-content;
+.playersPanel,
+.chatPanel,
+.gamePanel {
+  background: #072b28e1;
+  border-radius: 18px;
+  border-color: #059669;
+  border-width: 0.1px;
+  border-style: solid;
+  backdrop-filter: blur(500px);
+}
+
+.playersPanel,
+.chatPanel {
+  align-self: start;
+  padding: 20px;
+}
+
+.gamePanel {
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 .label {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
+  flex-direction: row;
+  gap: 10px;
+  height: auto;
+  justify-content: start;
+  align-content: center;
 }
 
 .panelTitle {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
+  margin-block: auto;
+  font-size: 20px;
+  font-weight: 400;
   color: #e2e8f0;
+}
+
+hr {
+  border-width: 0.5px;
+  color: #059669;
+  margin-block: 20px;
 }
 
 .playerList {
@@ -41,29 +69,32 @@
 }
 
 .playerItem {
-  padding: 8px 0;
-  border-bottom: 1px solid #334155;
-}
-
-.playerItem:last-child {
-  border-bottom: none;
+  background: #213443;
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  border: solid;
+  border-color: var(--light-grey);
+  border-width: thin;
 }
 
 .playerNameRow {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  font-size: 14px;
+  align-items: center;
+  gap: 12px;
+  font-weight: 300;
+  font-size: 18px;
   color: #e2e8f0;
 }
 
 .disconnectedTag {
-  font-size: 11px;
-  color: #f87171;
-  background: rgba(248, 113, 113, 0.1);
-  padding: 2px 6px;
-  border-radius: 4px;
+  background: #7f1d1d;
+  color: #fecaca;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
 }
 
 .empty {
@@ -73,13 +104,7 @@
   padding: 16px 0;
 }
 
-/* Game Panel */
-.gamePanel {
-  background: #1e293b;
-  border-radius: 12px;
-  padding: 24px;
-}
-
+/* Top Bar */
 .topBar {
   display: flex;
   align-items: center;
@@ -217,8 +242,8 @@
   position: relative;
   min-height: 100px;
   padding: 12px;
-  border-radius: 8px;
-  border: 2px solid #334155;
+  border-radius: 12px;
+  border: 2px solid #64748b;
   cursor: pointer;
   transition: all 0.2s;
   display: flex;
@@ -246,6 +271,17 @@
 .slotSelected {
   border-color: #f59e0b !important;
   box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.3);
+}
+
+.slotEmpty.canPlace {
+  border-color: #22c55e;
+  border-style: solid;
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.slotEmpty.canPlace:hover {
+  background: rgba(34, 197, 94, 0.2);
+  border-color: #16a34a;
 }
 
 .slotIndex {
@@ -284,6 +320,36 @@
   margin-bottom: auto;
 }
 
+/* Hidden Card (for non-owners) */
+.hiddenCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: auto;
+  margin-bottom: auto;
+  padding: 12px;
+  background: #1a1a2e;
+  border: 2px solid #475569;
+  border-radius: 8px;
+  min-height: 60px;
+}
+
+.hiddenCardText {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.hiddenCardOwner {
+  font-size: 10px;
+  color: #94a3b8;
+  font-style: italic;
+}
+
 .timelineHint {
   margin: 0;
   font-size: 12px;
@@ -296,7 +362,7 @@
   margin-bottom: 24px;
   padding: 16px;
   background: #0f172a;
-  border-radius: 8px;
+  border-radius: 12px;
 }
 
 .emptyHand {
@@ -331,8 +397,9 @@
 }
 
 .cardSelected {
-  border-color: #22c55e !important;
-  background: #1a3d2b;
+  border-color: #f59e0b !important;
+  background: #3d2e1a;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.4);
 }
 
 .cardDisabled {
@@ -374,7 +441,7 @@
   color: #ffffff;
   background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s;
 }
@@ -399,8 +466,11 @@
 
 /* Chat Panel */
 .chatPanel {
-  background: #1e293b;
-  border-radius: 12px;
+  background: #072b28e1;
+  border-radius: 18px;
+  border-color: #059669;
+  border-width: 0.1px;
+  border-style: solid;
   overflow: hidden;
   height: fit-content;
 }
@@ -416,10 +486,11 @@
   font-size: 14px;
 }
 
-/* Responsive */
-@media (max-width: 1200px) {
+/* Responsive - Tablet */
+@media (max-width: 1024px) {
   .layout {
     grid-template-columns: 1fr;
+    gap: 20px;
   }
 
   .playersPanel {
@@ -427,7 +498,8 @@
   }
 
   .chatPanel {
-    display: none;
+    display: block;
+    width: 100%;
   }
 
   .timelineGrid {
@@ -435,8 +507,30 @@
   }
 }
 
-@media (max-width: 768px) {
-  .chatPanel {
-    display: block;
+/* Responsive - Mobile */
+@media (max-width: 640px) {
+  .page {
+    padding: 12px;
+  }
+
+  .gamePanel {
+    padding: 16px;
+  }
+
+  .gameInfo {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .title {
+    font-size: 22px;
+  }
+
+  .handGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .timelineGrid {
+    grid-template-columns: 1fr;
   }
 }

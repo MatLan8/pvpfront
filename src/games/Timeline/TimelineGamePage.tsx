@@ -22,12 +22,26 @@ interface TimelineCard {
   Description: string;
 }
 
+interface TimelineSlot {
+  // Either a full card (owner only) or hidden info (others)
+  IsFilled: boolean;
+  OwnerId?: string;
+  OwnerNickname?: string;
+  // Card details (only populated for owner via private data)
+  card?: TimelineCard;
+}
+
+interface TimelinePlacedCard {
+  SlotIndex: number;
+  Card: TimelineCard;
+}
+
 interface TimelineGamePublic {
   GameType: string;
   Status: "running" | "completed" | "failed";
   Lives: number;
   MaxLives: number;
-  Timeline: (TimelineCard | null)[];
+  Timeline: (TimelineSlot | null)[];
   FilledSlots: number;
   TotalSlots: number;
 }
@@ -35,6 +49,7 @@ interface TimelineGamePublic {
 interface TimelinePlayerPrivate {
   Hand: TimelineCard[];
   HandCount: number;
+  PlacedCards: TimelinePlacedCard[];
 }
 
 type PrivateDataRaw = TimelinePlayerPrivate | null;
@@ -55,12 +70,17 @@ function normalizePublicState(
   const timeline = Array.isArray(timelineArray)
     ? timelineArray.map((item) => {
         if (!item || typeof item !== "object") return null;
-        const card = item as Record<string, unknown>;
-        return {
-          Id: (card.Id ?? card.id) as string,
-          Title: (card.Title ?? card.title) as string,
-          Description: (card.Description ?? card.description) as string,
-        };
+        const slot = item as Record<string, unknown>;
+        // Handle both old format (card object) and new format (IsFilled)
+        const isFilled = slot.IsFilled ?? slot.isFilled;
+        if (isFilled === true) {
+          return {
+            IsFilled: true,
+            OwnerId: (slot.OwnerId ?? slot.ownerId) as string,
+            OwnerNickname: (slot.OwnerNickname ?? slot.ownerNickname) as string,
+          };
+        }
+        return null; // Empty slot
       })
     : [];
 
@@ -77,7 +97,7 @@ function normalizePublicState(
 
 function normalizePrivateData(raw: unknown): TimelinePlayerPrivate {
   if (!raw || typeof raw !== "object") {
-    return { Hand: [], HandCount: 0 };
+    return { Hand: [], HandCount: 0, PlacedCards: [] };
   }
 
   const obj = raw as Record<string, unknown>;
@@ -95,9 +115,29 @@ function normalizePrivateData(raw: unknown): TimelinePlayerPrivate {
       }).filter((c): c is TimelineCard => c !== null)
     : [];
 
+  const placedArray = obj.PlacedCards ?? obj.placedCards;
+  const placedCards = Array.isArray(placedArray)
+    ? placedArray.map((item) => {
+        if (!item || typeof item !== "object") return null;
+        const placed = item as Record<string, unknown>;
+        const cardObj = placed.Card ?? placed.card;
+        if (!cardObj || typeof cardObj !== "object") return null;
+        const card = cardObj as Record<string, unknown>;
+        return {
+          SlotIndex: Number(placed.SlotIndex ?? placed.slotIndex ?? -1),
+          Card: {
+            Id: (card.Id ?? card.id) as string,
+            Title: (card.Title ?? card.title) as string,
+            Description: (card.Description ?? card.description) as string,
+          },
+        };
+      }).filter((p): p is TimelinePlacedCard => p !== null && p.SlotIndex >= 0)
+    : [];
+
   return {
     Hand: hand,
     HandCount: Number(obj.HandCount ?? obj.handCount ?? hand.length),
+    PlacedCards: placedCards,
   };
 }
 
@@ -350,36 +390,71 @@ export default function TimelineGamePage() {
                   </p>
 
                   <div className={styles.timelineGrid}>
-                    {gameState.Timeline.map((card, index) => (
-                      <div
-                        key={index}
-                        className={`${styles.timelineSlot} ${card ? styles.slotFilled : styles.slotEmpty} ${selectedSlotIndex === index ? styles.slotSelected : ""}`}
-                        onClick={() => {
-                          if (card && !isInteractionLocked) {
-                            setSelectedSlotIndex(index);
-                            handleRemoveCard(index);
-                          }
-                        }}
-                      >
-                        <span className={styles.slotIndex}>{index + 1}</span>
-                        {card ? (
-                          <div className={styles.cardContent}>
-                            <span className={styles.cardTitle}>
-                              {card.Title}
-                            </span>
-                            <span className={styles.cardDescription}>
-                              {card.Description}
-                            </span>
-                          </div>
-                        ) : (
-                          <span className={styles.slotEmptyText}>Empty</span>
-                        )}
-                      </div>
-                    ))}
+                    {gameState.Timeline.map((slot, index) => {
+                      const isFilled = slot?.IsFilled ?? false;
+                      const isOwner = slot?.OwnerId === playerId;
+                      const ownerNickname = slot?.OwnerNickname;
+                      
+                      // Find card details if we're the owner
+                      let cardData: TimelineCard | undefined;
+                      if (isOwner && isFilled) {
+                        const placed = privateData.PlacedCards.find(p => p.SlotIndex === index);
+                        cardData = placed?.Card;
+                      }
+
+                      return (
+                        <div
+                          key={index}
+                          className={`${styles.timelineSlot} ${isFilled ? styles.slotFilled : styles.slotEmpty} ${selectedSlotIndex === index ? styles.slotSelected : ""} ${!isFilled && selectedCardId ? styles.canPlace : ""}`}
+                          onClick={() => {
+                            if (isInteractionLocked) return;
+                            
+                            if (isFilled) {
+                              // Only owner can remove
+                              if (isOwner) {
+                                handleRemoveCard(index);
+                              }
+                              // Non-owners can't interact with filled slots
+                            } else if (selectedCardId) {
+                              // Empty slot with selected card: place card
+                              handlePlaceCard(selectedCardId, index);
+                            }
+                            // Empty slot without selected card: do nothing
+                          }}
+                        >
+                          <span className={styles.slotIndex}>{index + 1}</span>
+                          {isFilled ? (
+                            cardData ? (
+                              // Owner can see the card
+                              <div className={styles.cardContent}>
+                                <span className={styles.cardTitle}>
+                                  {cardData.Title}
+                                </span>
+                                <span className={styles.cardDescription}>
+                                  {cardData.Description}
+                                </span>
+                              </div>
+                            ) : (
+                              // Non-owner sees hidden card
+                              <div className={styles.hiddenCard}>
+                                <span className={styles.hiddenCardText}>Hidden Card</span>
+                                <span className={styles.hiddenCardOwner}>
+                                  Placed by {ownerNickname}
+                                </span>
+                              </div>
+                            )
+                          ) : (
+                            <span className={styles.slotEmptyText}>Empty</span>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
 
                   <p className={styles.timelineHint}>
-                    Click a filled slot to return the card to a player's hand.
+                    {selectedCardId 
+                      ? "Click an empty slot to place the selected card." 
+                      : "Select a card from your hand, then click an empty slot to place it. Click YOUR filled slot to remove it."}
                   </p>
                 </div>
 
