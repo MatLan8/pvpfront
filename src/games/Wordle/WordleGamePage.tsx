@@ -21,7 +21,7 @@ type GuessResultNorm = {
   states: LetterResult[];
 };
 
-const MAX_GUESSES = 2;
+const MAX_GUESSES = 3;
 
 const KEYBOARD_ROW_1 = "QWERTYUIOP".split("");
 const KEYBOARD_ROW_2 = "ASDFGHJKL".split("");
@@ -422,7 +422,7 @@ export default function WordleGamePage() {
 
                 <div className={styles.wordGridWrap}>
                   <div className={styles.wordRows}>
-                    {[0, 1].map((rowIndex) => {
+                    {[0, 1, 2].map((rowIndex) => {
                       const guess = guesses[rowIndex];
                       const isDraftRow = rowIndex === activeRowIndex;
 
@@ -532,7 +532,6 @@ export default function WordleGamePage() {
                 </div>
               </>
             )}
-
           </main>
 
           <aside className={styles.chatPanel}>
