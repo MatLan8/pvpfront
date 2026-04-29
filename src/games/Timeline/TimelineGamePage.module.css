@@ -422,12 +422,21 @@
     grid-template-columns: 1fr;
   }
 
-  .playersPanel,
+  .playersPanel {
+    display: none;
+  }
+
   .chatPanel {
     display: none;
   }
 
   .timelineGrid {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .chatPanel {
+    display: block;
   }
 }

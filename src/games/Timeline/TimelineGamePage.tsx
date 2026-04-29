@@ -51,26 +51,27 @@ function normalizePublicState(
 
   const obj = raw as Record<string, unknown>;
 
-  const timeline = Array.isArray(obj.Timeline)
-    ? obj.Timeline.map((item) => {
+  const timelineArray = obj.Timeline ?? obj.timeline;
+  const timeline = Array.isArray(timelineArray)
+    ? timelineArray.map((item) => {
         if (!item || typeof item !== "object") return null;
         const card = item as Record<string, unknown>;
         return {
-          Id: card.Id as string,
-          Title: card.Title as string,
-          Description: card.Description as string,
+          Id: (card.Id ?? card.id) as string,
+          Title: (card.Title ?? card.title) as string,
+          Description: (card.Description ?? card.description) as string,
         };
       })
     : [];
 
   return {
-    GameType: String(obj.GameType ?? ""),
-    Status: (obj.Status as "running" | "completed" | "failed") ?? "running",
-    Lives: Number(obj.Lives ?? 3),
-    MaxLives: Number(obj.MaxLives ?? 3),
+    GameType: String(obj.GameType ?? obj.gameType ?? ""),
+    Status: (obj.Status ?? obj.status ?? "running") as "running" | "completed" | "failed",
+    Lives: Number(obj.Lives ?? obj.lives ?? 3),
+    MaxLives: Number(obj.MaxLives ?? obj.maxLives ?? 3),
     Timeline: timeline,
-    FilledSlots: Number(obj.FilledSlots ?? 0),
-    TotalSlots: Number(obj.TotalSlots ?? 16),
+    FilledSlots: Number(obj.FilledSlots ?? obj.filledSlots ?? 0),
+    TotalSlots: Number(obj.TotalSlots ?? obj.totalSlots ?? 16),
   };
 }
 
@@ -81,21 +82,22 @@ function normalizePrivateData(raw: unknown): TimelinePlayerPrivate {
 
   const obj = raw as Record<string, unknown>;
 
-  const hand = Array.isArray(obj.Hand)
-    ? obj.Hand.map((item) => {
+  const handArray = obj.Hand ?? obj.hand;
+  const hand = Array.isArray(handArray)
+    ? handArray.map((item) => {
         if (!item || typeof item !== "object") return null;
         const card = item as Record<string, unknown>;
         return {
-          Id: card.Id as string,
-          Title: card.Title as string,
-          Description: card.Description as string,
+          Id: (card.Id ?? card.id) as string,
+          Title: (card.Title ?? card.title) as string,
+          Description: (card.Description ?? card.description) as string,
         };
       }).filter((c): c is TimelineCard => c !== null)
     : [];
 
   return {
     Hand: hand,
-    HandCount: Number(obj.HandCount ?? hand.length),
+    HandCount: Number(obj.HandCount ?? obj.handCount ?? hand.length),
   };
 }
 
