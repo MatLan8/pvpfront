@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { startConnection } from "../services/signalr";
-import { showGameToast } from "../services/gameToast";
-import type { GameToastPayload } from "../services/gameToast";
+import { handleReceiveGameToastPayload } from "../services/gameToast";
 
 type UseGameSessionParams = {
   sessionCode?: string;
@@ -80,9 +79,9 @@ export function useGameSession<TPublicState, TPrivateData>({
           setError(payload.success ? "" : payload.message);
         };
 
-        const handleGameToast = (payload: GameToastPayload) => {
+        const handleGameToast = (payload: unknown) => {
           if (!isMounted) return;
-          showGameToast(payload);
+          handleReceiveGameToastPayload(payload, playerId);
         };
 
         connection.off("ReceivePublicState");

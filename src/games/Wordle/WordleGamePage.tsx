@@ -414,10 +414,45 @@ export default function WordleGamePage() {
             ) : (
               <>
                 <div className={styles.gameSectionHeader}>
-                  <h2 className={styles.sectionTitle}>Your guesses</h2>
-                  <p className={styles.hint}>
-                    Two words, five letters each. Press Enter or Guess.
-                  </p>
+                  <div className={styles.content}>
+                    <h2 className={styles.sectionTitle}>
+                      Work together to guess the hidden word.
+                    </h2>
+
+                    <p className={styles.hint}>3 guesses per player</p>
+
+                    <div className={styles.colorContainer}>
+                      <div className={styles.colorDiv}>
+                        <div
+                          className={styles.colorItem}
+                          style={{ backgroundColor: "#f5793a" }}
+                        />
+                        <span className={styles.colorItemText}>
+                          Letter is in correct position
+                        </span>
+                      </div>
+
+                      <div className={styles.colorDiv}>
+                        <div
+                          className={styles.colorItem}
+                          style={{ backgroundColor: "#85c0f9" }}
+                        />
+                        <span className={styles.colorItemText}>
+                          Letter is in the word but in the wrong position
+                        </span>
+                      </div>
+
+                      <div className={styles.colorDiv}>
+                        <div
+                          className={styles.colorItem}
+                          style={{ backgroundColor: "#3a3a3c" }}
+                        />
+                        <span className={styles.colorItemText}>
+                          Letter is not in the word
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 <div className={styles.wordGridWrap}>

@@ -183,23 +183,54 @@ main {
   flex-wrap: wrap;
 }
 
+.gameSectionHeader {
+  display: flex;
+  justify-content: center; /* centers the whole block horizontally */
+  margin-bottom: 8px;
+}
+
+.content {
+  display: inline-block; /* shrink-wrap content */
+  text-align: left; /* ensures text + legend align left */
+}
+
 .sectionTitle {
   margin: 0;
   font-size: 22px;
   font-weight: 400;
-  text-align: start !important;
   margin-bottom: 10px;
-}
-
-.gameSectionHeader {
-  margin-bottom: 8px;
 }
 
 .hint {
   margin: 0;
   color: #94a3b8;
   font-weight: 600;
-  font-size: 15px;
+  font-size: 18px;
+}
+
+.colorContainer {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+  gap: 10px;
+}
+
+.colorDiv {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+}
+
+.colorItem {
+  width: 30px;
+  height: 30px;
+  border-radius: 10%;
+  flex-shrink: 0;
+}
+
+.colorItemText {
+  font-size: 14px;
 }
 
 .line {
