@@ -1,8 +1,9 @@
 import { GameSessionProvider, useGameSessionContext } from "../contexts/GameSessionContext";
 import ConnectionsGamePage from "./Connections/ConnectionsGamePage";
 import LasersGamePage from "./Lasers/LasersGamePage";
+import WordleGamePage from "./Wordle/WordleGamePage";
 import TimelineGamePage from "./Timeline/TimelineGamePage";
-import DebugPanel from "../components/DebugPanel/DebugPanel";
+import DebugPanel from "../components/DebugPanel/DebugPanel
 
 function GameSessionSwitch() {
   const { publicState, error } = useGameSessionContext();
@@ -89,6 +90,10 @@ function GameSessionSwitch() {
       </div>
     );
   };
+
+  if (gameType === "Wordle") {
+    return <WordleGamePage />;
+  }
 
   return (
     <>
