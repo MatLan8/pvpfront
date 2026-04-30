@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { X, Mail, Copy } from "lucide-react";
 import styles from "./Modals.module.css";
+import { useSendInvites } from "../../api/useSendInvites";
 
 interface SessionModalProps {
   isOpen: boolean;
@@ -18,6 +19,8 @@ function SessionModal({
   const [emails, setEmails] = useState("");
   const [copied, setCopied] = useState(false);
 
+  const sendInvitesMutation = useSendInvites();
+
   if (!isOpen || !sessionCode) return null;
 
   const handleCopy = () => {
@@ -27,12 +30,34 @@ function SessionModal({
   };
 
   const handleSendEmails = () => {
+    const isValidEmail = (email: string) =>
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
     const emailList = emails
       .split(",")
       .map((e) => e.trim())
-      .filter(Boolean);
+      .filter((e) => isValidEmail(e));
 
-    console.log("Send invites to:", emailList, "with code:", sessionCode);
+    if (emailList.length === 0) {
+      alert("Please enter valid email(s)");
+      return;
+    }
+
+    sendInvitesMutation.mutate(
+      {
+        sessionCode,
+        emails: emailList,
+      },
+      {
+        onSuccess: () => {
+          setEmails("");
+          alert("Invites sent!");
+        },
+        onError: () => {
+          alert("Failed to send invites");
+        },
+      },
+    );
   };
 
   return (
@@ -72,11 +97,17 @@ function SessionModal({
           </div>
         </div>
 
-        <button className={styles.button} onClick={handleSendEmails}>
+        {/* <button className={styles.button} onClick={handleSendEmails}>
           Send Invites
+        </button> */}
+        <button
+          className={styles.button}
+          onClick={handleSendEmails}
+          disabled={sendInvitesMutation.isPending}
+        >
+          {sendInvitesMutation.isPending ? "Sending..." : "Send Invites"}
         </button>
 
-        {/* CLEAN JOIN BUTTON */}
         <button className={styles.button} onClick={onJoin}>
           Join Game
         </button>
