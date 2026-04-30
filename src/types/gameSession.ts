@@ -15,5 +15,7 @@ export type BasePublicState<TGame> = {
   TimerStartedAtUtc?: string;
   timerEndsAtUtc?: string;
   TimerEndsAtUtc?: string;
+  totalRounds?: number;
+  roundIndex?: number;
   game: TGame | null;
 };

@@ -47,3 +47,18 @@ export const startConnection = async () => {
     startPromise = null;
   }
 };
+
+/**
+ * Manually changes the active game for a session.
+ * @param sessionCode The session code
+ * @param gameNumberInList 1-based index of the game (1 = first game, 2 = second, etc.)
+ */
+export const changeGame = async (sessionCode: string, gameNumberInList: number) => {
+  const conn = await startConnection();
+  await conn.invoke("ChangeGame", sessionCode, gameNumberInList);
+};
+
+// Expose globally for browser console debugging
+if (typeof window !== "undefined") {
+  (window as unknown as { changeGame: typeof changeGame }).changeGame = changeGame;
+}
