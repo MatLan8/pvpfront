@@ -52,8 +52,7 @@ interface TimelinePlayerPrivate {
   PlacedCards: TimelinePlacedCard[];
 }
 
-type PrivateDataRaw = TimelinePlayerPrivate | null;
-type PublicState = TimelineGamePublic | null;
+// TimelinePlayerPrivate and TimelineGamePublic types are used via normalize functions
 
 // =====================================================
 // Helpers
