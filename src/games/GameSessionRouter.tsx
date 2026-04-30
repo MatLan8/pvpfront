@@ -1,9 +1,12 @@
-import { GameSessionProvider, useGameSessionContext } from "../contexts/GameSessionContext";
+import {
+  GameSessionProvider,
+  useGameSessionContext,
+} from "../contexts/GameSessionContext";
 import ConnectionsGamePage from "./Connections/ConnectionsGamePage";
 import LasersGamePage from "./Lasers/LasersGamePage";
 import WordleGamePage from "./Wordle/WordleGamePage";
 import TimelineGamePage from "./Timeline/TimelineGamePage";
-import DebugPanel from "../components/DebugPanel/DebugPanel
+import DebugPanel from "../components/DebugPanel/DebugPanel";
 
 function GameSessionSwitch() {
   const { publicState, error } = useGameSessionContext();
@@ -70,6 +73,10 @@ function GameSessionSwitch() {
       return <TimelineGamePage />;
     }
 
+    if (gameType === "Wordle") {
+      return <WordleGamePage />;
+    }
+
     return (
       <div
         style={{
@@ -85,8 +92,12 @@ function GameSessionSwitch() {
           padding: 24,
         }}
       >
-        <p>Unknown or unsupported game type: {String(gameType ?? "undefined")}</p>
-        {error ? <p style={{ color: "#94a3b8", fontSize: 14 }}>{error}</p> : null}
+        <p>
+          Unknown or unsupported game type: {String(gameType ?? "undefined")}
+        </p>
+        {error ? (
+          <p style={{ color: "#94a3b8", fontSize: 14 }}>{error}</p>
+        ) : null}
       </div>
     );
   };
