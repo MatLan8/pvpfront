@@ -297,7 +297,18 @@ hr {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  margin-top: 12px;
+  margin-top: 0;
+}
+
+.cardImage {
+  width: 100%;
+  height: 70px;
+  max-height: 70px;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 6px;
+  margin-bottom: 4px;
+  flex-shrink: 0;
 }
 
 .cardTitle {
@@ -374,9 +385,11 @@ hr {
 }
 
 .handGrid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  flex-direction: row;
   gap: 12px;
+  justify-content: center;
+  flex-wrap: nowrap;
 }
 
 .handCard {
@@ -389,6 +402,21 @@ hr {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-height: unset;
+  overflow: hidden;
+  flex: 1;
+  max-width: calc(33.333% - 8px);
+}
+
+.handCardImage {
+  width: 100%;
+  height: 70px;
+  max-height: 70px;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 6px;
+  margin-bottom: 4px;
+  flex-shrink: 0;
 }
 
 .handCard:hover {

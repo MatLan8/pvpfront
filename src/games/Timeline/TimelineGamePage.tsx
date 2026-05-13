@@ -20,6 +20,7 @@ interface TimelineCard {
   Id: string;
   Title: string;
   Description: string;
+  ImageUrl?: string;
 }
 
 interface TimelineSlot {
@@ -90,7 +91,7 @@ function normalizePublicState(
     MaxLives: Number(obj.MaxLives ?? obj.maxLives ?? 3),
     Timeline: timeline,
     FilledSlots: Number(obj.FilledSlots ?? obj.filledSlots ?? 0),
-    TotalSlots: Number(obj.TotalSlots ?? obj.totalSlots ?? 16),
+    TotalSlots: Number(obj.TotalSlots ?? obj.totalSlots ?? 12),
   };
 }
 
@@ -110,6 +111,7 @@ function normalizePrivateData(raw: unknown): TimelinePlayerPrivate {
           Id: (card.Id ?? card.id) as string,
           Title: (card.Title ?? card.title) as string,
           Description: (card.Description ?? card.description) as string,
+          ImageUrl: (card.ImageUrl ?? card.imageUrl) as string | undefined,
         };
       }).filter((c): c is TimelineCard => c !== null)
     : [];
@@ -128,6 +130,7 @@ function normalizePrivateData(raw: unknown): TimelinePlayerPrivate {
             Id: (card.Id ?? card.id) as string,
             Title: (card.Title ?? card.title) as string,
             Description: (card.Description ?? card.description) as string,
+            ImageUrl: (card.ImageUrl ?? card.imageUrl) as string | undefined,
           },
         };
       }).filter((p): p is TimelinePlacedCard => p !== null && p.SlotIndex >= 0)
@@ -177,6 +180,7 @@ export default function TimelineGamePage() {
   );
 
   const isGameRunning = gameState?.Status === "running";
+  const totalSlots = gameState?.TotalSlots ?? 12;
 
   const {
     timerRemainingSeconds,
@@ -205,7 +209,7 @@ export default function TimelineGamePage() {
   });
 
   const isInteractionLocked = !hasStarted || !isGameRunning || hasTimedOut;
-  const allSlotsFilled = (gameState?.FilledSlots ?? 0) === 16;
+  const allSlotsFilled = (gameState?.FilledSlots ?? 0) === totalSlots;
 
   // =====================================================
   // Actions
@@ -357,7 +361,7 @@ export default function TimelineGamePage() {
                   <div className={styles.objective}>
                     <h2 className={styles.sectionTitle}>Objective</h2>
                     <p className={styles.objectiveText}>
-                      Collaborate with your team to reconstruct the 16-step story
+                      Collaborate with your team to reconstruct the {totalSlots}-step story
                       in chronological order. Place cards on the timeline,
                       then verify when complete!
                     </p>
@@ -384,7 +388,7 @@ export default function TimelineGamePage() {
                 <div className={styles.timelineSection}>
                   <h2 className={styles.sectionTitle}>Timeline</h2>
                   <p className={styles.timelineProgress}>
-                    {gameState.FilledSlots} / {gameState.TotalSlots} slots
+                    {gameState.FilledSlots} / {totalSlots} slots
                     filled
                   </p>
 
@@ -424,8 +428,15 @@ export default function TimelineGamePage() {
                           <span className={styles.slotIndex}>{index + 1}</span>
                           {isFilled ? (
                             cardData ? (
-                              // Owner can see the card
+                              // Owner can see the card with image
                               <div className={styles.cardContent}>
+                                {cardData.ImageUrl && (
+                                  <img 
+                                    src={cardData.ImageUrl} 
+                                    alt={cardData.Title}
+                                    className={styles.cardImage}
+                                  />
+                                )}
                                 <span className={styles.cardTitle}>
                                   {cardData.Title}
                                 </span>
@@ -481,6 +492,13 @@ export default function TimelineGamePage() {
                             }
                           }}
                         >
+                          {card.ImageUrl && (
+                            <img 
+                              src={card.ImageUrl} 
+                              alt={card.Title}
+                              className={styles.handCardImage}
+                            />
+                          )}
                           <span className={styles.cardTitle}>{card.Title}</span>
                           <span className={styles.cardDescription}>
                             {card.Description}
@@ -518,7 +536,7 @@ export default function TimelineGamePage() {
                   </button>
                   {!allSlotsFilled && (
                     <p className={styles.verifyHint}>
-                      Fill all 16 slots before verifying.
+                      Fill all {totalSlots} slots before verifying.
                     </p>
                   )}
                 </div>
@@ -540,7 +558,7 @@ export default function TimelineGamePage() {
           onDismiss={dismissEndModal}
           onViewReport={() => navigate(`/report`)}
           winTitle="Timeline Complete!"
-          winMessage="Your team correctly ordered all 16 story cards. Great teamwork!"
+          winMessage={`Your team correctly ordered all ${totalSlots} story cards. Great teamwork!`}
           loseTitle="Game Over"
           loseMessage="The timeline was incorrect and the team ran out of lives."
           timeoutTitle="Time Over"

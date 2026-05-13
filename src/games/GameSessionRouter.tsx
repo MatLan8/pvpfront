@@ -109,7 +109,7 @@ function GameSessionSwitch() {
   return (
     <>
       {renderGame()}
-      {totalRounds > 0 && (
+      {totalRounds > 0 && gameType !== "Timeline" && (
         <DebugPanel
           sessionCode={sessionCode}
           totalGames={totalRounds}
