@@ -1,17 +1,22 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { X, User, Hash } from "lucide-react";
 import { startConnection } from "../../services/signalr";
 import styles from "./Modals.module.css";
+import { useState, useEffect } from "react";
 
 interface JoinSessionModalProps {
   isOpen: boolean;
   onClose: () => void;
+  prefilledCode?: string;
 }
 
-function JoinSessionModal({ isOpen, onClose }: JoinSessionModalProps) {
+function JoinSessionModal({
+  isOpen,
+  onClose,
+  prefilledCode,
+}: JoinSessionModalProps) {
   const [nickname, setNickname] = useState("");
-  const [sessionCode, setSessionCode] = useState("");
+  const [sessionCode, setSessionCode] = useState(prefilledCode || "");
   const [error, setError] = useState("");
   const [isJoining, setIsJoining] = useState(false);
 
@@ -87,6 +92,12 @@ function JoinSessionModal({ isOpen, onClose }: JoinSessionModalProps) {
       setIsJoining(false);
     }
   };
+
+  useEffect(() => {
+    if (prefilledCode) {
+      setSessionCode(prefilledCode);
+    }
+  }, [prefilledCode]);
 
   if (!isOpen) return null;
 

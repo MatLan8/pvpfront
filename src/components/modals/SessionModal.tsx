@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, Mail, Copy } from "lucide-react";
+import { X, Mail, Copy, Link2 } from "lucide-react";
 import styles from "./Modals.module.css";
 import { useSendInvites } from "../../api/useSendInvites";
 
@@ -18,6 +18,14 @@ function SessionModal({
 }: SessionModalProps) {
   const [emails, setEmails] = useState("");
   const [copied, setCopied] = useState(false);
+
+  const inviteLink = `${window.location.origin}/?join=true&code=${sessionCode}`;
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(inviteLink);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
 
   const sendInvitesMutation = useSendInvites();
 
@@ -72,13 +80,42 @@ function SessionModal({
 
         <h2 className={styles.title}>Session Created</h2>
 
-        {/* 🔥 CODE DISPLAY (not input anymore) */}
-        <div className={styles.codeBox}>
+        {/* <div className={styles.codeBox}>
           <span className={styles.codeText}>{sessionCode}</span>
 
           <button className={styles.copyIcon} onClick={handleCopy}>
             <Copy size={16} />
           </button>
+        </div> */}
+        <div className={styles.codeBox}>
+          <span className={styles.codeText}>{sessionCode}</span>
+
+          {/* <div className={styles.codeActions}>
+            <button className={styles.copyIcon} onClick={handleCopy}>
+              <Copy size={16} />
+            </button>
+
+            <button className={styles.copyIcon} onClick={handleCopyLink}>
+              <Link2 size={16} />
+            </button>
+          </div> */}
+          <div className={styles.codeActions}>
+            <button
+              className={styles.copyIcon}
+              onClick={handleCopy}
+              title="Copy session code"
+            >
+              <Copy size={16} />
+            </button>
+
+            <button
+              className={styles.copyIcon}
+              onClick={handleCopyLink}
+              title="Copy join link"
+            >
+              <Link2 size={16} />
+            </button>
+          </div>
         </div>
 
         {copied && <p className={styles.success}>Copied!</p>}
