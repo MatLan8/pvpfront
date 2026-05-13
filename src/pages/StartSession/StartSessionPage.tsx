@@ -33,7 +33,7 @@ function StartSession() {
     sessionStorage.removeItem("playerId");
     sessionStorage.removeItem("sessionCode");
 
-    navigate("/mainpage");
+    navigate("/");
   };
 
   // const handleStartSession = () => {
