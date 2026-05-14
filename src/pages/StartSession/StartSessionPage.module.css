@@ -1,8 +1,19 @@
-.page {
+ /* .page {
   height: 100vh;
   justify-content: center;
   align-items: center;
   color: white;
+} */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: white;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f172a, #064e3b, #020617);
+  background-attachment: fixed;
+  background-size: cover;
 }
 
 .card {
@@ -108,7 +119,6 @@
   color: #ffffff;
 }
 
-/* From Uiverse.io by iZOXVL */
 .elegante {
   padding: 15px 30px;
   border: 2px solid #2c2c2c;
@@ -161,3 +171,132 @@ a {
 a:hover {
   color: white;
 }
+
+/* .sessionsSection {
+  margin-top: 4rem;
+  width: 100%;
+  max-width: 1100px;
+} */
+
+.sessionsSection {
+  margin-top: 4rem;
+  width: 100%;
+  max-width: 1100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 1rem 4rem;
+  box-sizing: border-box;
+}
+
+.sectionTitle {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: white;
+}
+
+.tableCard {
+  width: 100%;
+  max-width: 950px;
+
+  margin: 0 auto 2rem auto;
+
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(16,185,129,0.15);
+  border-radius: 24px;
+  padding: 1.5rem;
+  backdrop-filter: blur(10px);
+}
+
+.tableHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.tableHeader h3 {
+  margin: 0;
+  color: #f8fafc;
+}
+
+.liveDot {
+  width: 10px;
+  height: 10px;
+  background: #10b981;
+  border-radius: 999px;
+  animation: pulse 2s infinite;
+}
+
+.sessionTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.sessionTable th {
+  text-align: left;
+  padding-bottom: 1rem;
+  color: #94a3b8;
+  font-weight: 500;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.sessionTable td {
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  color: #f8fafc;
+}
+
+.codeCell {
+  color: #34d399;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.smallButton {
+  background: #059669;
+  border: none;
+  color: white;
+  padding: 0.7rem 1.2rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.smallButton:hover {
+  background: #10b981;
+}
+
+.reportButton {
+  background: transparent;
+  border: 1px solid #10b981;
+  color: #34d399;
+  padding: 0.7rem 1.2rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.reportButton:hover {
+  background: rgba(16,185,129,0.08);
+}
+
+.emptyText {
+  color: #64748b;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16,185,129,0.7);
+  }
+
+  70% {
+    box-shadow: 0 0 0 10px rgba(16,185,129,0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(16,185,129,0);
+  }
+}
+
+

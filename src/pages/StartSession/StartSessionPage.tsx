@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import SessionModal from "../../components/modals/SessionModal";
 import Header from "../../components/Headers/LoggedInHeader";
+import { useGetLeaderSessions } from "../../api/useGetLeaderSessions";
 
 function StartSession() {
   const navigate = useNavigate();
@@ -17,6 +18,13 @@ function StartSession() {
 
   const { data: user, isLoading, error, refetch } = useGetUser(userId);
   const { mutate, isPending } = useStartSession();
+
+  const { data: sessions = [], isLoading: sessionsLoading } =
+    useGetLeaderSessions(userId);
+
+  const activeSessions = sessions.filter((s) => !s.completedAtUtc);
+
+  const finishedSessions = sessions.filter((s) => s.completedAtUtc);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -61,9 +69,10 @@ function StartSession() {
         <p>Hello, {user.displayName}!</p>
       </div>
       <div>
-        <p>You have {user.remainingCredits} remaining game sessions.
-          <a href="/buy">Buy more credits.</a></p>
-
+        <p>
+          You have {user.remainingCredits} remaining game sessions.
+          <a href="/buy">Buy more credits.</a>
+        </p>
       </div>
       <div>
         <button
@@ -76,6 +85,98 @@ function StartSession() {
           </span>
         </button>
       </div>
+
+      <div className={styles.sessionsSection}>
+        <h2 className={styles.sectionTitle}>Your Sessions</h2>
+
+        {sessionsLoading ? (
+          <p>Loading sessions...</p>
+        ) : (
+          <>
+            {/* ACTIVE SESSIONS */}
+            <div className={styles.tableCard}>
+              <div className={styles.tableHeader}>
+                {/* <div className={styles.liveDot}></div> */}
+                <h3>Active Sessions</h3>
+              </div>
+
+              {activeSessions.length === 0 ? (
+                <p className={styles.emptyText}>No active sessions.</p>
+              ) : (
+                <table className={styles.sessionTable}>
+                  <thead>
+                    <tr>
+                      <th>Session Code</th>
+                      <th>Started</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {activeSessions.map((session) => (
+                      <tr key={session.sessionId}>
+                        <td className={styles.codeCell}>
+                          {session.sessionCode}
+                        </td>
+
+                        <td>
+                          {new Date(session.createdAtUtc).toLocaleString()}
+                        </td>
+
+                        <td>
+                          <button className={styles.smallButton}>Open</button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+
+            {/* FINISHED SESSIONS */}
+            <div className={styles.tableCard}>
+              <div className={styles.tableHeader}>
+                <h3>Finished Sessions</h3>
+              </div>
+
+              {finishedSessions.length === 0 ? (
+                <p className={styles.emptyText}>No finished sessions.</p>
+              ) : (
+                <table className={styles.sessionTable}>
+                  <thead>
+                    <tr>
+                      <th>Session Code</th>
+                      <th>Finished</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {finishedSessions.map((session) => (
+                      <tr key={session.sessionId}>
+                        <td className={styles.codeCell}>
+                          {session.sessionCode}
+                        </td>
+
+                        <td>
+                          {new Date(session.completedAtUtc!).toLocaleString()}
+                        </td>
+
+                        <td>
+                          <button className={styles.reportButton}>
+                            View Report
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </>
+        )}
+      </div>
+
       {/* {sessionCode && (
         <div className={styles.code}>
           <div className={styles.card}>
