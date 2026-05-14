@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import type { UIEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   Gamepad2,
   MessageSquare,
@@ -45,6 +45,8 @@ export default function JoinGameScreen() {
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [isJoinOpen, setIsJoinOpen] = useState(false);
 
+  const [searchParams] = useSearchParams();
+
   useEffect(() => {
     const consent = document.cookie
       .split("; ")
@@ -55,6 +57,14 @@ export default function JoinGameScreen() {
       setHasAccepted(true);
     }
   }, []);
+
+  useEffect(() => {
+    const shouldOpenJoin = searchParams.get("join");
+
+    if (shouldOpenJoin === "true") {
+      setIsJoinOpen(true);
+    }
+  }, [searchParams]);
 
   const handleScroll = (e: UIEvent<HTMLDivElement>) => {
     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
@@ -291,9 +301,15 @@ export default function JoinGameScreen() {
         }}
       />
 
+      {/* <JoinSessionModal
+        isOpen={isJoinOpen}
+        onClose={() => setIsJoinOpen(false)}
+      /> */}
+
       <JoinSessionModal
         isOpen={isJoinOpen}
         onClose={() => setIsJoinOpen(false)}
+        prefilledCode={searchParams.get("code") || ""}
       />
     </div>
   );

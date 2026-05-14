@@ -200,3 +200,8 @@
 .copyIcon:hover {
   color: #111827;
 }
+
+.codeActions {
+  display: flex;
+  gap: 8px;
+}
