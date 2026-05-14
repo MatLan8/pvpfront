@@ -8,6 +8,7 @@ import PlayerReportPage from "./pages/PlayerReport/PlayerReportPage";
 import StartSessionPage from "./pages/StartSession/StartSessionPage";
 import TeamReportPage from "./pages/TeamReportPage/TeamReportPage";
 import MainPage from "./pages/MainPage/MainPage";
+import CreditsPage from "./pages/BuyCredits/BuyCreditsPage";
 
 import GameSessionRouter from "./games/GameSessionRouter";
 function App() {
@@ -25,6 +26,7 @@ function App() {
         <Route path="/team-report" element={<TeamReportPage />} />
         <Route path="/start-session" element={<StartSessionPage />} />
         <Route path="/" element={<MainPage />} />
+        <Route path="/buy" element={<CreditsPage />} />
       </Routes>
       <ToastContainer
         position="top-center"

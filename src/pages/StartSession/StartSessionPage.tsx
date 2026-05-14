@@ -4,6 +4,7 @@ import { useStartSession } from "../../api/useStartSession";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import SessionModal from "../../components/modals/SessionModal";
+import Header from "../../components/Headers/LoggedInHeader";
 
 function StartSession() {
   const navigate = useNavigate();
@@ -26,31 +27,6 @@ function StartSession() {
   }
   const noCreds = user.remainingCredits === 0;
 
-  const handleLogout = () => {
-    localStorage.removeItem("userId");
-
-    sessionStorage.removeItem("nickname");
-    sessionStorage.removeItem("playerId");
-    sessionStorage.removeItem("sessionCode");
-
-    navigate("/mainpage");
-  };
-
-  // const handleStartSession = () => {
-  //   mutate(
-  //     { LeaderId: userId },
-  //     {
-  //       onSuccess: (data) => {
-  //         setSessionCode(data.sessionCode);
-  //         refetch();
-  //       },
-  //       onError: (error) => {
-  //         console.error("Failed to start session:", error.Error);
-  //         alert(`Failed to start session: ${error.Error}`);
-  //       },
-  //     },
-  //   );
-  // };
   const handleStartSession = () => {
     mutate(
       { LeaderId: userId },
@@ -80,15 +56,14 @@ function StartSession() {
 
   return (
     <div className={styles.page}>
-      <button className={styles.logoutBtn} onClick={handleLogout}>
-        Logout
-      </button>
+      <Header />
       <div>
-        <p>Hello, {user.displayName}</p>
+        <p>Hello, {user.displayName}!</p>
       </div>
-      <hr />
       <div>
-        <p>You have {user.remainingCredits} remaining game sessions</p>
+        <p>You have {user.remainingCredits} remaining game sessions.
+          <a href="/buy">Buy more credits.</a></p>
+
       </div>
       <div>
         <button

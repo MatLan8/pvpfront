@@ -10,7 +10,7 @@ import GameEndModals from "../../components/GameEndModals/GameEndModals";
 import GameChat from "../../components/GameChat/GameChat";
 import GameSessionTimer from "../../components/GameSessionTimer/GameSessionTimer";
 import IconTeam from "../../assets/players_icon.png";
-import GameHeader from "../../components/GameHeader/GameHeader";
+import GameHeader from "../../components/Headers/GameHeader";
 
 // =====================================================
 // Types
@@ -68,19 +68,19 @@ function normalizePublicState(
   const timelineArray = obj.Timeline ?? obj.timeline;
   const timeline = Array.isArray(timelineArray)
     ? timelineArray.map((item) => {
-        if (!item || typeof item !== "object") return null;
-        const slot = item as Record<string, unknown>;
-        // Handle both old format (card object) and new format (IsFilled)
-        const isFilled = slot.IsFilled ?? slot.isFilled;
-        if (isFilled === true) {
-          return {
-            IsFilled: true,
-            OwnerId: (slot.OwnerId ?? slot.ownerId) as string,
-            OwnerNickname: (slot.OwnerNickname ?? slot.ownerNickname) as string,
-          };
-        }
-        return null; // Empty slot
-      })
+      if (!item || typeof item !== "object") return null;
+      const slot = item as Record<string, unknown>;
+      // Handle both old format (card object) and new format (IsFilled)
+      const isFilled = slot.IsFilled ?? slot.isFilled;
+      if (isFilled === true) {
+        return {
+          IsFilled: true,
+          OwnerId: (slot.OwnerId ?? slot.ownerId) as string,
+          OwnerNickname: (slot.OwnerNickname ?? slot.ownerNickname) as string,
+        };
+      }
+      return null; // Empty slot
+    })
     : [];
 
   return {
@@ -104,33 +104,33 @@ function normalizePrivateData(raw: unknown): TimelinePlayerPrivate {
   const handArray = obj.Hand ?? obj.hand;
   const hand = Array.isArray(handArray)
     ? handArray.map((item) => {
-        if (!item || typeof item !== "object") return null;
-        const card = item as Record<string, unknown>;
-        return {
-          Id: (card.Id ?? card.id) as string,
-          Title: (card.Title ?? card.title) as string,
-          Description: (card.Description ?? card.description) as string,
-        };
-      }).filter((c): c is TimelineCard => c !== null)
+      if (!item || typeof item !== "object") return null;
+      const card = item as Record<string, unknown>;
+      return {
+        Id: (card.Id ?? card.id) as string,
+        Title: (card.Title ?? card.title) as string,
+        Description: (card.Description ?? card.description) as string,
+      };
+    }).filter((c): c is TimelineCard => c !== null)
     : [];
 
   const placedArray = obj.PlacedCards ?? obj.placedCards;
   const placedCards = Array.isArray(placedArray)
     ? placedArray.map((item) => {
-        if (!item || typeof item !== "object") return null;
-        const placed = item as Record<string, unknown>;
-        const cardObj = placed.Card ?? placed.card;
-        if (!cardObj || typeof cardObj !== "object") return null;
-        const card = cardObj as Record<string, unknown>;
-        return {
-          SlotIndex: Number(placed.SlotIndex ?? placed.slotIndex ?? -1),
-          Card: {
-            Id: (card.Id ?? card.id) as string,
-            Title: (card.Title ?? card.title) as string,
-            Description: (card.Description ?? card.description) as string,
-          },
-        };
-      }).filter((p): p is TimelinePlacedCard => p !== null && p.SlotIndex >= 0)
+      if (!item || typeof item !== "object") return null;
+      const placed = item as Record<string, unknown>;
+      const cardObj = placed.Card ?? placed.card;
+      if (!cardObj || typeof cardObj !== "object") return null;
+      const card = cardObj as Record<string, unknown>;
+      return {
+        SlotIndex: Number(placed.SlotIndex ?? placed.slotIndex ?? -1),
+        Card: {
+          Id: (card.Id ?? card.id) as string,
+          Title: (card.Title ?? card.title) as string,
+          Description: (card.Description ?? card.description) as string,
+        },
+      };
+    }).filter((p): p is TimelinePlacedCard => p !== null && p.SlotIndex >= 0)
     : [];
 
   return {
@@ -393,7 +393,7 @@ export default function TimelineGamePage() {
                       const isFilled = slot?.IsFilled ?? false;
                       const isOwner = slot?.OwnerId === playerId;
                       const ownerNickname = slot?.OwnerNickname;
-                      
+
                       // Find card details if we're the owner
                       let cardData: TimelineCard | undefined;
                       if (isOwner && isFilled) {
@@ -407,7 +407,7 @@ export default function TimelineGamePage() {
                           className={`${styles.timelineSlot} ${isFilled ? styles.slotFilled : styles.slotEmpty} ${selectedSlotIndex === index ? styles.slotSelected : ""} ${!isFilled && selectedCardId ? styles.canPlace : ""}`}
                           onClick={() => {
                             if (isInteractionLocked) return;
-                            
+
                             if (isFilled) {
                               // Only owner can remove
                               if (isOwner) {
@@ -451,8 +451,8 @@ export default function TimelineGamePage() {
                   </div>
 
                   <p className={styles.timelineHint}>
-                    {selectedCardId 
-                      ? "Click an empty slot to place the selected card." 
+                    {selectedCardId
+                      ? "Click an empty slot to place the selected card."
                       : "Select a card from your hand, then click an empty slot to place it. Click YOUR filled slot to remove it."}
                   </p>
                 </div>

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { startConnection } from "../../services/signalr";
 import styles from "./WaitingRoomPage.module.css";
-import Header from "../../components/GameHeader/GameHeader";
+import Header from "../../components/Headers/GameHeader";
 
 type WaitingRoomPayload = {
   sessionCode: string;
