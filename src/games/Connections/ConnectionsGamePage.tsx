@@ -11,7 +11,7 @@ import GameEndModals from "../../components/GameEndModals/GameEndModals";
 import GameChat from "../../components/GameChat/GameChat";
 import GameSessionTimer from "../../components/GameSessionTimer/GameSessionTimer";
 import IconTeam from "../../assets/players_icon.png";
-import GameHeader from "../../components/GameHeader/GameHeader";
+import GameHeader from "../../components/Headers/GameHeader";
 
 type GamePlayerState = {
   playerId: string;

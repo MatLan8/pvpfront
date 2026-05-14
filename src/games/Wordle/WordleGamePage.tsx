@@ -11,7 +11,7 @@ import styles from "./WordleGamePage.module.css";
 import GameEndModals from "../../components/GameEndModals/GameEndModals";
 import GameChat from "../../components/GameChat/GameChat";
 import GameSessionTimer from "../../components/GameSessionTimer/GameSessionTimer";
-import GameHeader from "../../components/GameHeader/GameHeader";
+import GameHeader from "../../components/Headers/GameHeader";
 import IconTeam from "../../assets/players_icon.png";
 
 type LetterResult = "absent" | "present" | "correct";
