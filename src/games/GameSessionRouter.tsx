@@ -6,6 +6,7 @@ import ConnectionsGamePage from "./Connections/ConnectionsGamePage";
 import LasersGamePage from "./Lasers/LasersGamePage";
 import WordleGamePage from "./Wordle/WordleGamePage";
 import TimelineGamePage from "./Timeline/TimelineGamePage";
+import CodeBreakersGamePage from "./CodeBreakers/CodeBreakersGamePage";
 import DebugPanel from "../components/DebugPanel/DebugPanel";
 
 function GameSessionSwitch() {
@@ -75,6 +76,10 @@ function GameSessionSwitch() {
 
     if (gameType === "Wordle") {
       return <WordleGamePage />;
+    }
+
+    if (gameType === "CodeBreakers") {
+      return <CodeBreakersGamePage />;
     }
 
     return (
