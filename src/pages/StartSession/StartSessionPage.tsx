@@ -163,8 +163,10 @@ function StartSession() {
                         </td>
 
                         <td>
-                          <button className={styles.reportButton}>
+                          <button className={styles.reportButton}
+                            onClick={() => navigate(`/report/${session.sessionCode}`)}>
                             View Report
+
                           </button>
                         </td>
                       </tr>

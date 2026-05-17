@@ -11,6 +11,10 @@ import {
 import { useGetSessionReport } from "../../api/useGetSessionReport";
 import ReportLoadingPage from "../../components/ReportLoadingPage/ReportLoadingPage";
 import { useNavigate } from "react-router-dom";
+import Header from "../../components/Headers/GameHeader";
+import strength from "../../assets/strength.png";
+import improve from "../../assets/improve.png";
+import rec from "../../assets/rec.png";
 
 function TeamReportPage() {
   const sessionCode = sessionStorage.getItem("sessionCode");
@@ -43,6 +47,7 @@ function TeamReportPage() {
 
   return (
     <div className={styles.page}>
+      <Header sessionCode={sessionCode} />
       <div className={styles.container}>
         <header className={styles.hero}>
           <div>
@@ -68,7 +73,7 @@ function TeamReportPage() {
 
         <section className={styles.topSection}>
           <div className={styles.chartCard}>
-            <h2 className={styles.cardTitle}>Team Skill Radar</h2>
+            <h2 className={styles.cardTitle}>Team's Skills</h2>
             <div className={styles.chartWrapper}>
               <ResponsiveContainer width="100%" height={500}>
                 <RadarChart data={radarData}>
@@ -86,7 +91,7 @@ function TeamReportPage() {
                     name="Team"
                     dataKey="score"
                     stroke="#22c55e"
-                    fill="#22c55e"
+                    fill="#059669"
                     fillOpacity={0.5}
                   />
                   <Tooltip
@@ -104,7 +109,13 @@ function TeamReportPage() {
 
           <div className={styles.summaryColumn}>
             <div className={styles.infoCard}>
-              <h2 className={styles.cardTitle}>Team Strengths</h2>
+
+              <div className={styles.cardHeader}>
+                <h2 className={styles.cardTitle}>Team Strengths</h2>
+                <div className={styles.icon}><img src={strength} alt="strength icon" height="30" /></div>
+              </div>
+
+
               {team.strengths.length > 0 ? (
                 <ul className={styles.list}>
                   {team.strengths.map((item, index) => (
@@ -117,7 +128,10 @@ function TeamReportPage() {
             </div>
 
             <div className={styles.infoCard}>
-              <h2 className={styles.cardTitle}>Team Issues</h2>
+              <div className={styles.cardHeader}>
+                <h2 className={styles.cardTitle}>Areas for improvement</h2>
+                <div className={styles.icon}><img src={improve} alt="broken chain icon" height="30" /></div>
+              </div>
               {team.improvements.length > 0 ? (
                 <ul className={styles.list}>
                   {team.improvements.map((item, index) => (
@@ -130,7 +144,10 @@ function TeamReportPage() {
             </div>
 
             <div className={styles.infoCard}>
-              <h2 className={styles.cardTitle}>Recommendations</h2>
+              <div className={styles.cardHeader}>
+                <h2 className={styles.cardTitle}>Recommendations</h2>
+                <div className={styles.icon}><img src={rec} alt="up arrow icon" height="30" /></div>
+              </div>
               {team.recommendations.length > 0 ? (
                 <ul className={styles.list}>
                   {team.recommendations.map((item, index) => (

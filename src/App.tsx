@@ -9,7 +9,7 @@ import StartSessionPage from "./pages/StartSession/StartSessionPage";
 import TeamReportPage from "./pages/TeamReportPage/TeamReportPage";
 import MainPage from "./pages/MainPage/MainPage";
 import CreditsPage from "./pages/BuyCredits/BuyCreditsPage";
-
+import ReportsForLeader from "./pages/TeamReportPage/ReportsForLeaderPage";
 import GameSessionRouter from "./games/GameSessionRouter";
 function App() {
   return (
@@ -27,6 +27,7 @@ function App() {
         <Route path="/start-session" element={<StartSessionPage />} />
         <Route path="/" element={<MainPage />} />
         <Route path="/buy" element={<CreditsPage />} />
+        <Route path="/report/:sessionCode" element={<ReportsForLeader />} />
       </Routes>
       <ToastContainer
         position="top-center"
