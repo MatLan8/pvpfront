@@ -11,13 +11,18 @@ import {
 import { useGetSessionReport } from "../../api/useGetSessionReport";
 import ReportLoadingPage from "../../components/ReportLoadingPage/ReportLoadingPage";
 import { useNavigate } from "react-router-dom";
+import Header from "../../components/Headers/GameHeader";
+import pattern from "../../assets/pattern.png";
+import steps from "../../assets/steps.png";
+import weak from "../../assets/improve.png";
+import { useState } from "react";
 
 function PlayerReportPage() {
   const sessionCode = sessionStorage.getItem("sessionCode");
   const playerId = sessionStorage.getItem("playerId");
   const nickname = sessionStorage.getItem("nickname");
   const navigate = useNavigate();
-
+  const [expandedEvidence, setExpandedEvidence] = useState<Record<string, boolean>>({});
   const { data, isLoading, error } = useGetSessionReport(sessionCode ?? "");
 
   if (!sessionCode) {
@@ -84,6 +89,7 @@ function PlayerReportPage() {
 
   return (
     <div className={styles.page}>
+      <Header sessionCode={sessionCode} />
       <div className={styles.container}>
         <header className={styles.hero}>
           <div>
@@ -112,9 +118,9 @@ function PlayerReportPage() {
 
         <section className={styles.topSection}>
           <div className={styles.chartCard}>
-            <h2 className={styles.cardTitle}>Skill Radar</h2>
+            <h2 className={styles.cardTitle}>Your Skills</h2>
             <div className={styles.chartWrapper}>
-              <ResponsiveContainer width="100%" height={420}>
+              <ResponsiveContainer width="100%" height={500}>
                 <RadarChart data={radarData}>
                   <PolarGrid />
                   <PolarAngleAxis
@@ -129,8 +135,8 @@ function PlayerReportPage() {
                   <Radar
                     name={playerReport.nickname}
                     dataKey="score"
-                    stroke="#60a5fa"
-                    fill="#60a5fa"
+                    stroke="#22c55e"
+                    fill="#059669"
                     fillOpacity={0.5}
                   />
                   <Tooltip
@@ -148,7 +154,10 @@ function PlayerReportPage() {
 
           <div className={styles.summaryColumn}>
             <div className={styles.infoCard}>
-              <h2 className={styles.cardTitle}>Top Behavioral Patterns</h2>
+              <div className={styles.cardHeader}>
+                <h2 className={styles.cardTitle}>Top Behavioral Patterns</h2>
+                <div className={styles.icon}><img src={pattern} alt="puzzle icon" height="30" /></div>
+              </div>
               {playerReport.topBehavioralPatterns.length > 0 ? (
                 <ul className={styles.list}>
                   {playerReport.topBehavioralPatterns.map((item, index) => (
@@ -163,7 +172,10 @@ function PlayerReportPage() {
             </div>
 
             <div className={styles.infoCard}>
-              <h2 className={styles.cardTitle}>Actionable Next Steps</h2>
+              <div className={styles.cardHeader}>
+                <h2 className={styles.cardTitle}>Actionable Next Steps</h2>
+                <div className={styles.icon}><img src={steps} alt="steps icon" height="30" /></div>
+              </div>
               {playerReport.actionableNextSteps.length > 0 ? (
                 <ul className={styles.list}>
                   {playerReport.actionableNextSteps.map((item, index) => (
@@ -176,7 +188,10 @@ function PlayerReportPage() {
             </div>
 
             <div className={styles.infoCard}>
-              <h2 className={styles.cardTitle}>Red Flags</h2>
+              <div className={styles.cardHeader}>
+                <h2 className={styles.cardTitle}>Weak spots</h2>
+                <div className={styles.icon}><img src={weak} alt="steps icon" height="30" /></div>
+              </div>
               {playerReport.redFlags.length > 0 ? (
                 <ul className={styles.list}>
                   {playerReport.redFlags.map((item, index) => (
@@ -184,7 +199,7 @@ function PlayerReportPage() {
                   ))}
                 </ul>
               ) : (
-                <p className={styles.emptyText}>No major red flags detected.</p>
+                <p className={styles.emptyText}>No major weak spots detected.</p>
               )}
             </div>
           </div>
@@ -237,16 +252,26 @@ function PlayerReportPage() {
                   <h4 className={styles.subheading}>Evidence</h4>
                   {skill.data.keyEvidence.length > 0 ? (
                     <div className={styles.evidenceList}>
-                      {skill.data.keyEvidence.map((evidence, index) => (
+                      {(expandedEvidence[skill.title]
+                        ? skill.data.keyEvidence
+                        : skill.data.keyEvidence.slice(0, 3)
+                      ).map((evidence, index) => (
                         <div key={index} className={styles.evidenceItem}>
-                          <div className={styles.evidenceRef}>
-                            {evidence.ref}
-                          </div>
                           <div className={styles.evidenceQuote}>
                             "{evidence.quote}"
                           </div>
                         </div>
                       ))}
+                      {skill.data.keyEvidence.length > 3 && (
+                        <button className={styles.seeMore}
+                          onClick={() => setExpandedEvidence(prev => ({
+                            ...prev,
+                            [skill.title]: !prev[skill.title]
+                          }))}
+                        >
+                          {expandedEvidence[skill.title] ? "See less ▲" : `See ${skill.data.keyEvidence.length - 3} more ▼`}
+                        </button>
+                      )}
                     </div>
                   ) : (
                     <p className={styles.emptyText}>No evidence provided.</p>

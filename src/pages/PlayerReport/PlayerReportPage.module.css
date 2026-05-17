@@ -1,17 +1,17 @@
 .page {
   min-height: 100vh;
-  background: #0f172a;
   color: white;
-  padding: 32px;
   box-sizing: border-box;
+  background: #0E1B2B;
+  background: linear-gradient(160deg, rgba(14, 27, 43, 1) 20%, rgb(4, 51, 39) 50%, rgba(14, 27, 43, 1) 80%);
 }
 
 .container {
-  max-width: 1500px;
-  margin: 0 auto;
+  width: 95%;
+  margin: 25px auto;
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 24px;
 }
 
 .loadingPage {
@@ -31,30 +31,54 @@
   font-weight: 800;
 }
 
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 14px;
+
+}
+
+.icon {
+  min-width: 50px;
+  height: 50px;
+  border-radius: 999px;
+  background: #093c37;
+  border: 0.1px solid #059669;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 900;
+  color: #5ee9b5;
+  margin: 12px 0 0 0;
+}
+
 .hero {
-  background: linear-gradient(135deg, #1e293b, #0f172a);
-  border: 1px solid #334155;
+  background: #072b28e1;
+  border: 0.1px solid #059669;
   border-radius: 24px;
   padding: 28px 32px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 24px;
+  backdrop-filter: blur(500px);
 }
 
 .eyebrow {
   margin: 0 0 8px 0;
-  color: #93c5fd;
+  color: #5ee9b5;
   font-size: 14px;
-  font-weight: 700;
-  text-transform: uppercase;
+  font-weight: 600;
   letter-spacing: 0.08em;
 }
 
 .pageTitle {
   margin: 0 0 10px 0;
   font-size: 42px;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .pageSubtitle {
@@ -67,7 +91,8 @@
 
 .scoreBadge {
   min-width: 180px;
-  background: #1d4ed8;
+  background: #093c37;
+  border: 0.1px solid #059669;
   border-radius: 22px;
   padding: 22px 24px;
   display: flex;
@@ -77,38 +102,45 @@
 }
 
 .scoreLabel {
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 700;
-  color: #dbeafe;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  line-height: 1.1;
+  letter-spacing: 0.03em;
 }
 
 .scoreValue {
-  font-size: 54px;
-  font-weight: 900;
+  font-size: 44px;
+  font-weight: 600;
   line-height: 1;
 }
 
 .topSection {
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(360px, 0.85fr);
+  grid-template-columns: minmax(0, 1.2fr) minmax(340px, 1fr);
   gap: 24px;
   align-items: start;
 }
 
 .chartCard,
-.infoCard,
 .skillCard {
-  background: #1e293b;
-  border: 1px solid #334155;
+  background: #072b28e1;
+  border: 0.1px solid #059669;
   border-radius: 24px;
   padding: 24px;
+  backdrop-filter: blur(500px);
+}
+
+.infoCard {
+  background: #072b28e1;
+  border: 0.1px solid #059669;
+  border-radius: 24px;
+  padding: 0px 24px 24px 24px;
+  backdrop-filter: blur(500px);
 }
 
 .chartWrapper {
+  height: auto;
   width: 100%;
-  height: 420px;
 }
 
 .summaryColumn {
@@ -118,10 +150,11 @@
 }
 
 .cardTitle {
-  margin: 0 0 16px 0;
-  font-size: 24px;
-  font-weight: 800;
+  margin-bottom: 10px;
+  font-weight: 500;
+
 }
+
 
 .sectionHeading {
   margin: 0;
@@ -150,25 +183,27 @@
   justify-content: space-between;
   align-items: center;
   gap: 16px;
-  margin-bottom: 14px;
 }
 
 .skillTitle {
   margin: 0;
   font-size: 26px;
-  font-weight: 800;
+  font-weight: 600;
 }
+
 
 .skillScore {
   min-width: 64px;
   height: 64px;
   border-radius: 999px;
-  background: #2563eb;
+  background: #093c37;
+  border: 0.1px solid #059669;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 24px;
   font-weight: 900;
+  color: #5ee9b5;
 }
 
 .warningBadge {
@@ -187,54 +222,68 @@
 }
 
 .subheading {
-  margin: 0 0 10px 0;
+  margin: 10px 0 10px 0;
   font-size: 18px;
-  font-weight: 800;
-  color: #dbeafe;
-}
-
-.list {
-  margin: 0;
-  padding-left: 22px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  color: #e2e8f0;
-}
-
-.list li {
-  line-height: 1.5;
+  font-weight: 500;
+  text-align: left;
 }
 
 .evidenceList {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  text-align: left;
 }
 
 .evidenceItem {
-  background: #0f172a;
-  border: 1px solid #334155;
-  border-radius: 16px;
-  padding: 12px 14px;
+  background: #0a1f1c;
+  border-left: 2px solid #059669;
+  border-radius: 0 10px 10px 0;
+  padding: 10px 16px;
+  color: #cbd5e1;
+  font-style: italic;
+  line-height: 1.6;
+  font-size: 14px;
 }
 
-.evidenceRef {
-  font-size: 13px;
-  font-weight: 800;
-  color: #93c5fd;
-  margin-bottom: 6px;
-}
 
 .evidenceQuote {
-  color: #e2e8f0;
-  line-height: 1.45;
+  color: #cbd5e1;
+  line-height: 1.5;
+  font-style: italic;
+  font-size: 14px;
 }
 
 .emptyText {
   margin: 0;
   color: #94a3b8;
 }
+
+.list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.list li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  text-align: left;
+  line-height: 1.5;
+  color: #e2e8f0;
+}
+
+.list li::before {
+  content: "🔎︎";
+  color: #85bda8;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
 
 .error {
   min-height: 100vh;
@@ -249,51 +298,24 @@
   text-align: center;
 }
 
-@media (max-width: 1200px) {
-  .topSection {
-    grid-template-columns: 1fr;
-  }
 
-  .skillsGrid {
-    grid-template-columns: 1fr;
-  }
 
-  .skillCard:last-child:nth-child(odd) {
-    grid-column: auto;
-  }
-}
-
-@media (max-width: 700px) {
-  .page {
-    padding: 18px;
-  }
-
+@media (max-width: 1150px) {
   .hero {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .pageTitle {
-    font-size: 32px;
-  }
-
-  .pageSubtitle {
-    font-size: 16px;
+  .topSection {
+    grid-template-columns: 1fr;
   }
 
   .scoreBadge {
-    min-width: unset;
-  }
-
-  .chartWrapper {
-    height: 320px;
-  }
-
-  .skillHeader {
-    flex-direction: column;
-    align-items: flex-start;
+    align-self: flex-start;
   }
 }
+
+
 
 .navButtonContainer {
   display: flex;
@@ -301,21 +323,40 @@
 }
 
 .navButton {
-  background: #1d4ed8;
-  border: none;
+  background: #093c37;
+  border: 0.1px solid #059669;
   color: white;
   padding: 12px 18px;
   border-radius: 999px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
+  box-shadow: #059669 0px 4px 6px 0px;
 }
 
 .navButton:hover {
-  background: #2563eb;
+  background: #059668e1;
   transform: translateY(-1px);
 }
 
 .navButton:active {
   transform: translateY(0);
+}
+
+.seeMore {
+  padding: 0;
+  background: none;
+
+  font-size: 15px;
+  color: #85bda8;
+  text-decoration: none;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  border: none;
+  cursor: pointer;
+}
+
+.seeMore:hover {
+  color: white;
 }
