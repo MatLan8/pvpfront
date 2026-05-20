@@ -2,6 +2,7 @@ import { useState } from "react";
 import { X, Mail, Copy, Link2 } from "lucide-react";
 import styles from "./Modals.module.css";
 import { useSendInvites } from "../../api/useSendInvites";
+import QRCode from "react-qr-code";
 
 interface SessionModalProps {
   isOpen: boolean;
@@ -18,6 +19,8 @@ function SessionModal({
 }: SessionModalProps) {
   const [emails, setEmails] = useState("");
   const [copied, setCopied] = useState(false);
+
+  const [showQr, setShowQr] = useState(false);
 
   const inviteLink = `${window.location.origin}/?join=true&code=${sessionCode}`;
 
@@ -120,6 +123,22 @@ function SessionModal({
 
         {copied && <p className={styles.success}>Copied!</p>}
 
+        <div className={styles.qrSection}>
+          <button
+            className={styles.qrPreviewButton}
+            onClick={() => setShowQr(true)}
+          >
+            <QRCode
+              value={inviteLink}
+              size={72}
+              bgColor="transparent"
+              fgColor="#34d399"
+            />
+          </button>
+
+          <p className={styles.qrHint}>Click to enlarge</p>
+        </div>
+
         {/* EMAIL INPUT */}
         <div className={styles.field}>
           <label className={styles.label}>Invite by Email</label>
@@ -149,6 +168,21 @@ function SessionModal({
           Join Game
         </button>
       </div>
+
+      {showQr && (
+        <div className={styles.qrOverlay} onClick={() => setShowQr(false)}>
+          <div className={styles.qrModal} onClick={(e) => e.stopPropagation()}>
+            <QRCode
+              value={inviteLink}
+              size={260}
+              bgColor="transparent"
+              fgColor="#34d399"
+            />
+
+            <p className={styles.qrText}>Scan to join session</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
