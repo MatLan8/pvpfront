@@ -8,14 +8,19 @@ interface SessionModalProps {
   isOpen: boolean;
   onClose: () => void;
   sessionCode: string | null;
+  // onJoin: () => void;
   onJoin: () => void;
+  isExistingSession?: boolean;
 }
 
 function SessionModal({
   isOpen,
   onClose,
   sessionCode,
+  //   onJoin,
+  // }: SessionModalProps) {
   onJoin,
+  isExistingSession = false,
 }: SessionModalProps) {
   const [emails, setEmails] = useState("");
   const [copied, setCopied] = useState(false);
@@ -81,7 +86,7 @@ function SessionModal({
           <X size={18} />
         </button>
 
-        <h2 className={styles.title}>Session Created</h2>
+        <h2 className={styles.title}>Game Session</h2>
 
         {/* <div className={styles.codeBox}>
           <span className={styles.codeText}>{sessionCode}</span>
