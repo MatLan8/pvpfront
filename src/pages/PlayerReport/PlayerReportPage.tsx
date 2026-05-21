@@ -8,7 +8,6 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { useGetSessionReport } from "../../api/useGetSessionReport";
 import ReportLoadingPage from "../../components/ReportLoadingPage/ReportLoadingPage";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Headers/GameHeader";
@@ -16,37 +15,39 @@ import pattern from "../../assets/pattern.png";
 import steps from "../../assets/steps.png";
 import weak from "../../assets/improve.png";
 import { useState } from "react";
+import { useSessionReportPage } from "../../hooks/useSessionReportPage";
 
 function PlayerReportPage() {
   const sessionCode = sessionStorage.getItem("sessionCode");
   const playerId = sessionStorage.getItem("playerId");
   const nickname = sessionStorage.getItem("nickname");
   const navigate = useNavigate();
-  const [expandedEvidence, setExpandedEvidence] = useState<Record<string, boolean>>({});
-  const { data, isLoading, error } = useGetSessionReport(sessionCode ?? "");
+
+  const [expandedEvidence, setExpandedEvidence] = useState<
+    Record<string, boolean>
+  >({});
+
+  const { data, isReportLoading, isReportError } = useSessionReportPage(
+    sessionCode ?? "",
+  );
 
   if (!sessionCode) {
     return <div className={styles.error}>Session code not found.</div>;
   }
-
   if (!playerId) {
     return (
       <div className={styles.error}>No player found in session storage.</div>
     );
   }
-
-  if (isLoading) {
-    return <ReportLoadingPage text="Evaluating your soft skills" />;
+  if (isReportLoading) {
+    return <ReportLoadingPage text="Evaluating your soft skills…" />;
   }
-
-  if (error) {
+  if (isReportError) {
     return <div className={styles.error}>Failed to load report.</div>;
   }
-
-  if (!data) {
+  if (!data?.report) {
     return <div className={styles.error}>No report data found.</div>;
   }
-
   const playerReport = data.report.playerEvaluations.find(
     (player) => player.playerId === playerId,
   );
@@ -156,7 +157,9 @@ function PlayerReportPage() {
             <div className={styles.infoCard}>
               <div className={styles.cardHeader}>
                 <h2 className={styles.cardTitle}>Top Behavioral Patterns</h2>
-                <div className={styles.icon}><img src={pattern} alt="puzzle icon" height="30" /></div>
+                <div className={styles.icon}>
+                  <img src={pattern} alt="puzzle icon" height="30" />
+                </div>
               </div>
               {playerReport.topBehavioralPatterns.length > 0 ? (
                 <ul className={styles.list}>
@@ -174,7 +177,9 @@ function PlayerReportPage() {
             <div className={styles.infoCard}>
               <div className={styles.cardHeader}>
                 <h2 className={styles.cardTitle}>Actionable Next Steps</h2>
-                <div className={styles.icon}><img src={steps} alt="steps icon" height="30" /></div>
+                <div className={styles.icon}>
+                  <img src={steps} alt="steps icon" height="30" />
+                </div>
               </div>
               {playerReport.actionableNextSteps.length > 0 ? (
                 <ul className={styles.list}>
@@ -190,7 +195,9 @@ function PlayerReportPage() {
             <div className={styles.infoCard}>
               <div className={styles.cardHeader}>
                 <h2 className={styles.cardTitle}>Weak spots</h2>
-                <div className={styles.icon}><img src={weak} alt="steps icon" height="30" /></div>
+                <div className={styles.icon}>
+                  <img src={weak} alt="steps icon" height="30" />
+                </div>
               </div>
               {playerReport.redFlags.length > 0 ? (
                 <ul className={styles.list}>
@@ -199,7 +206,9 @@ function PlayerReportPage() {
                   ))}
                 </ul>
               ) : (
-                <p className={styles.emptyText}>No major weak spots detected.</p>
+                <p className={styles.emptyText}>
+                  No major weak spots detected.
+                </p>
               )}
             </div>
           </div>
@@ -263,13 +272,18 @@ function PlayerReportPage() {
                         </div>
                       ))}
                       {skill.data.keyEvidence.length > 3 && (
-                        <button className={styles.seeMore}
-                          onClick={() => setExpandedEvidence(prev => ({
-                            ...prev,
-                            [skill.title]: !prev[skill.title]
-                          }))}
+                        <button
+                          className={styles.seeMore}
+                          onClick={() =>
+                            setExpandedEvidence((prev) => ({
+                              ...prev,
+                              [skill.title]: !prev[skill.title],
+                            }))
+                          }
                         >
-                          {expandedEvidence[skill.title] ? "See less ▲" : `See ${skill.data.keyEvidence.length - 3} more ▼`}
+                          {expandedEvidence[skill.title]
+                            ? "See less ▲"
+                            : `See ${skill.data.keyEvidence.length - 3} more ▼`}
                         </button>
                       )}
                     </div>

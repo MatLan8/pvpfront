@@ -8,7 +8,6 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { useGetSessionReport } from "../../api/useGetSessionReport";
 import ReportLoadingPage from "../../components/ReportLoadingPage/ReportLoadingPage";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Headers/GameHeader";
@@ -16,28 +15,27 @@ import strength from "../../assets/strength.png";
 import improve from "../../assets/improve.png";
 import rec from "../../assets/rec.png";
 
+import { useSessionReportPage } from "../../hooks/useSessionReportPage";
+
 function TeamReportPage() {
   const sessionCode = sessionStorage.getItem("sessionCode");
   const navigate = useNavigate();
 
-  const { data, isLoading, error } = useGetSessionReport(sessionCode ?? "");
-
+  const { data, isReportLoading, isReportError } = useSessionReportPage(
+    sessionCode ?? "",
+  );
   if (!sessionCode) {
     return <div className={styles.error}>Session code not found.</div>;
   }
-
-  if (isLoading) {
-    return <ReportLoadingPage text="Analyzing team performance" />;
+  if (isReportLoading) {
+    return <ReportLoadingPage text="Analyzing team performance…" />;
   }
-
-  if (error) {
+  if (isReportError) {
     return <div className={styles.error}>Failed to load report.</div>;
   }
-
-  if (!data || !data.report) {
+  if (!data?.report) {
     return <div className={styles.error}>No report data found.</div>;
   }
-
   const team = data.report.teamEvaluation;
 
   const radarData = team.radarChart.labels.map((label, index) => ({
@@ -109,12 +107,12 @@ function TeamReportPage() {
 
           <div className={styles.summaryColumn}>
             <div className={styles.infoCard}>
-
               <div className={styles.cardHeader}>
                 <h2 className={styles.cardTitle}>Team Strengths</h2>
-                <div className={styles.icon}><img src={strength} alt="strength icon" height="30" /></div>
+                <div className={styles.icon}>
+                  <img src={strength} alt="strength icon" height="30" />
+                </div>
               </div>
-
 
               {team.strengths.length > 0 ? (
                 <ul className={styles.list}>
@@ -130,7 +128,9 @@ function TeamReportPage() {
             <div className={styles.infoCard}>
               <div className={styles.cardHeader}>
                 <h2 className={styles.cardTitle}>Areas for improvement</h2>
-                <div className={styles.icon}><img src={improve} alt="broken chain icon" height="30" /></div>
+                <div className={styles.icon}>
+                  <img src={improve} alt="broken chain icon" height="30" />
+                </div>
               </div>
               {team.improvements.length > 0 ? (
                 <ul className={styles.list}>
@@ -146,7 +146,9 @@ function TeamReportPage() {
             <div className={styles.infoCard}>
               <div className={styles.cardHeader}>
                 <h2 className={styles.cardTitle}>Recommendations</h2>
-                <div className={styles.icon}><img src={rec} alt="up arrow icon" height="30" /></div>
+                <div className={styles.icon}>
+                  <img src={rec} alt="up arrow icon" height="30" />
+                </div>
               </div>
               {team.recommendations.length > 0 ? (
                 <ul className={styles.list}>
