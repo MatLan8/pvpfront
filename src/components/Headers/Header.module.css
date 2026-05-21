@@ -1,97 +1,97 @@
 header {
-    background-color: #072b28e1;
+  background-color: #072b28e1;
 
-    border-bottom: solid thin;
-    border-color: var(--light-green);
-    color: white;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    width: 100%;        /* ← add this */
-    box-sizing: border-box; /* ← and this */
+  border-bottom: solid thin;
+  border-color: var(--light-green);
+  color: white;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%; /* ← add this */
+  box-sizing: border-box; /* ← and this */
+}
+
+.logoContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  cursor: pointer;
 }
 
 .name {
-    padding-left: 0px;
-    font-size: 16px;
-    padding-right: 15px;
-    border-right: solid thin;
+  padding-left: 0px;
+  font-size: 16px;
+  padding-right: 15px;
+  border-right: solid thin;
 }
 
 .nameNoLine {
-    padding-left: 0;
-    font-size: 16px;
-    padding-right: 15px;
+  padding-left: 0;
+  font-size: 16px;
+  padding-right: 15px;
 }
 
 .code {
-    font-size: 15px;
-    padding-left: 15px;
+  font-size: 15px;
+  padding-left: 15px;
 }
 
 .logo {
-    padding-left: 40px;
-    padding-right: 0;
+  padding-left: 40px;
+  padding-right: 0;
 }
 
 .logoGame {
-    padding-left: 30px;
-    padding-right: 0;
+  padding-left: 30px;
+  padding-right: 0;
 }
 
 .logoutBtn {
-    position: absolute;
-    top: 25px;
-    right: 40px;
+  position: absolute;
+  top: 25px;
+  right: 40px;
 
-    background: var(--dark-blue);
-    border: 1px solid #465871;
-    color: #e4e9f0;
-    font-size: 15px;
-    padding: 6px 14px;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.2s ease;
+  background: var(--dark-blue);
+  border: 1px solid #465871;
+  color: #e4e9f0;
+  font-size: 15px;
+  padding: 6px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .logoutBtn:hover {
-    background: #3a485f;
+  background: #3a485f;
 }
 
-
-@media (max-width: 1350px) {}
+@media (max-width: 1350px) {
+}
 
 @media (max-width: 1100px) {
-    .logoGame {
-        padding-left: 20px;
+  .logoGame {
+    padding-left: 20px;
+  }
 
-    }
+  .logo {
+    padding-left: 30px;
+  }
 
-    .logo {
-        padding-left: 30px;
-    }
-
-    .logoutBtn {
-
-        right: 35px;
-
-    }
+  .logoutBtn {
+    right: 35px;
+  }
 }
 
 @media (max-width: 700px) {
-    .logoGame {
-        padding-left: 10px;
+  .logoGame {
+    padding-left: 10px;
+  }
 
-    }
+  .logo {
+    padding-left: 10px;
+  }
 
-    .logo {
-        padding-left: 10px;
-    }
-
-    .logoutBtn {
-
-        right: 15px;
-
-    }
-
+  .logoutBtn {
+    right: 15px;
+  }
 }
