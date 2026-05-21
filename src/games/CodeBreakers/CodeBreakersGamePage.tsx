@@ -148,48 +148,44 @@ export default function CodeBreakersGamePage() {
 
   const isInteractionLocked = !hasStarted || !isGameRunning || hasTimedOut;
 
-  const sendSubmitCode = useCallback(
-    async (code: string) => {
-      if (!sessionCode || !gameState || isSubmitting || isInteractionLocked) return;
-      try {
-        setIsSubmitting(true);
-        const connection = await startConnection();
-        await connection.invoke("SubmitAction", sessionCode, {
-          type: "submit_code",
-          data: { code },
-        });
-      } catch (err) {
-        console.error(err);
-        setError("Failed to submit code.");
-      } finally {
-        setIsSubmitting(false);
-      }
-    },
-    [sessionCode, gameState, isSubmitting, isInteractionLocked, setError],
-  );
-
   const handleReadyToggle = useCallback(async () => {
     if (!sessionCode || !gameState || isSubmitting || isInteractionLocked) return;
 
-    const code = digits.join("");
-    if (!isReady && (code.length !== 4 || !/^\d{4}$/.test(code))) {
-      showGameToast({
-        variant: "error",
-        message: "Enter a 4-digit code before readying up.",
-      });
-      return;
+    if (!isReady) {
+      const code = digits.join("");
+      if (code.length !== 4 || !/^\d{4}$/.test(code)) {
+        showGameToast({
+          variant: "error",
+          message: "Enter a 4-digit code before readying up.",
+        });
+        return;
+      }
     }
 
     try {
       setIsSubmitting(true);
       const connection = await startConnection();
+
+      if (isReady) {
+        await connection.invoke("SubmitAction", sessionCode, {
+          type: "set_ready",
+          data: {},
+        });
+        return;
+      }
+
+      const code = digits.join("");
+      await connection.invoke("SubmitAction", sessionCode, {
+        type: "submit_code",
+        data: { code },
+      });
       await connection.invoke("SubmitAction", sessionCode, {
         type: "set_ready",
         data: {},
       });
     } catch (err) {
       console.error(err);
-      setError("Failed to update ready state.");
+      setError(isReady ? "Failed to update ready state." : "Failed to submit code.");
     } finally {
       setIsSubmitting(false);
     }
@@ -211,12 +207,6 @@ export default function CodeBreakersGamePage() {
       setDigits((prev) => {
         const next = [...prev];
         next[index] = ch;
-
-        const fullCode = next.join("");
-        if (fullCode.length === 4 && /^\d{4}$/.test(fullCode)) {
-          void sendSubmitCode(fullCode);
-        }
-
         return next;
       });
 
@@ -224,7 +214,7 @@ export default function CodeBreakersGamePage() {
         inputRefs.current[index + 1]?.focus();
       }
     },
-    [isReady, isInteractionLocked, sendSubmitCode],
+    [isReady, isInteractionLocked],
   );
 
   const handleDigitKeyDown = useCallback(
