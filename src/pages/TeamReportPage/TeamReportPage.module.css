@@ -132,6 +132,7 @@
 .cardTitle {
   margin-bottom: 10px;
   font-weight: 500;
+  flex: 1;
 }
 
 .cardHeader {
@@ -279,4 +280,36 @@
   .scoreBadge {
     align-self: flex-start;
   }
+}
+
+
+@media (max-width: 700px) {
+  .chartWrapper {
+    height: 450px;
+  }
+
+  .skillsGrid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .hero {
+    align-items: center;
+  }
+
+  .scoreBadge {
+    padding: 22px 24px;
+    margin: auto;
+  }
+
+  .topSection {
+
+    grid-template-columns: minmax(0, 1.2fr);
+  }
+
+  .cardTitle {
+    font-size: 20px;
+  }
+
 }

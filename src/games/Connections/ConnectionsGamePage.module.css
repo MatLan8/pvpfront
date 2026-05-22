@@ -382,10 +382,17 @@ main {
     grid-template-columns: 98%;
   }
 
-  .gamePanel,
+  .gamePanel {
+    padding: 18px 18px 0 18px;
+  }
+
   .playersPanel,
   .chatPanel {
     padding: 18px;
+  }
+
+  .chatPanel {
+    margin-bottom: 20px;
   }
 
   .topBar,
@@ -396,7 +403,9 @@ main {
   }
 
   .wordsGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(100px, 1fr));
+    gap: 18px;
+
   }
 
   .solvedGroups {
@@ -405,9 +414,10 @@ main {
 
 
   .wordCard {
-    font-size: 20px;
+    font-size: 18px;
+    font-weight: 400;
     min-height: 84px;
-    padding: 22px 14px;
+    padding: 10px 14px;
   }
 
   .mistakesBadge {

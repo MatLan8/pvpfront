@@ -37,6 +37,7 @@ hr {
   display: flex;
   flex-direction: column;
   min-width: 0;
+  min-height: 0;
 }
 
 .empty {
@@ -229,5 +230,14 @@ hr {
 
   100% {
     opacity: 1;
+  }
+}
+
+@media (max-width: 700px) {
+
+  .box {
+    height: 400px;
+    overflow: hidden;
+    min-height: 400px;
   }
 }

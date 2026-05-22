@@ -44,7 +44,31 @@ function TeamReportPage() {
     skill: label,
     score: team.radarChart.values[index] ?? 0,
   }));
+  const CustomTick = ({ x, y, payload, index, cx, cy }: any) => {
+    const isLeft = index === 4;
+    const isRight = index === 1;
+    const rotation = isLeft ? -90 : isRight ? 90 : 0;
 
+
+    const dx = x - cx;
+    const dy = y - cy;
+    const distance = 1.05;
+    const nx = cx + dx * distance;
+    const ny = cy + dy * distance;
+
+    return (
+      <text
+        x={nx}
+        y={ny}
+        textAnchor="middle"
+        fill="#ffffff"
+        fontSize={14}
+        transform={`rotate(${rotation}, ${nx}, ${ny})`}
+      >
+        {payload.value}
+      </text>
+    );
+  };
   return (
     <div className={styles.page}>
       <Header sessionCode={sessionCode} />
@@ -78,10 +102,7 @@ function TeamReportPage() {
               <ResponsiveContainer width="100%" height={500}>
                 <RadarChart data={radarData}>
                   <PolarGrid />
-                  <PolarAngleAxis
-                    dataKey="skill"
-                    tick={{ fill: "#ffffff", fontSize: 14 }}
-                  />
+                  <PolarAngleAxis dataKey="skill" tick={<CustomTick />} />
                   <PolarRadiusAxis
                     angle={18}
                     domain={[0, 100]}

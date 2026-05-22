@@ -9,12 +9,10 @@
   padding: 24px;
   box-sizing: border-box;
   background: #0e1b2b;
-  background: linear-gradient(
-    160deg,
-    rgba(14, 27, 43, 1) 20%,
-    rgb(4, 51, 39) 50%,
-    rgba(14, 27, 43, 1) 80%
-  );
+  background: linear-gradient(160deg,
+      rgba(14, 27, 43, 1) 20%,
+      rgb(4, 51, 39) 50%,
+      rgba(14, 27, 43, 1) 80%);
   flex: 1;
   min-height: 0;
   overflow: auto;
@@ -37,10 +35,8 @@ hr {
 
 .layout {
   display: grid;
-  grid-template-columns: minmax(250px, 290px) minmax(0, 1fr) minmax(
-      320px,
-      380px
-    );
+  grid-template-columns: minmax(250px, 290px) minmax(0, 1fr) minmax(320px,
+      380px);
   grid-auto-rows: 1fr;
   gap: 32px;
   align-items: start;
@@ -185,13 +181,16 @@ main {
 
 .gameSectionHeader {
   display: flex;
-  justify-content: center; /* centers the whole block horizontally */
+  justify-content: center;
+  /* centers the whole block horizontally */
   margin-bottom: 8px;
 }
 
 .content {
-  display: inline-block; /* shrink-wrap content */
-  text-align: left; /* ensures text + legend align left */
+  display: inline-block;
+  /* shrink-wrap content */
+  text-align: left;
+  /* ensures text + legend align left */
 }
 
 .sectionTitle {
@@ -330,7 +329,7 @@ main {
   gap: 8px;
   max-width: 100%;
   padding: 14px 12px;
-  background: #000000;
+  background: var(--dark-blue);
   border-radius: 12px;
   box-sizing: border-box;
   overflow: visible;
@@ -447,30 +446,120 @@ main {
 }
 
 @media (max-width: 700px) {
+
   .page {
-    padding: 14px;
+    padding: 8px;
   }
 
   .layout {
-    gap: 50px;
+    grid-template-columns: minmax(0, 1fr);
     grid-auto-rows: auto;
-    grid-template-columns: 98%;
+    gap: 12px;
   }
 
-  .gamePanel,
-  .playersPanel,
   .chatPanel {
-    padding: 18px;
+    margin-top: 24px;
   }
 
-  .topBar,
-  .titleRow {
-    flex-direction: column;
-    align-items: stretch;
+  /* keyboard below */
+  .keyboard {
+    order: 2;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px 4px;
+    gap: 5px;
   }
 
-  .timerRow {
-    flex-direction: column;
-    align-items: stretch;
+  .keyboardRow {
+    gap: 3px;
+    justify-content: center;
   }
+
+  .keyboardKey {
+    flex: 0 0 calc((100vw - 40px) / 11);
+    width: calc((100vw - 40px) / 11);
+    height: calc((100vw - 40px) / 11);
+    font-size: clamp(0.6rem, 1.8vw, 0.85rem);
+    border-radius: 4px;
+    padding: 0;
+  }
+
+  /* word grid left-aligned, guess button to the right */
+  .wordGridWrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* top row: tiles left, guess button right */
+  .wordRows {
+    order: 1;
+    max-width: 60%;
+    align-self: flex-start;
+  }
+
+  .guessRow {
+    order: 1;
+    position: absolute;
+    right: 14px;
+    display: flex;
+    align-items: center;
+  }
+
+  .guessButton {
+    padding: 10px 14px;
+    font-size: 14px;
+    margin-left: 220px;
+    margin-top: 40px;
+  }
+
+  /* reduce overall game panel spacing */
+  .gamePanel {
+    position: relative;
+    gap: 12px;
+    padding: 14px 14px 0 14px;
+  }
+
+  .colorContainer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .colorItem {
+    width: 18px;
+    height: 18px;
+  }
+
+  .colorItemText {
+    font-size: 11px;
+  }
+
+  /* make section header more compact */
+  .gameSectionHeader {
+    margin-bottom: 4px;
+  }
+
+  .sectionTitle {
+    font-size: 16px;
+    margin-bottom: 6px;
+  }
+
+  .hint {
+    font-size: 15px;
+  }
+
+  .wordRow {
+    gap: 5px;
+  }
+
+  .tile {
+    font-size: clamp(0.9rem, 3.5vw, 1.2rem);
+    border-radius: 7px;
+  }
+
+
 }
