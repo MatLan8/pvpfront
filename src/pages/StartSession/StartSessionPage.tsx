@@ -9,7 +9,10 @@ import { useGetLeaderSessions } from "../../api/useGetLeaderSessions";
 
 function StartSession() {
   const navigate = useNavigate();
-  const [sessionCode, setSessionCode] = useState<string | null>(null);
+  // const [sessionCode, setSessionCode] = useState<string | null>(null);
+  const [selectedSessionCode, setSelectedSessionCode] = useState<string | null>(
+    null,
+  );
 
   const userId = localStorage.getItem("userId");
   if (userId === null) {
@@ -40,7 +43,8 @@ function StartSession() {
       { LeaderId: userId },
       {
         onSuccess: (data) => {
-          setSessionCode(data.sessionCode);
+          // setSessionCode(data.sessionCode);
+          setSelectedSessionCode(data.sessionCode);
           setIsModalOpen(true);
           refetch();
         },
@@ -52,14 +56,26 @@ function StartSession() {
     );
   };
 
+  // const handleJoinGame = () => {
+  //   sessionStorage.setItem("nickname", user.displayName);
+  //   sessionStorage.setItem("playerId", userId);
+  //   if (!sessionCode) {
+  //     return <div className={styles.error}>Error. No session code.</div>;
+  //   }
+  //   sessionStorage.setItem("sessionCode", sessionCode);
+  //   navigate(`/waiting-room/${sessionCode}`);
+  // };
   const handleJoinGame = () => {
     sessionStorage.setItem("nickname", user.displayName);
     sessionStorage.setItem("playerId", userId);
-    if (!sessionCode) {
-      return <div className={styles.error}>Error. No session code.</div>;
+
+    if (!selectedSessionCode) {
+      return;
     }
-    sessionStorage.setItem("sessionCode", sessionCode);
-    navigate(`/waiting-room/${sessionCode}`);
+
+    sessionStorage.setItem("sessionCode", selectedSessionCode);
+
+    navigate(`/waiting-room/${selectedSessionCode}`);
   };
 
   return (
@@ -124,7 +140,16 @@ function StartSession() {
                         </td>
 
                         <td>
-                          <button className={styles.smallButton}>Open</button>
+                          {/* <button className={styles.smallButton}>Open</button> */}
+                          <button
+                            className={styles.smallButton}
+                            onClick={() => {
+                              setSelectedSessionCode(session.sessionCode);
+                              setIsModalOpen(true);
+                            }}
+                          >
+                            Open
+                          </button>
                         </td>
                       </tr>
                     ))}
@@ -163,10 +188,13 @@ function StartSession() {
                         </td>
 
                         <td>
-                          <button className={styles.reportButton}
-                            onClick={() => navigate(`/report/${session.sessionCode}`)}>
+                          <button
+                            className={styles.reportButton}
+                            onClick={() =>
+                              navigate(`/report/${session.sessionCode}`)
+                            }
+                          >
                             View Report
-
                           </button>
                         </td>
                       </tr>
@@ -191,11 +219,23 @@ function StartSession() {
           </div>
         </div>
       )} */}
+
+      {/* <SessionModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        // sessionCode={sessionCode}
+        sessionCode={selectedSessionCode}
+        onJoin={handleJoinGame}
+      /> */}
+
       <SessionModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        sessionCode={sessionCode}
+        sessionCode={selectedSessionCode}
         onJoin={handleJoinGame}
+        isExistingSession={activeSessions.some(
+          (s) => s.sessionCode === selectedSessionCode,
+        )}
       />
     </div>
   );

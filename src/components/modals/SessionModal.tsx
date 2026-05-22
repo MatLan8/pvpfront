@@ -2,12 +2,14 @@ import { useState } from "react";
 import { X, Mail, Copy, Link2 } from "lucide-react";
 import styles from "./Modals.module.css";
 import { useSendInvites } from "../../api/useSendInvites";
+import QRCode from "react-qr-code";
 
 interface SessionModalProps {
   isOpen: boolean;
   onClose: () => void;
   sessionCode: string | null;
   onJoin: () => void;
+  isExistingSession?: boolean;
 }
 
 function SessionModal({
@@ -15,9 +17,12 @@ function SessionModal({
   onClose,
   sessionCode,
   onJoin,
+  isExistingSession = false,
 }: SessionModalProps) {
   const [emails, setEmails] = useState("");
   const [copied, setCopied] = useState(false);
+
+  const [showQr, setShowQr] = useState(false);
 
   const inviteLink = `${window.location.origin}/?join=true&code=${sessionCode}`;
 
@@ -78,7 +83,7 @@ function SessionModal({
           <X size={18} />
         </button>
 
-        <h2 className={styles.title}>Session Created</h2>
+        <h2 className={styles.title}>Game Session</h2>
 
         {/* <div className={styles.codeBox}>
           <span className={styles.codeText}>{sessionCode}</span>
@@ -120,6 +125,22 @@ function SessionModal({
 
         {copied && <p className={styles.success}>Copied!</p>}
 
+        <div className={styles.qrSection}>
+          <button
+            className={styles.qrPreviewButton}
+            onClick={() => setShowQr(true)}
+          >
+            <QRCode
+              value={inviteLink}
+              size={72}
+              bgColor="transparent"
+              fgColor="#34d399"
+            />
+          </button>
+
+          <p className={styles.qrHint}>Click to enlarge</p>
+        </div>
+
         {/* EMAIL INPUT */}
         <div className={styles.field}>
           <label className={styles.label}>Invite by Email</label>
@@ -145,10 +166,30 @@ function SessionModal({
           {sendInvitesMutation.isPending ? "Sending..." : "Send Invites"}
         </button>
 
-        <button className={styles.button} onClick={onJoin}>
+        {/* <button className={styles.button} onClick={onJoin}>
           Join Game
-        </button>
+        </button> */}
+        {!isExistingSession && (
+          <button className={styles.button} onClick={onJoin}>
+            Join Game
+          </button>
+        )}
       </div>
+
+      {showQr && (
+        <div className={styles.qrOverlay} onClick={() => setShowQr(false)}>
+          <div className={styles.qrModal} onClick={(e) => e.stopPropagation()}>
+            <QRCode
+              value={inviteLink}
+              size={260}
+              bgColor="transparent"
+              fgColor="#34d399"
+            />
+
+            <p className={styles.qrText}>Scan to join session</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
