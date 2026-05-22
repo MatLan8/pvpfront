@@ -1,18 +1,19 @@
 /* =========================================================
-   PAGRINDINIS FAKTAS: Tamsi tema
+   BASE
    ========================================================= */
 .pageWrapper {
-  background: linear-gradient(135deg, #0f172a, #064e3b, #020617);
+  background: linear-gradient(135deg, #0a1118, #0f1f1a, #020617);
   min-height: 100vh;
   color: #f8fafc;
   font-family: system-ui, -apple-system, sans-serif;
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  position: relative;
 }
 
 /* =========================================================
-   EULA MODALAS (Gatekeeper)
+   EULA MODAL
    ========================================================= */
 .modalOverlay {
   position: fixed;
@@ -66,50 +67,79 @@
   margin: 0;
 }
 
-/* Custom Scrollbar EULA langui */
 .eulaScrollBox::-webkit-scrollbar { width: 8px; }
 .eulaScrollBox::-webkit-scrollbar-track { background: transparent; }
 .eulaScrollBox::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
 
-/* =========================================================
-   BLUR EFEKTAS (Kol nesutikta)
-   ========================================================= */
 .contentBlurred {
   filter: blur(10px) grayscale(50%);
   pointer-events: none;
   user-select: none;
-  transition: all 0.5s ease;
 }
 .contentClear {
-  transition: all 0.5s ease;
+  position: relative;
+  z-index: 1;
 }
 
 /* =========================================================
-   HEADER IR NAVIGACIJA
+   GLOW EFFECTS
+   ========================================================= */
+.ambientGlowTop {
+  position: fixed;
+  top: -10%;
+  left: -10%;
+  width: 50vw;
+  height: 50vw;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.08), transparent 70%);
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ambientGlowBottom {
+  position: fixed;
+  bottom: -10%;
+  right: -10%;
+  width: 50vw;
+  height: 50vw;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.06), transparent 70%);
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* =========================================================
+   HEADER
    ========================================================= */
 .header {
+  position: relative;
+  z-index: 10;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem 3rem;
-  background: rgba(15, 23, 42, 0.5);
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  padding: 1.25rem 4rem;
 }
 
 .logoArea {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  font-size: 1.2rem;
-  font-weight: bold;
+  gap: 0.75rem;
 }
 
-.iconBox {
-  background: rgba(16, 185, 129, 0.2);
-  padding: 0.75rem;
-  border-radius: 12px;
-  display: inline-flex;
-  color: #34d399;
+.logoImg {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
+}
+
+.logoText {
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #f8fafc;
 }
 
 .navArea {
@@ -118,136 +148,388 @@
   gap: 1.5rem;
 }
 
+.navBtn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.navBtn:hover {
+  color: #f8fafc;
+}
+
+.btnSecondary {
+  background: transparent;
+  border: 1px solid rgba(52, 211, 153, 0.4);
+  color: #6ee7b7;
+  padding: 0.5rem 1.25rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.btnSecondary:hover {
+  background: rgba(52, 211, 153, 0.1);
+  border-color: #34d399;
+}
+
 /* =========================================================
-   MYGTUKAI
+   HERO
    ========================================================= */
+.hero {
+  position: relative;
+  z-index: 10;
+  padding: 2rem 4rem 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.heroContent {
+  max-width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.heroTitle {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 800;
+  line-height: 1.15;
+  margin-bottom: 1.25rem;
+  white-space: nowrap;
+}
+
+.heroTitleGradient {
+  background: linear-gradient(to right, #34d399, #14b8a6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.heroSubtitle {
+  font-size: 1.1rem;
+  color: #94a3b8;
+  line-height: 1.7;
+  margin-bottom: 2rem;
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .btnPrimary {
   background: #059669;
   color: white;
   border: none;
-  padding: 1.2rem 3.5rem;
-  font-size: 1.2rem;
-  font-weight: bold;
-  border-radius: 16px;
+  padding: 0.875rem 2.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 10px;
   cursor: pointer;
   box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
-  transition: 0.2s;
-  width: 100%;
+  transition: all 0.2s;
+  letter-spacing: 0.05em;
+  margin: 0 auto;
+  display: block;
 }
-
-.btnPrimary:hover:not(:disabled) {
+.btnPrimary:hover {
   background: #10b981;
   transform: translateY(-2px);
+  box-shadow: 0 0 30px rgba(16, 185, 129, 0.45);
 }
-
 .btnPrimary:disabled {
   background: #1e293b;
   color: #64748b;
   cursor: not-allowed;
   box-shadow: none;
-  border: 1px solid #334155;
 }
-
-.btnSecondary {
-  background: transparent;
-  border: 1px solid rgba(16, 185, 129, 0.5);
-  color: #a7f3d0;
-  padding: 0.5rem 1.5rem;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.btnSecondary:hover {
-  background: rgba(16, 185, 129, 0.1);
+.btnPrimary:active {
+  transform: translateY(0);
 }
 
 /* =========================================================
-   HERO SEKCIJA
+   STEPS SECTION
    ========================================================= */
-.hero {
-  text-align: center;
-  padding: 6rem 2rem;
-  max-width: 800px;
+.stepsSection {
+  position: relative;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  padding: 2rem 4rem;
+  max-width: 1200px;
   margin: 0 auto;
+  border-top: 1px solid rgba(255,255,255,0.06);
 }
 
-.heroTitle {
-  font-size: 3.5rem;
-  font-weight: 800;
-  margin-bottom: 1.5rem;
-  line-height: 1.2;
+.stepCard {
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px;
+  padding: 1.5rem;
 }
 
-.textEmerald {
+.stepIcon {
   color: #34d399;
+  margin-bottom: 0.75rem;
+  display: inline-block;
 }
 
-.heroSubtitle {
-  font-size: 1.25rem;
-  color: #a7f3d0;
-  margin-bottom: 2.5rem;
-  line-height: 1.6;
+.stepTitle {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #cbd5e1;
+  margin: 0 0 0.4rem 0;
 }
 
-.heroSteps {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 2rem;
-  margin-top: 4rem;
-  opacity: 0.8;
-}
-
-.stepItem {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-weight: 500;
+.stepDesc {
+  font-size: 0.875rem;
+  color: #64748b;
+  line-height: 1.5;
+  margin: 0;
 }
 
 /* =========================================================
-   INFORMACINĖS SEKCIJOS
+   SECTIONS (shared)
    ========================================================= */
 .section {
-  padding: 5rem 2rem;
-  max-width: 1000px;
+  position: relative;
+  z-index: 10;
+  padding: 2rem 4rem;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
-.grid2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3rem;
-  align-items: center;
+/* =========================================================
+   FEATURE CARDS (problem section)
+   ========================================================= */
+.featureRowWrapper {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.featureRow {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
 }
 
 .featureCard {
   background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(16, 185, 129, 0.2);
-  padding: 1.5rem;
-  border-radius: 16px;
-  margin-bottom: 1rem;
+  border: 1px solid rgba(52, 211, 153, 0.2);
+  padding: 1.25rem;
+  border-radius: 14px;
+  flex: 1;
+  max-width: 300px;
 }
 
 .featureCard h4 {
-  margin: 1rem 0 0.5rem 0;
-  font-size: 1.1rem;
+  margin: 0.75rem 0 0.4rem;
+  font-size: 0.95rem;
+  color: #f8fafc;
 }
 
 .featureCard p {
   color: #94a3b8;
-  line-height: 1.6;
-  font-size: 0.95rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
   margin: 0;
 }
 
+.previewImg {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 16px;
+  border: 1px solid #334155;
+  margin-top: 1.5rem;
+}
+
+/* =========================================================
+   GAMES GRID
+   ========================================================= */
+.gamesGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.gameCard {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(52, 211, 153, 0.2);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.gameImg {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+}
+
+.gameCardBody {
+  padding: 1.25rem;
+}
+
+.gameCard h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #f8fafc;
+  letter-spacing: 0.02em;
+}
+
+.gameCard p {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   AI EVALUATION
+   ========================================================= */
+.evalRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.evalCard {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(52, 211, 153, 0.2);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.evalImg {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  display: block;
+}
+
+.evalCardBody {
+  padding: 1.25rem;
+}
+
+.evalCard h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #f8fafc;
+  letter-spacing: 0.02em;
+}
+
+.evalCard p {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   CONTACT
+   ========================================================= */
 .contactBox {
   background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.1);
-  padding: 3rem;
-  border-radius: 32px;
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 2.5rem;
+  border-radius: 24px;
   text-align: center;
   max-width: 600px;
   margin: 0 auto;
+}
+
+/* =========================================================
+   LIGHTBOX
+   ========================================================= */
+.lightbox {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.92);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.lightboxClose {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: white;
+  font-size: 1.25rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.lightboxClose:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.lightboxImg {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 12px;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media (max-width: 900px) {
+  .stepsSection {
+    grid-template-columns: 1fr;
+  }
+  .gamesGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .evalRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .header {
+    padding: 1rem 1.5rem;
+  }
+  .hero {
+    padding: 1.5rem 1.5rem 1rem;
+  }
+  .stepsSection {
+    padding: 1.5rem;
+  }
+  .section {
+    padding: 1.5rem;
+  }
+  .gamesGrid {
+    grid-template-columns: 1fr;
+  }
+  .featureRow {
+    flex-direction: column;
+  }
+  .featureCard {
+    max-width: 100%;
+  }
+  .previewImg {
+    width: 100%;
+    margin-left: 0;
+  }
 }

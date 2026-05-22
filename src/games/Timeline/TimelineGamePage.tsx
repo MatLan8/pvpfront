@@ -18,17 +18,13 @@ import GameHeader from "../../components/Headers/GameHeader";
 
 interface TimelineCard {
   Id: string;
-  Title: string;
-  Description: string;
+  ImageName: string;
 }
 
 interface TimelineSlot {
-  // Either a full card (owner only) or hidden info (others)
   IsFilled: boolean;
   OwnerId?: string;
   OwnerNickname?: string;
-  // Card details (only populated for owner via private data)
-  card?: TimelineCard;
 }
 
 interface TimelinePlacedCard {
@@ -38,6 +34,7 @@ interface TimelinePlacedCard {
 
 interface TimelineGamePublic {
   GameType: string;
+  Theme: string;
   Status: "running" | "completed" | "failed";
   Lives: number;
   MaxLives: number;
@@ -52,11 +49,15 @@ interface TimelinePlayerPrivate {
   PlacedCards: TimelinePlacedCard[];
 }
 
-// TimelinePlayerPrivate and TimelineGamePublic types are used via normalize functions
-
 // =====================================================
 // Helpers
 // =====================================================
+
+const IMG_BASE_PATH = "/games/Timeline/img/";
+
+function getCardImageUrl(imageName: string): string {
+  return `${IMG_BASE_PATH}${imageName}.png`;
+}
 
 function normalizePublicState(
   raw: unknown,
@@ -68,29 +69,31 @@ function normalizePublicState(
   const timelineArray = obj.Timeline ?? obj.timeline;
   const timeline = Array.isArray(timelineArray)
     ? timelineArray.map((item) => {
-      if (!item || typeof item !== "object") return null;
-      const slot = item as Record<string, unknown>;
-      // Handle both old format (card object) and new format (IsFilled)
-      const isFilled = slot.IsFilled ?? slot.isFilled;
-      if (isFilled === true) {
-        return {
-          IsFilled: true,
-          OwnerId: (slot.OwnerId ?? slot.ownerId) as string,
-          OwnerNickname: (slot.OwnerNickname ?? slot.ownerNickname) as string,
-        };
-      }
-      return null; // Empty slot
-    })
+
+        if (!item || typeof item !== "object") return null;
+        const slot = item as Record<string, unknown>;
+        const isFilled = slot.IsFilled ?? slot.isFilled;
+        if (isFilled === true) {
+          return {
+            IsFilled: true,
+            OwnerId: (slot.OwnerId ?? slot.ownerId) as string,
+            OwnerNickname: (slot.OwnerNickname ?? slot.ownerNickname) as string,
+          };
+        }
+        return null;
+      })
+
     : [];
 
   return {
     GameType: String(obj.GameType ?? obj.gameType ?? ""),
+    Theme: String(obj.Theme ?? obj.theme ?? "Timeline"),
     Status: (obj.Status ?? obj.status ?? "running") as "running" | "completed" | "failed",
     Lives: Number(obj.Lives ?? obj.lives ?? 3),
     MaxLives: Number(obj.MaxLives ?? obj.maxLives ?? 3),
     Timeline: timeline,
     FilledSlots: Number(obj.FilledSlots ?? obj.filledSlots ?? 0),
-    TotalSlots: Number(obj.TotalSlots ?? obj.totalSlots ?? 16),
+    TotalSlots: Number(obj.TotalSlots ?? obj.totalSlots ?? 12),
   };
 }
 
@@ -104,33 +107,35 @@ function normalizePrivateData(raw: unknown): TimelinePlayerPrivate {
   const handArray = obj.Hand ?? obj.hand;
   const hand = Array.isArray(handArray)
     ? handArray.map((item) => {
-      if (!item || typeof item !== "object") return null;
-      const card = item as Record<string, unknown>;
-      return {
-        Id: (card.Id ?? card.id) as string,
-        Title: (card.Title ?? card.title) as string,
-        Description: (card.Description ?? card.description) as string,
-      };
-    }).filter((c): c is TimelineCard => c !== null)
+
+        if (!item || typeof item !== "object") return null;
+        const card = item as Record<string, unknown>;
+        return {
+          Id: (card.Id ?? card.id) as string,
+          ImageName: (card.ImageName ?? card.imageName) as string,
+        };
+      }).filter((c): c is TimelineCard => c !== null)
+
     : [];
 
   const placedArray = obj.PlacedCards ?? obj.placedCards;
   const placedCards = Array.isArray(placedArray)
     ? placedArray.map((item) => {
-      if (!item || typeof item !== "object") return null;
-      const placed = item as Record<string, unknown>;
-      const cardObj = placed.Card ?? placed.card;
-      if (!cardObj || typeof cardObj !== "object") return null;
-      const card = cardObj as Record<string, unknown>;
-      return {
-        SlotIndex: Number(placed.SlotIndex ?? placed.slotIndex ?? -1),
-        Card: {
-          Id: (card.Id ?? card.id) as string,
-          Title: (card.Title ?? card.title) as string,
-          Description: (card.Description ?? card.description) as string,
-        },
-      };
-    }).filter((p): p is TimelinePlacedCard => p !== null && p.SlotIndex >= 0)
+
+        if (!item || typeof item !== "object") return null;
+        const placed = item as Record<string, unknown>;
+        const cardObj = placed.Card ?? placed.card;
+        if (!cardObj || typeof cardObj !== "object") return null;
+        const card = cardObj as Record<string, unknown>;
+        return {
+          SlotIndex: Number(placed.SlotIndex ?? placed.slotIndex ?? -1),
+          Card: {
+            Id: (card.Id ?? card.id) as string,
+            ImageName: (card.ImageName ?? card.imageName) as string,
+          },
+        };
+      }).filter((p): p is TimelinePlacedCard => p !== null && p.SlotIndex >= 0)
+
     : [];
 
   return {
@@ -177,6 +182,7 @@ export default function TimelineGamePage() {
   );
 
   const isGameRunning = gameState?.Status === "running";
+  const totalSlots = gameState?.TotalSlots ?? 12;
 
   const {
     timerRemainingSeconds,
@@ -196,6 +202,7 @@ export default function TimelineGamePage() {
   const {
     hasGameEnded,
     showWinModal,
+    showLoseModal,
     showLoseTimeModal,
     dismissEndModal,
     reopenEndModal,
@@ -205,7 +212,7 @@ export default function TimelineGamePage() {
   });
 
   const isInteractionLocked = !hasStarted || !isGameRunning || hasTimedOut;
-  const allSlotsFilled = (gameState?.FilledSlots ?? 0) === 16;
+  const allSlotsFilled = (gameState?.FilledSlots ?? 0) === totalSlots;
 
   // =====================================================
   // Actions
@@ -319,6 +326,9 @@ export default function TimelineGamePage() {
             <div className={styles.topBar}>
               <div className={styles.titleRow}>
                 <h1 className={styles.title}>Timeline</h1>
+                {gameState?.Theme && (
+                  <span className={styles.themeBadge}>{gameState.Theme}</span>
+                )}
 
                 {hasGameEnded && (
                   <button
@@ -357,7 +367,7 @@ export default function TimelineGamePage() {
                   <div className={styles.objective}>
                     <h2 className={styles.sectionTitle}>Objective</h2>
                     <p className={styles.objectiveText}>
-                      Collaborate with your team to reconstruct the 16-step story
+                      Collaborate with your team to reconstruct the {totalSlots}-step story
                       in chronological order. Place cards on the timeline,
                       then verify when complete!
                     </p>
@@ -384,7 +394,7 @@ export default function TimelineGamePage() {
                 <div className={styles.timelineSection}>
                   <h2 className={styles.sectionTitle}>Timeline</h2>
                   <p className={styles.timelineProgress}>
-                    {gameState.FilledSlots} / {gameState.TotalSlots} slots
+                    {gameState.FilledSlots} / {totalSlots} slots
                     filled
                   </p>
 
@@ -409,41 +419,34 @@ export default function TimelineGamePage() {
                             if (isInteractionLocked) return;
 
                             if (isFilled) {
-                              // Only owner can remove
                               if (isOwner) {
                                 handleRemoveCard(index);
                               }
-                              // Non-owners can't interact with filled slots
                             } else if (selectedCardId) {
-                              // Empty slot with selected card: place card
                               handlePlaceCard(selectedCardId, index);
                             }
-                            // Empty slot without selected card: do nothing
                           }}
                         >
                           <span className={styles.slotIndex}>{index + 1}</span>
                           {isFilled ? (
                             cardData ? (
-                              // Owner can see the card
                               <div className={styles.cardContent}>
-                                <span className={styles.cardTitle}>
-                                  {cardData.Title}
-                                </span>
-                                <span className={styles.cardDescription}>
-                                  {cardData.Description}
-                                </span>
+                                <img 
+                                  src={getCardImageUrl(cardData.ImageName)} 
+                                  alt="card"
+                                  className={styles.cardImage}
+                                />
                               </div>
                             ) : (
-                              // Non-owner sees hidden card
                               <div className={styles.hiddenCard}>
-                                <span className={styles.hiddenCardText}>Hidden Card</span>
+                                <span className={styles.hiddenCardText}>Hidden</span>
                                 <span className={styles.hiddenCardOwner}>
-                                  Placed by {ownerNickname}
+                                  {ownerNickname}
                                 </span>
                               </div>
                             )
                           ) : (
-                            <span className={styles.slotEmptyText}>Empty</span>
+                            <span className={styles.slotEmptyText}>+</span>
                           )}
                         </div>
                       );
@@ -451,9 +454,11 @@ export default function TimelineGamePage() {
                   </div>
 
                   <p className={styles.timelineHint}>
-                    {selectedCardId
-                      ? "Click an empty slot to place the selected card."
-                      : "Select a card from your hand, then click an empty slot to place it. Click YOUR filled slot to remove it."}
+
+                    {selectedCardId 
+                      ? "Click an empty slot to place the selected card." 
+                      : "Select a card from your hand, then click an empty slot to place it."}
+
                   </p>
                 </div>
 
@@ -481,10 +486,16 @@ export default function TimelineGamePage() {
                             }
                           }}
                         >
-                          <span className={styles.cardTitle}>{card.Title}</span>
-                          <span className={styles.cardDescription}>
-                            {card.Description}
-                          </span>
+                          <div className={styles.handCardContent}>
+                            {card.ImageName === "perspective_001" && (
+                              <span className={styles.startBadge}>START</span>
+                            )}
+                            <img 
+                              src={getCardImageUrl(card.ImageName)} 
+                              alt="card"
+                              className={styles.handCardImage}
+                            />
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -493,14 +504,7 @@ export default function TimelineGamePage() {
                   {selectedCardId && (
                     <div className={styles.placeInstructions}>
                       <p>
-                        Card selected:{" "}
-                        <strong>
-                          {privateData.Hand.find((c) => c.Id === selectedCardId)
-                            ?.Title}
-                        </strong>
-                      </p>
-                      <p className={styles.hint}>
-                        Click an empty slot on the timeline to place the card.
+                        Card selected. Click an empty slot on the timeline to place it.
                       </p>
                     </div>
                   )}
@@ -518,7 +522,7 @@ export default function TimelineGamePage() {
                   </button>
                   {!allSlotsFilled && (
                     <p className={styles.verifyHint}>
-                      Fill all 16 slots before verifying.
+                      Fill all {totalSlots} slots before verifying.
                     </p>
                   )}
                 </div>
@@ -535,12 +539,13 @@ export default function TimelineGamePage() {
 
         <GameEndModals
           showWinModal={showWinModal}
-          showLoseModal={false}
+          showLoseModal={showLoseModal}
           showLoseTimeModal={showLoseTimeModal}
           onDismiss={dismissEndModal}
           onViewReport={() => navigate(`/report`)}
+          onEvaluatePeers={() => navigate(`/peer-evaluation/${sessionCode}`)}
           winTitle="Timeline Complete!"
-          winMessage="Your team correctly ordered all 16 story cards. Great teamwork!"
+          winMessage={`Your team correctly ordered all ${totalSlots} story cards. Great teamwork!`}
           loseTitle="Game Over"
           loseMessage="The timeline was incorrect and the team ran out of lives."
           timeoutTitle="Time Over"
