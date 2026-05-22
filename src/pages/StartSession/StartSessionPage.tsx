@@ -233,9 +233,9 @@ function StartSession() {
         onClose={() => setIsModalOpen(false)}
         sessionCode={selectedSessionCode}
         onJoin={handleJoinGame}
-        isExistingSession={activeSessions.some(
-          (s) => s.sessionCode === selectedSessionCode,
-        )}
+        // isExistingSession={activeSessions.some(
+        //   (s) => s.sessionCode === selectedSessionCode,
+        // )}
       />
     </div>
   );
