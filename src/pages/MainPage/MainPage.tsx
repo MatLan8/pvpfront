@@ -142,7 +142,7 @@ export default function JoinGameScreen() {
         {/* Header */}
         <header className={styles.header}>
           <div className={styles.logoArea}>
-            <img src="/src/assets/brand/logo.png" alt="TeamLens Logo" className={styles.logoImg} />
+            <img src="/assets/brand/logo.png" alt="TeamLens Logo" className={styles.logoImg} />
             <span className={styles.logoText}>TeamLens</span>
           </div>
           <div className={styles.navArea}>
@@ -246,10 +246,10 @@ export default function JoinGameScreen() {
           </div>
 
           <img
-            src="/src/assets/brand/Connections.png"
+            src="/assets/brand/Connections.png"
             alt="Game Interface Preview"
             className={styles.previewImg}
-            onClick={() => setLightboxImg("/src/assets/brand/Connections.png")}
+            onClick={() => setLightboxImg("/assets/brand/Connections.png")}
             style={{ cursor: "pointer" }}
           />
         </section>
@@ -264,21 +264,21 @@ export default function JoinGameScreen() {
           </p>
           <div className={styles.gamesGrid}>
             <div className={styles.gameCard}>
-              <img src="/src/assets/brand/Connections.png" alt="Connections" className={styles.gameImg} onClick={() => setLightboxImg("/src/assets/brand/Connections.png")} style={{ cursor: "pointer" }} />
+              <img src="/assets/brand/Connections.png" alt="Connections" className={styles.gameImg} onClick={() => setLightboxImg("/assets/brand/Connections.png")} style={{ cursor: "pointer" }} />
               <div className={styles.gameCardBody}>
                 <h4>Connections</h4>
                 <p>16 words. 4 hidden categories. Group them together by finding links between words. Speed and accuracy matter.</p>
               </div>
             </div>
             <div className={styles.gameCard}>
-              <img src="/src/assets/brand/GameWordGuessing.png" alt="Word Guessing" className={styles.gameImg} onClick={() => setLightboxImg("/src/assets/brand/GameWordGuessing.png")} style={{ cursor: "pointer" }} />
+              <img src="/assets/brand/GameWordGuessing.png" alt="Word Guessing" className={styles.gameImg} onClick={() => setLightboxImg("/assets/brand/GameWordGuessing.png")} style={{ cursor: "pointer" }} />
               <div className={styles.gameCardBody}>
                 <h4>Word Guessing</h4>
                 <p>One player describes, others guess. Quick thinking and clear communication unlock the word.</p>
               </div>
             </div>
             <div className={styles.gameCard}>
-              <img src="/src/assets/brand/GameCodeGuessing.png" alt="Code Guessing" className={styles.gameImg} onClick={() => setLightboxImg("/src/assets/brand/GameCodeGuessing.png")} style={{ cursor: "pointer" }} />
+              <img src="/assets/brand/GameCodeGuessing.png" alt="Code Guessing" className={styles.gameImg} onClick={() => setLightboxImg("/assets/brand/GameCodeGuessing.png")} style={{ cursor: "pointer" }} />
               <div className={styles.gameCardBody}>
                 <h4>Code Guessing</h4>
                 <p>Patterns hide in plain sight. Crack the sequence through logical deduction and team discussion.</p>
@@ -297,14 +297,14 @@ export default function JoinGameScreen() {
           </p>
           <div className={styles.evalRow}>
             <div className={styles.evalCard}>
-              <img src="/src/assets/brand/TeamAssesment.png" alt="Team Assessment" className={styles.evalImg} onClick={() => setLightboxImg("/src/assets/brand/TeamAssesment.png")} style={{ cursor: "pointer" }} />
+              <img src="/assets/brand/TeamAssesment.png" alt="Team Assessment" className={styles.evalImg} onClick={() => setLightboxImg("/assets/brand/TeamAssesment.png")} style={{ cursor: "pointer" }} />
               <div className={styles.evalCardBody}>
                 <h4>Team Report</h4>
                 <p>Aggregated insights across the whole team. See how the group performed, who stepped up, and where collaboration thrived or struggled.</p>
               </div>
             </div>
             <div className={styles.evalCard}>
-              <img src="/src/assets/brand/IndividualAssesment.png" alt="Individual Assessment" className={styles.evalImg} onClick={() => setLightboxImg("/src/assets/brand/IndividualAssesment.png")} style={{ cursor: "pointer" }} />
+              <img src="/assets/brand/IndividualAssesment.png" alt="Individual Assessment" className={styles.evalImg} onClick={() => setLightboxImg("/assets/brand/IndividualAssesment.png")} style={{ cursor: "pointer" }} />
               <div className={styles.evalCardBody}>
                 <h4>Individual Report</h4>
                 <p>Personal breakdown of your communication, teamwork, problem-solving, and leadership. Clear scores backed by chat evidence.</p>
