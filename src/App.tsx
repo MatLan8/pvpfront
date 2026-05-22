@@ -8,7 +8,7 @@ import PlayerReportPage from "./pages/PlayerReport/PlayerReportPage";
 import StartSessionPage from "./pages/StartSession/StartSessionPage";
 import TeamReportPage from "./pages/TeamReportPage/TeamReportPage";
 import MainPage from "./pages/MainPage/MainPage";
-import PeerEvaluationPage from "./pages/PeerEvaluationPage/PeerEvaluationPageWrapper";
+
 
 import GameSessionRouter from "./games/GameSessionRouter";
 function App() {
@@ -24,7 +24,6 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/report" element={<PlayerReportPage />} />
         <Route path="/team-report" element={<TeamReportPage />} />
-        <Route path="/peer-evaluation/:sessionCode" element={<PeerEvaluationPage />} />
         <Route path="/start-session" element={<StartSessionPage />} />
         <Route path="/" element={<MainPage />} />
       </Routes>
