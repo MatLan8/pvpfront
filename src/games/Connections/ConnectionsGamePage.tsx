@@ -284,6 +284,34 @@ export default function ConnectionsGamePage() {
                 </div>
               )}
             </div>
+            <div className={styles.line} />
+            {gameState?.solvedGroups?.length ? (
+              <div className={styles.solvedSection}>
+                <h2 className={styles.sectionTitle}>Solved Groups</h2>
+
+                <div className={styles.solvedGroups}>
+                  {gameState.solvedGroups.map((group, index) => (
+                    <div
+                      key={`${group.name}-${index}`}
+                      className={`${styles.solvedGroupCard} ${styles[`solvedGroupColor${index % 4}`]
+                        }`}
+                    >
+                      <div className={styles.solvedGroupTitle}>
+                        {group.name}
+                      </div>
+
+                      <div className={styles.solvedWordsRow}>
+                        {group.words.map((word) => (
+                          <span key={word} className={styles.solvedWord}>
+                            {word}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
 
             <div className={styles.line} />
 
@@ -332,35 +360,8 @@ export default function ConnectionsGamePage() {
                   </div>
                 )}
 
-                <div className={styles.line} />
 
-                {gameState?.solvedGroups?.length ? (
-                  <div className={styles.solvedSection}>
-                    <h2 className={styles.sectionTitle}>Solved Groups</h2>
 
-                    <div className={styles.solvedGroups}>
-                      {gameState.solvedGroups.map((group, index) => (
-                        <div
-                          key={`${group.name}-${index}`}
-                          className={`${styles.solvedGroupCard} ${styles[`solvedGroupColor${index % 4}`]
-                            }`}
-                        >
-                          <div className={styles.solvedGroupTitle}>
-                            {group.name}
-                          </div>
-
-                          <div className={styles.solvedWordsRow}>
-                            {group.words.map((word) => (
-                              <span key={word} className={styles.solvedWord}>
-                                {word}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ) : null}
               </>
             )}
 
@@ -370,6 +371,7 @@ export default function ConnectionsGamePage() {
           <aside className={styles.chatPanel}>
             <GameChat sessionCode={sessionCode!} playerId={playerId!} />
           </aside>
+
         </div>
 
         <GameEndModals

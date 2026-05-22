@@ -64,7 +64,31 @@ function PlayerReportPage() {
     skill: label,
     score: playerReport.radarChart.values[index] ?? 0,
   }));
+  const CustomTick = ({ x, y, payload, index, cx, cy }: any) => {
+    const isLeft = index === 4;
+    const isRight = index === 1;
+    const rotation = isLeft ? -90 : isRight ? 90 : 0;
 
+
+    const dx = x - cx;
+    const dy = y - cy;
+    const distance = 1.05;
+    const nx = cx + dx * distance;
+    const ny = cy + dy * distance;
+
+    return (
+      <text
+        x={nx}
+        y={ny}
+        textAnchor="middle"
+        fill="#ffffff"
+        fontSize={14}
+        transform={`rotate(${rotation}, ${nx}, ${ny})`}
+      >
+        {payload.value}
+      </text>
+    );
+  };
   const skillCards = [
     {
       title: "Communication",
@@ -121,13 +145,10 @@ function PlayerReportPage() {
           <div className={styles.chartCard}>
             <h2 className={styles.cardTitle}>Your Skills</h2>
             <div className={styles.chartWrapper}>
-              <ResponsiveContainer width="100%" height={500}>
-                <RadarChart data={radarData}>
+              <ResponsiveContainer width="100%" height={500} >
+                <RadarChart data={radarData} >
                   <PolarGrid />
-                  <PolarAngleAxis
-                    dataKey="skill"
-                    tick={{ fill: "#ffffff", fontSize: 14 }}
-                  />
+                  <PolarAngleAxis dataKey="skill" tick={<CustomTick />} />
                   <PolarRadiusAxis
                     angle={18}
                     domain={[0, 100]}
