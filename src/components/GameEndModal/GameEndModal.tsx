@@ -11,6 +11,8 @@ type GameEndModalProps = {
   onPrimaryClick?: () => void;
   secondaryButtonText?: string;
   onSecondaryClick?: () => void;
+  tertiaryButtonText?: string;
+  onTertiaryClick?: () => void;
   showConfetti?: boolean;
 };
 
@@ -23,6 +25,8 @@ export default function GameEndModal({
   onPrimaryClick,
   secondaryButtonText,
   onSecondaryClick,
+  tertiaryButtonText,
+  onTertiaryClick,
   showConfetti = false,
 }: GameEndModalProps) {
   const [windowSize, setWindowSize] = useState({
@@ -77,6 +81,16 @@ export default function GameEndModal({
                 onClick={onSecondaryClick}
               >
                 {secondaryButtonText}
+              </button>
+            )}
+
+            {tertiaryButtonText && onTertiaryClick && (
+              <button
+                type="button"
+                className={styles.tertiaryButton}
+                onClick={onTertiaryClick}
+              >
+                {tertiaryButtonText}
               </button>
             )}
 

@@ -93,3 +93,20 @@
 .secondaryButton:hover {
   background: var(--dark-green);
 }
+
+.tertiaryButton {
+  background: transparent;
+  border: 2px solid #64748b;
+  border-radius: 10px;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.tertiaryButton:hover {
+  border-color: #94a3b8;
+  color: #e2e8f0;
+}

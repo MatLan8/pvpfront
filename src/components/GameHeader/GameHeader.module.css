@@ -1,25 +1,52 @@
 header {
     background-color: #072b28e1;
-
     border-bottom: solid thin;
-    border-color: var(--light-green);
+    border-color: #34d399;
     color: white;
     display: flex;
     flex-direction: row;
     align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 2.5rem;
+}
 
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.logo {
+    height: 36px;
+    width: auto;
+    object-fit: contain;
 }
 
 .name {
-    padding-left: 40px;
-    font-size: 16px;
-    padding-right: 15px;
-    border-right: solid thin;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #f8fafc;
+    border-right: 1px solid rgba(52, 211, 153, 0.4);
+    padding-right: 1rem;
 }
 
 .code {
-    /* margin-left: auto; */
-    /* padding-right: 40px; */
-    font-size: 15px;
-    padding-left: 15px;
+    font-size: 0.875rem;
+    color: #94a3b8;
+    letter-spacing: 0.05em;
+}
+
+@media (max-width: 480px) {
+    header {
+        padding: 0.6rem 1rem;
+    }
+    .logo {
+        height: 28px;
+    }
+    .name {
+        font-size: 0.8rem;
+        padding-right: 0.75rem;
+    }
 }

@@ -196,6 +196,7 @@ export default function TimelineGamePage() {
   const {
     hasGameEnded,
     showWinModal,
+    showLoseModal,
     showLoseTimeModal,
     dismissEndModal,
     reopenEndModal,
@@ -530,10 +531,11 @@ export default function TimelineGamePage() {
 
         <GameEndModals
           showWinModal={showWinModal}
-          showLoseModal={false}
+          showLoseModal={showLoseModal}
           showLoseTimeModal={showLoseTimeModal}
           onDismiss={dismissEndModal}
           onViewReport={() => navigate(`/report`)}
+          onEvaluatePeers={() => navigate(`/peer-evaluation/${sessionCode}`)}
           winTitle="Timeline Complete!"
           winMessage={`Your team correctly ordered all ${totalSlots} story cards. Great teamwork!`}
           loseTitle="Game Over"

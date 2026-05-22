@@ -6,6 +6,7 @@ export type GameEndModalsProps = {
   showLoseTimeModal: boolean;
   onDismiss: () => void;
   onViewReport: () => void;
+  onEvaluatePeers?: () => void;
   winTitle?: string;
   winMessage?: string;
   loseTitle?: string;
@@ -16,13 +17,13 @@ export type GameEndModalsProps = {
 
 const defaultWinTitle = "You solved all groups!";
 const defaultWinMessage =
-  "Great teamwork. Your team completed the Connections game successfully.";
-const defaultLoseTitle = "You ran out of mistakes";
+  "Great teamwork. Your team completed the game successfully.";
+const defaultLoseTitle = "Game Over";
 const defaultLoseMessage =
-  "Your team did not solve all groups. You can close this window for now.";
+  "Your team did not complete the game. You can close this window for now.";
 const defaultTimeoutTitle = "You ran out of time";
 const defaultTimeoutMessage =
-  "Your team did not solve all groups in time. You can close this window for now.";
+  "Your team did not complete the game in time. You can close this window for now.";
 
 export default function GameEndModals({
   showWinModal,
@@ -30,6 +31,7 @@ export default function GameEndModals({
   showLoseTimeModal,
   onDismiss,
   onViewReport,
+  onEvaluatePeers,
   winTitle = defaultWinTitle,
   winMessage = defaultWinMessage,
   loseTitle = defaultLoseTitle,
@@ -46,8 +48,10 @@ export default function GameEndModals({
         message={winMessage}
         primaryButtonText="Close"
         onPrimaryClick={onDismiss}
-        secondaryButtonText="View report"
-        onSecondaryClick={onViewReport}
+        secondaryButtonText="Evaluate Teammates"
+        onSecondaryClick={onEvaluatePeers || onViewReport}
+        tertiaryButtonText="View Report"
+        onTertiaryClick={onViewReport}
         showConfetti
       />
 
@@ -58,8 +62,10 @@ export default function GameEndModals({
         message={loseMessage}
         primaryButtonText="Close"
         onPrimaryClick={onDismiss}
-        secondaryButtonText="View report"
-        onSecondaryClick={onViewReport}
+        secondaryButtonText="Evaluate Teammates"
+        onSecondaryClick={onEvaluatePeers || onViewReport}
+        tertiaryButtonText="View Report"
+        onTertiaryClick={onViewReport}
       />
 
       <GameEndModal
@@ -69,8 +75,10 @@ export default function GameEndModals({
         message={timeoutMessage}
         primaryButtonText="Close"
         onPrimaryClick={onDismiss}
-        secondaryButtonText="View report"
-        onSecondaryClick={onViewReport}
+        secondaryButtonText="Evaluate Teammates"
+        onSecondaryClick={onEvaluatePeers || onViewReport}
+        tertiaryButtonText="View Report"
+        onTertiaryClick={onViewReport}
       />
     </>
   );
