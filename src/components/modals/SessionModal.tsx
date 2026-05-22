@@ -8,7 +8,6 @@ interface SessionModalProps {
   isOpen: boolean;
   onClose: () => void;
   sessionCode: string | null;
-  // onJoin: () => void;
   onJoin: () => void;
   isExistingSession?: boolean;
 }
@@ -17,8 +16,6 @@ function SessionModal({
   isOpen,
   onClose,
   sessionCode,
-  //   onJoin,
-  // }: SessionModalProps) {
   onJoin,
   isExistingSession = false,
 }: SessionModalProps) {
@@ -169,9 +166,14 @@ function SessionModal({
           {sendInvitesMutation.isPending ? "Sending..." : "Send Invites"}
         </button>
 
-        <button className={styles.button} onClick={onJoin}>
+        {/* <button className={styles.button} onClick={onJoin}>
           Join Game
-        </button>
+        </button> */}
+        {!isExistingSession && (
+          <button className={styles.button} onClick={onJoin}>
+            Join Game
+          </button>
+        )}
       </div>
 
       {showQr && (
