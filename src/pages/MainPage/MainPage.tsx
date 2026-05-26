@@ -134,7 +134,6 @@ export default function JoinGameScreen() {
 
       {/* 2. MAIN PAGE */}
       <div className={showEula ? styles.contentBlurred : styles.contentClear}>
-
         {/* Ambient Glows */}
         <div className={styles.ambientGlowTop} />
         <div className={styles.ambientGlowBottom} />
@@ -142,7 +141,11 @@ export default function JoinGameScreen() {
         {/* Header */}
         <header className={styles.header}>
           <div className={styles.logoArea}>
-            <img src="/assets/brand/logo.png" alt="TeamLens Logo" className={styles.logoImg} />
+            <img
+              src="/assets/brand/logo.png"
+              alt="TeamLens Logo"
+              className={styles.logoImg}
+            />
             <span className={styles.logoText}>TeamLens</span>
           </div>
           <div className={styles.navArea}>
@@ -191,21 +194,27 @@ export default function JoinGameScreen() {
               <Gamepad2 size={22} />
             </div>
             <h3 className={styles.stepTitle}>1. Join Game</h3>
-            <p className={styles.stepDesc}>Join a short, focused team activity.</p>
+            <p className={styles.stepDesc}>
+              Join a short, focused team activity.
+            </p>
           </div>
           <div className={styles.stepCard}>
             <div className={styles.stepIcon}>
               <MessageSquare size={22} />
             </div>
             <h3 className={styles.stepTitle}>2. Play & Chat</h3>
-            <p className={styles.stepDesc}>Interact with colleagues in real-time chat.</p>
+            <p className={styles.stepDesc}>
+              Interact with colleagues in real-time chat.
+            </p>
           </div>
           <div className={styles.stepCard}>
             <div className={styles.stepIcon}>
               <FileBarChart2 size={22} />
             </div>
             <h3 className={styles.stepTitle}>3. Get Report</h3>
-            <p className={styles.stepDesc}>Receive a detailed AI-driven soft skills profile.</p>
+            <p className={styles.stepDesc}>
+              Receive a detailed AI-driven soft skills profile.
+            </p>
           </div>
         </section>
 
@@ -232,7 +241,8 @@ export default function JoinGameScreen() {
                   <Brain color="#34d399" />
                   <h4>AI-driven Analysis</h4>
                   <p>
-                    We analyze linguistic and behavioral indicators in real-time.
+                    We analyze linguistic and behavioral indicators in
+                    real-time.
                   </p>
                 </div>
 
@@ -256,32 +266,68 @@ export default function JoinGameScreen() {
 
         {/* Games Section */}
         <section className={styles.section}>
-          <h2 style={{ fontSize: "2rem", marginBottom: "1rem" }}>
-            Mini-Games
-          </h2>
-          <p style={{ color: "#94a3b8", marginBottom: "2rem", lineHeight: "1.6" }}>
-            Short, engaging team challenges that reveal how you communicate, collaborate, and solve problems together.
+          <h2 style={{ fontSize: "2rem", marginBottom: "1rem" }}>Mini-Games</h2>
+          <p
+            style={{
+              color: "#94a3b8",
+              marginBottom: "2rem",
+              lineHeight: "1.6",
+            }}
+          >
+            Short, engaging team challenges that reveal how you communicate,
+            collaborate, and solve problems together.
           </p>
           <div className={styles.gamesGrid}>
             <div className={styles.gameCard}>
-              <img src="/assets/brand/Connections.png" alt="Connections" className={styles.gameImg} onClick={() => setLightboxImg("/assets/brand/Connections.png")} style={{ cursor: "pointer" }} />
+              <img
+                src="/assets/brand/Connections.png"
+                alt="Connections"
+                className={styles.gameImg}
+                onClick={() => setLightboxImg("/assets/brand/Connections.png")}
+                style={{ cursor: "pointer" }}
+              />
               <div className={styles.gameCardBody}>
                 <h4>Connections</h4>
-                <p>16 words. 4 hidden categories. Group them together by finding links between words. Speed and accuracy matter.</p>
+                <p>
+                  16 words. 4 hidden categories. Group them together by finding
+                  links between words. Speed and accuracy matter.
+                </p>
               </div>
             </div>
             <div className={styles.gameCard}>
-              <img src="/assets/brand/GameWordGuessing.png" alt="Word Guessing" className={styles.gameImg} onClick={() => setLightboxImg("/assets/brand/GameWordGuessing.png")} style={{ cursor: "pointer" }} />
+              <img
+                src="/assets/brand/GameWordGuessing.png"
+                alt="Word Guessing"
+                className={styles.gameImg}
+                onClick={() =>
+                  setLightboxImg("/assets/brand/GameWordGuessing.png")
+                }
+                style={{ cursor: "pointer" }}
+              />
               <div className={styles.gameCardBody}>
                 <h4>Word Guessing</h4>
-                <p>One player describes, others guess. Quick thinking and clear communication unlock the word.</p>
+                <p>
+                  One player describes, others guess. Quick thinking and clear
+                  communication unlock the word.
+                </p>
               </div>
             </div>
             <div className={styles.gameCard}>
-              <img src="/assets/brand/GameCodeGuessing.png" alt="Code Guessing" className={styles.gameImg} onClick={() => setLightboxImg("/assets/brand/GameCodeGuessing.png")} style={{ cursor: "pointer" }} />
+              <img
+                src="/assets/brand/GameCodeGuessing.png"
+                alt="Code Guessing"
+                className={styles.gameImg}
+                onClick={() =>
+                  setLightboxImg("/assets/brand/GameCodeGuessing.png")
+                }
+                style={{ cursor: "pointer" }}
+              />
               <div className={styles.gameCardBody}>
                 <h4>Code Guessing</h4>
-                <p>Patterns hide in plain sight. Crack the sequence through logical deduction and team discussion.</p>
+                <p>
+                  Patterns hide in plain sight. Crack the sequence through
+                  logical deduction and team discussion.
+                </p>
               </div>
             </div>
           </div>
@@ -292,22 +338,53 @@ export default function JoinGameScreen() {
           <h2 style={{ fontSize: "2rem", marginBottom: "1rem" }}>
             AI-Powered Evaluation
           </h2>
-          <p style={{ color: "#94a3b8", marginBottom: "2rem", lineHeight: "1.6" }}>
-            Every game captures real behavioral signals — how you communicate, lead, and collaborate under pressure.
+          <p
+            style={{
+              color: "#94a3b8",
+              marginBottom: "2rem",
+              lineHeight: "1.6",
+            }}
+          >
+            Every game captures real behavioral signals — how you communicate,
+            lead, and collaborate under pressure.
           </p>
           <div className={styles.evalRow}>
             <div className={styles.evalCard}>
-              <img src="/assets/brand/TeamAssesment.png" alt="Team Assessment" className={styles.evalImg} onClick={() => setLightboxImg("/assets/brand/TeamAssesment.png")} style={{ cursor: "pointer" }} />
+              <img
+                src="/assets/brand/TeamAssesment.png"
+                alt="Team Assessment"
+                className={styles.evalImg}
+                onClick={() =>
+                  setLightboxImg("/assets/brand/TeamAssesment.png")
+                }
+                style={{ cursor: "pointer" }}
+              />
               <div className={styles.evalCardBody}>
                 <h4>Team Report</h4>
-                <p>Aggregated insights across the whole team. See how the group performed, who stepped up, and where collaboration thrived or struggled.</p>
+                <p>
+                  Aggregated insights across the whole team. See how the group
+                  performed, who stepped up, and where collaboration thrived or
+                  struggled.
+                </p>
               </div>
             </div>
             <div className={styles.evalCard}>
-              <img src="/assets/brand/IndividualAssesment.png" alt="Individual Assessment" className={styles.evalImg} onClick={() => setLightboxImg("/assets/brand/IndividualAssesment.png")} style={{ cursor: "pointer" }} />
+              <img
+                src="/assets/brand/IndividualAssesment.png"
+                alt="Individual Assessment"
+                className={styles.evalImg}
+                onClick={() =>
+                  setLightboxImg("/assets/brand/IndividualAssesment.png")
+                }
+                style={{ cursor: "pointer" }}
+              />
               <div className={styles.evalCardBody}>
                 <h4>Individual Report</h4>
-                <p>Personal breakdown of your communication, teamwork, problem-solving, and leadership. Clear scores backed by chat evidence.</p>
+                <p>
+                  Personal breakdown of your communication, teamwork,
+                  problem-solving, and leadership. Clear scores backed by chat
+                  evidence.
+                </p>
               </div>
             </div>
           </div>
@@ -369,8 +446,18 @@ export default function JoinGameScreen() {
 
       {lightboxImg && (
         <div className={styles.lightbox} onClick={() => setLightboxImg(null)}>
-          <button className={styles.lightboxClose} onClick={() => setLightboxImg(null)}>✕</button>
-          <img src={lightboxImg} alt="" className={styles.lightboxImg} onClick={(e) => e.stopPropagation()} />
+          <button
+            className={styles.lightboxClose}
+            onClick={() => setLightboxImg(null)}
+          >
+            ✕
+          </button>
+          <img
+            src={lightboxImg}
+            alt=""
+            className={styles.lightboxImg}
+            onClick={(e) => e.stopPropagation()}
+          />
         </div>
       )}
     </div>
