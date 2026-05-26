@@ -58,7 +58,7 @@
 }
 
 .primaryButton,
-.secondaryButton {
+.tertiaryButton {
   border: none;
   border-radius: 10px;
   padding: 14px 22px;
@@ -72,7 +72,7 @@
 }
 
 .primaryButton:hover,
-.secondaryButton:hover {
+.tertiaryButton:hover {
   transform: translateY(-1px);
 }
 
@@ -85,16 +85,16 @@
   background: #2b4460de;
 }
 
-.secondaryButton {
+.tertiaryButton {
   background: var(--light-green);
   color: white;
 }
 
-.secondaryButton:hover {
+.tertiaryButton:hover {
   background: var(--dark-green);
 }
 
-.tertiaryButton {
+.secondaryButton {
   background: transparent;
   border: 2px solid #64748b;
   border-radius: 10px;
@@ -106,7 +106,7 @@
   transition: border-color 0.15s, color 0.15s;
 }
 
-.tertiaryButton:hover {
+.secondaryButton:hover {
   border-color: #94a3b8;
   color: #e2e8f0;
 }

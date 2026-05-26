@@ -25,7 +25,7 @@ const MAX_GUESSES = 3;
 
 const KEYBOARD_ROW_1 = "QWERTYUIOP".split("");
 const KEYBOARD_ROW_2 = "ASDFGHJKL".split("");
-const KEYBOARD_ROW_3 = "ZXCVBNM".split("");
+const KEYBOARD_ROW_3 = "ZXCVBNM⌫".split("");
 
 const LETTER_PRIORITY: Record<LetterResult, number> = {
   absent: 0,
@@ -376,7 +376,7 @@ export default function WordleGamePage() {
           <main className={styles.gamePanel}>
             <div className={styles.topBar}>
               <div className={styles.titleRow}>
-                <h1 className={styles.title}>Wordle</h1>
+                <h1 className={styles.title}>Guess the Word</h1>
                 {hasGameEnded && (
                   <button
                     type="button"
@@ -524,26 +524,31 @@ export default function WordleGamePage() {
                       (row, ri) => (
                         <div key={ri} className={styles.keyboardRow}>
                           {row.map((letter) => {
+                            const isBackspace = letter === "⌫";
                             const st = keyboardStates.get(letter);
-                            const stateClass =
-                              st === "correct"
+                            const stateClass = isBackspace
+                              ? styles.keyboardKeyDefault
+                              : st === "correct"
                                 ? styles.keyboardKeyCorrect
                                 : st === "present"
                                   ? styles.keyboardKeyPresent
                                   : st === "absent"
                                     ? styles.keyboardKeyAbsent
                                     : styles.keyboardKeyDefault;
-                            const keyDisabled =
-                              !canType || isSubmitting || draft.length >= 5;
+
+                            const keyDisabled = isBackspace
+                              ? !canType || isSubmitting
+                              : !canType || isSubmitting || draft.length >= 5;
+
                             return (
                               <button
                                 key={letter}
                                 type="button"
                                 className={`${styles.keyboardKey} ${stateClass}`}
-                                aria-label={`Letter ${letter}`}
+                                aria-label={isBackspace ? "Delete" : `Letter ${letter}`}
                                 disabled={keyDisabled}
                                 onMouseDown={(e) => e.preventDefault()}
-                                onClick={() => appendLetter(letter)}
+                                onClick={() => isBackspace ? removeLastLetter() : appendLetter(letter)}
                               >
                                 {letter}
                               </button>

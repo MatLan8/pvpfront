@@ -31,7 +31,6 @@ export default function GameEndModals({
   showLoseTimeModal,
   onDismiss,
   onViewReport,
-  onEvaluatePeers,
   winTitle = defaultWinTitle,
   winMessage = defaultWinMessage,
   loseTitle = defaultLoseTitle,
@@ -48,8 +47,6 @@ export default function GameEndModals({
         message={winMessage}
         primaryButtonText="Close"
         onPrimaryClick={onDismiss}
-        secondaryButtonText="Evaluate Teammates"
-        onSecondaryClick={onEvaluatePeers || onViewReport}
         tertiaryButtonText="View Report"
         onTertiaryClick={onViewReport}
         showConfetti
@@ -62,8 +59,6 @@ export default function GameEndModals({
         message={loseMessage}
         primaryButtonText="Close"
         onPrimaryClick={onDismiss}
-        secondaryButtonText="Evaluate Teammates"
-        onSecondaryClick={onEvaluatePeers || onViewReport}
         tertiaryButtonText="View Report"
         onTertiaryClick={onViewReport}
       />
@@ -75,8 +70,6 @@ export default function GameEndModals({
         message={timeoutMessage}
         primaryButtonText="Close"
         onPrimaryClick={onDismiss}
-        secondaryButtonText="Evaluate Teammates"
-        onSecondaryClick={onEvaluatePeers || onViewReport}
         tertiaryButtonText="View Report"
         onTertiaryClick={onViewReport}
       />
