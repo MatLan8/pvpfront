@@ -9,7 +9,6 @@ import { useGetLeaderSessions } from "../../api/useGetLeaderSessions";
 
 function StartSession() {
   const navigate = useNavigate();
-  // const [sessionCode, setSessionCode] = useState<string | null>(null);
   const [selectedSessionCode, setSelectedSessionCode] = useState<string | null>(
     null,
   );
@@ -25,9 +24,9 @@ function StartSession() {
   const { data: sessions = [], isLoading: sessionsLoading } =
     useGetLeaderSessions(userId);
 
-  const activeSessions = sessions.filter((s) => !s.completedAtUtc);
+  const activeSessions = sessions.filter((s) => !s.reportCreatedAtUtc);
 
-  const finishedSessions = sessions.filter((s) => s.completedAtUtc);
+  const finishedSessions = sessions.filter((s) => s.reportCreatedAtUtc);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -43,7 +42,6 @@ function StartSession() {
       { LeaderId: userId },
       {
         onSuccess: (data) => {
-          // setSessionCode(data.sessionCode);
           setSelectedSessionCode(data.sessionCode);
           setIsModalOpen(true);
           refetch();
@@ -56,15 +54,6 @@ function StartSession() {
     );
   };
 
-  // const handleJoinGame = () => {
-  //   sessionStorage.setItem("nickname", user.displayName);
-  //   sessionStorage.setItem("playerId", userId);
-  //   if (!sessionCode) {
-  //     return <div className={styles.error}>Error. No session code.</div>;
-  //   }
-  //   sessionStorage.setItem("sessionCode", sessionCode);
-  //   navigate(`/waiting-room/${sessionCode}`);
-  // };
   const handleJoinGame = () => {
     sessionStorage.setItem("nickname", user.displayName);
     sessionStorage.setItem("playerId", userId);
@@ -112,7 +101,6 @@ function StartSession() {
             {/* ACTIVE SESSIONS */}
             <div className={styles.tableCard}>
               <div className={styles.tableHeader}>
-                {/* <div className={styles.liveDot}></div> */}
                 <h3>Active Sessions</h3>
               </div>
 
@@ -140,7 +128,6 @@ function StartSession() {
                         </td>
 
                         <td>
-                          {/* <button className={styles.smallButton}>Open</button> */}
                           <button
                             className={styles.smallButton}
                             onClick={() => {
@@ -184,7 +171,9 @@ function StartSession() {
                         </td>
 
                         <td>
-                          {new Date(session.completedAtUtc!).toLocaleString()}
+                          {new Date(
+                            session.reportCreatedAtUtc!,
+                          ).toLocaleString()}
                         </td>
 
                         <td>
@@ -207,35 +196,11 @@ function StartSession() {
         )}
       </div>
 
-      {/* {sessionCode && (
-        <div className={styles.code}>
-          <div className={styles.card}>
-            <p>
-              Game Session Code: <strong>{sessionCode}</strong>{" "}
-            </p>
-            <button className={styles.elegante} onClick={handleJoinGame}>
-              Go to the game
-            </button>
-          </div>
-        </div>
-      )} */}
-
-      {/* <SessionModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        // sessionCode={sessionCode}
-        sessionCode={selectedSessionCode}
-        onJoin={handleJoinGame}
-      /> */}
-
       <SessionModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         sessionCode={selectedSessionCode}
         onJoin={handleJoinGame}
-        // isExistingSession={activeSessions.some(
-        //   (s) => s.sessionCode === selectedSessionCode,
-        // )}
       />
     </div>
   );

@@ -5,8 +5,9 @@ export interface LeaderSession {
   sessionId: string;
   sessionCode: string;
   createdAtUtc: string;
-  completedAtUtc: string | null;
+  reportCreatedAtUtc: string | null;
   reportId: string | null;
+  rawJson: string | null;
 }
 
 export const useGetLeaderSessions = (leaderId: string) => {
