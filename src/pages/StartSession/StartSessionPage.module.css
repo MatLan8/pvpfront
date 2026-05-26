@@ -28,15 +28,21 @@
 .heroLeft {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 0.3rem;
 }
 
 .greeting {
-  margin: 0;
   font-size: 1.6rem;
   font-weight: 700;
   letter-spacing: -0.02em;
   color: #f8fafc;
+}
+
+.greeting,
+.credits {
+  margin: 0;
+  padding: 0;
 }
 
 .credits {
