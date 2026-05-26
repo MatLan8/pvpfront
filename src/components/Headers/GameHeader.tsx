@@ -8,7 +8,7 @@ type GameHeaderProps = {
 export default function GameHeader({ sessionCode }: GameHeaderProps) {
   const navigate = useNavigate();
   return (
-    <header>
+    <header className={styles.headerGame}>
       <div className={styles.logoContainer} onClick={() => navigate("/")}>
         <img
           src={Logo}

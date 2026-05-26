@@ -7,7 +7,7 @@ import LasersGamePage from "./Lasers/LasersGamePage";
 import WordleGamePage from "./Wordle/WordleGamePage";
 import TimelineGamePage from "./Timeline/TimelineGamePage";
 import CodeBreakersGamePage from "./CodeBreakers/CodeBreakersGamePage";
-import DebugPanel from "../components/DebugPanel/DebugPanel";
+// import DebugPanel from "../components/DebugPanel/DebugPanel";
 
 function GameSessionSwitch() {
   const { publicState, error } = useGameSessionContext();
@@ -21,9 +21,9 @@ function GameSessionSwitch() {
         ? game.gameType
         : undefined;
 
-  const totalRounds = publicState?.totalRounds ?? 0;
-  const roundIndex = publicState?.roundIndex ?? 0;
-  const sessionCode = publicState?.sessionCode ?? "";
+  // const totalRounds = publicState?.totalRounds ?? 0;
+  // const roundIndex = publicState?.roundIndex ?? 0;
+  // const sessionCode = publicState?.sessionCode ?? "";
 
   if (!hasStarted) {
     return (
@@ -114,13 +114,13 @@ function GameSessionSwitch() {
   return (
     <>
       {renderGame()}
-      {totalRounds > 0 && gameType !== "Timeline" && (
+      {/* {totalRounds > 0 && gameType !== "Timeline" && (
         <DebugPanel
           sessionCode={sessionCode}
           totalGames={totalRounds}
           currentGameIndex={roundIndex}
         />
-      )}
+      )} */}
     </>
   );
 }
