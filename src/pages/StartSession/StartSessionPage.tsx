@@ -1,8 +1,11 @@
 import styles from "./StartSessionPage.module.css";
-import { useGetUser } from "../../api/useGetUser";
+import { useGetUser, type User } from "../../api/useGetUser";
 import { useStartSession } from "../../api/useStartSession";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useConfirmStripePayment } from "../../api/useConfirmStripePayment";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 import SessionModal from "../../components/modals/SessionModal";
 import Header from "../../components/Headers/LoggedInHeader";
 import { useGetLeaderSessions } from "../../api/useGetLeaderSessions";
@@ -198,6 +201,9 @@ function FinishedSessionRow({ session }: { session: any }) {
 
 function StartSession() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const queryClient = useQueryClient();
+
   const [selectedSessionCode, setSelectedSessionCode] = useState<string | null>(
     null,
   );
@@ -213,6 +219,44 @@ function StartSession() {
   const { mutate, isPending } = useStartSession();
   const { data: sessions = [], isLoading: sessionsLoading } =
     useGetLeaderSessions(userId);
+
+  const payment = searchParams.get("payment");
+  const sessionId = searchParams.get("session_id");
+  const { mutateAsync: confirmPaymentAsync } = useConfirmStripePayment();
+
+  useEffect(() => {
+    if (!payment) return;
+    const key = `stripe_${sessionId ?? payment}`;
+    if (sessionStorage.getItem(key)) return;
+    (async () => {
+      if (payment === "cancelled") {
+        sessionStorage.setItem(key, "1");
+        toast.info("Payment cancelled.");
+        setSearchParams({}, { replace: true });
+        return;
+      }
+      if (payment !== "success" || !sessionId) return;
+      sessionStorage.setItem(key, "1");
+      try {
+        const data = await confirmPaymentAsync(sessionId);
+        const remaining =
+          data.remainingCredits ??
+          (data as { RemainingCredits?: number }).RemainingCredits;
+        if (remaining != null) {
+          queryClient.setQueryData(["user", userId], (old: User | undefined) =>
+            old ? { ...old, remainingCredits: remaining } : old,
+          );
+        }
+        await queryClient.invalidateQueries({ queryKey: ["user", userId] });
+        await refetch();
+        toast.success("Payment successful! Credits added.");
+        setSearchParams({}, { replace: true });
+      } catch {
+        toast.error("Payment confirmation failed.");
+        setSearchParams({}, { replace: true });
+      }
+    })();
+  }, [payment, sessionId]);
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>{error.message}</div>;
@@ -262,9 +306,6 @@ function StartSession() {
             <span className={styles.creditsLabel}>
               {user.remainingCredits === 1 ? "session" : "sessions"} remaining.
             </span>
-            <a href="/buy" className={styles.buyLink}>
-              Buy more
-            </a>
           </p>
         </div>
 
