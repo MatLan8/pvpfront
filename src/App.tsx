@@ -34,9 +34,9 @@ function App() {
         <Route path="/bulk-sessions" element={<BulkSessionsPage />} />
       </Routes>
       <ToastContainer
-        position="top-center"
-        autoClose={2200}
-        hideProgressBar
+        position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
         newestOnTop
         closeOnClick
         pauseOnHover={false}
