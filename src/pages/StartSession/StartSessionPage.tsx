@@ -272,8 +272,8 @@ function StartSession() {
           {/* Secondary: bulk sessions (placeholder) */}
           <button
             className={styles.secondaryAction}
-            onClick={() => alert("Multiple session creation coming soon!")}
-            title="Start multiple sessions at once (coming soon)"
+            onClick={() => navigate("/bulk-sessions")}
+            title="Start multiple sessions"
           >
             <svg
               width="16"
