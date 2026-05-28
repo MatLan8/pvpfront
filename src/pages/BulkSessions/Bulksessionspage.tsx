@@ -2,6 +2,8 @@ import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Headers/LoggedInHeader";
 import styles from "./BulkSessionsPage.module.css";
+import { useStartSession } from "../../api/useStartSession";
+import { useSendInvites } from "../../api/useSendInvites";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -320,7 +322,7 @@ function RandomizerPanel({
             ))}
           </div>
           <button className={styles.applyBtn} onClick={handleApply}>
-            Apply to sessions below
+            Apply to sessions
           </button>
         </div>
       )}
@@ -338,6 +340,16 @@ export default function BulkSessionsPage() {
   ]);
   const [isLaunching, setIsLaunching] = useState(false);
   const [launched, setLaunched] = useState(false);
+  const [launchError, setLaunchError] = useState<string | null>(null);
+  const [launchProgress, setLaunchProgress] = useState<{
+    done: number;
+    total: number;
+  } | null>(null);
+
+  const { mutateAsync: startSession } = useStartSession();
+  const { mutateAsync: sendInvites } = useSendInvites();
+
+  const userId = localStorage.getItem("userId");
 
   const addSession = () => {
     if (slots.length < 20) {
@@ -367,16 +379,115 @@ export default function BulkSessionsPage() {
   const validCount = allEmails.filter(isValidEmail).length;
   const canLaunch = slots.length > 0 && validCount > 0;
 
+  // const handleLaunch = async () => {
+  //   if (!userId) {
+  //     setLaunchError("No user ID found. Please log in again.");
+  //     return;
+  //   }
+
+  //   setIsLaunching(true);
+  //   setLaunchError(null);
+  //   setLaunchProgress({ done: 0, total: slots.length });
+
+  //   try {
+  //     for (let i = 0; i < slots.length; i++) {
+  //       const slot = slots[i];
+
+  //       // Start the session
+  //       const { sessionCode } = await startSession({ LeaderId: userId });
+
+  //       // Send invites only for valid emails in this slot
+  //       const validEmails = slot.emails
+  //         .map((e) => e.trim())
+  //         .filter(isValidEmail);
+
+  //       if (validEmails.length > 0) {
+  //         await sendInvites({ sessionCode, emails: validEmails });
+  //       }
+
+  //       setLaunchProgress({ done: i + 1, total: slots.length });
+  //     }
+
+  //     setLaunched(true);
+  //   } catch (err: any) {
+  //     setLaunchError(
+  //       err?.response?.data?.Error ?? err?.message ?? "Something went wrong. Please try again."
+  //     );
+  //   } finally {
+  //     setIsLaunching(false);
+  //   }
+  // };
+
   const handleLaunch = async () => {
+    if (!userId) {
+      setLaunchError("No user ID found. Please log in again.");
+      return;
+    }
+
+    console.log("Starting bulk launch...");
+    console.log("User ID:", userId);
+
     setIsLaunching(true);
-    // TODO: replace with real API calls
-    // slots.forEach(slot => {
-    //   await startSession({ LeaderId: userId });
-    //   await sendInvites(slot.emails);
-    // });
-    await new Promise((r) => setTimeout(r, 1800)); // simulated delay
-    setIsLaunching(false);
-    setLaunched(true);
+    setLaunchError(null);
+    setLaunchProgress({ done: 0, total: slots.length });
+
+    try {
+      for (let i = 0; i < slots.length; i++) {
+        const slot = slots[i];
+
+        console.log("Launching slot:", slot);
+
+        // START SESSION
+        const response = await startSession({
+          LeaderId: userId,
+        });
+
+        console.log("startSession response:", response);
+
+        const sessionCode = response?.sessionCode;
+
+        if (!sessionCode) {
+          throw new Error("No sessionCode returned from API");
+        }
+
+        // VALID EMAILS
+        const validEmails = slot.emails
+          .map((e) => e.trim())
+          .filter(isValidEmail);
+
+        console.log("Valid emails:", validEmails);
+
+        // SEND INVITES
+        if (validEmails.length > 0) {
+          const inviteResponse = await sendInvites({
+            sessionCode,
+            emails: validEmails,
+          });
+
+          console.log("Invite response:", inviteResponse);
+        }
+
+        setLaunchProgress({
+          done: i + 1,
+          total: slots.length,
+        });
+      }
+
+      console.log("ALL SESSIONS CREATED");
+
+      setLaunched(true);
+    } catch (err: any) {
+      console.error("Launch error:", err);
+
+      setLaunchError(
+        err?.response?.data?.Error ??
+          err?.response?.data?.message ??
+          err?.message ??
+          "Something went wrong. Please try again.",
+      );
+    } finally {
+      setIsLaunching(false);
+    }
   };
 
   if (launched) {
@@ -439,7 +550,7 @@ export default function BulkSessionsPage() {
           </svg>
           Back
         </button>
-        <div>
+        <div className={styles.pageTitleBlock}>
           <h1 className={styles.pageTitle}>Bulk Sessions</h1>
           <p className={styles.pageSubtitle}>
             Create multiple game sessions and invite players all at once.
@@ -491,17 +602,58 @@ export default function BulkSessionsPage() {
 
           {/* ── Launch bar ── */}
           <div className={styles.launchBar}>
-            <div className={styles.launchMeta}>
-              <span className={styles.launchStat}>
-                <strong>{slots.length}</strong> session
-                {slots.length !== 1 ? "s" : ""}
-              </span>
-              <span className={styles.launchDivider}>·</span>
-              <span className={styles.launchStat}>
-                <strong>{validCount}</strong> invite
-                {validCount !== 1 ? "s" : ""} will be sent
-              </span>
+            <div className={styles.launchBarLeft}>
+              <div className={styles.launchMeta}>
+                <span className={styles.launchStat}>
+                  <strong>{slots.length}</strong> session
+                  {slots.length !== 1 ? "s" : ""}
+                </span>
+                <span className={styles.launchDivider}>·</span>
+                <span className={styles.launchStat}>
+                  <strong>{validCount}</strong> invite
+                  {validCount !== 1 ? "s" : ""} will be sent
+                </span>
+              </div>
+
+              {/* Progress bar while launching */}
+              {isLaunching && launchProgress && (
+                <div className={styles.progressBar}>
+                  <div
+                    className={styles.progressFill}
+                    style={{
+                      width: `${(launchProgress.done / launchProgress.total) * 100}%`,
+                    }}
+                  />
+                  <span className={styles.progressLabel}>
+                    {launchProgress.done} / {launchProgress.total} sessions
+                    started
+                  </span>
+                </div>
+              )}
+
+              {/* Error message */}
+              {launchError && (
+                <p className={styles.launchError}>
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <circle
+                      cx="7"
+                      cy="7"
+                      r="6"
+                      stroke="currentColor"
+                      strokeWidth="1.3"
+                    />
+                    <path
+                      d="M7 4v3.5M7 9.5v.5"
+                      stroke="currentColor"
+                      strokeWidth="1.3"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  {launchError}
+                </p>
+              )}
             </div>
+
             <button
               className={styles.primaryAction}
               onClick={handleLaunch}
@@ -513,17 +665,7 @@ export default function BulkSessionsPage() {
                   Launching…
                 </>
               ) : (
-                <>
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <path
-                      d="M2 8l10-6v12L2 8z"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                  Launch all sessions
-                </>
+                <>Launch all sessions</>
               )}
             </button>
           </div>
