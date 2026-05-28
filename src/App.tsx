@@ -12,10 +12,8 @@ import MainPage from "./pages/MainPage/MainPage";
 import CreditsPage from "./pages/BuyCredits/BuyCreditsPage";
 import ReportsForLeader from "./pages/TeamReportPage/ReportsForLeaderPage";
 
-
-
-
 import GameSessionRouter from "./games/GameSessionRouter";
+import BulkSessionsPage from "./pages/BulkSessions/Bulksessionspage";
 function App() {
   return (
     <>
@@ -33,6 +31,7 @@ function App() {
         <Route path="/" element={<MainPage />} />
         <Route path="/buy" element={<CreditsPage />} />
         <Route path="/report/:sessionCode" element={<ReportsForLeader />} />
+        <Route path="/bulk-sessions" element={<BulkSessionsPage />} />
       </Routes>
       <ToastContainer
         position="top-center"
