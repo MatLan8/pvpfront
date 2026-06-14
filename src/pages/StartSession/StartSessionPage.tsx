@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import SessionModal from "../../components/modals/SessionModal";
-import Header from "../../components/Headers/LoggedInHeader";
+import Header from "../../components/Headers/AppHeader";
 import { useGetLeaderSessions } from "../../api/useGetLeaderSessions";
 
 interface SkillScores {

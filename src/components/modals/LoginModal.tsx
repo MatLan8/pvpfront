@@ -52,6 +52,7 @@ function LoginModal({ isOpen, onClose, openRegister }: LoginModalProps) {
 
         onSuccess: (data) => {
           localStorage.setItem("userId", data.id);
+          window.dispatchEvent(new Event("authchange"));
 
           setIsLoggingIn(false);
 

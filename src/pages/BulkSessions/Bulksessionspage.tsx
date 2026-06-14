@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../../components/Headers/LoggedInHeader";
+import Header from "../../components/Headers/AppHeader";
 import styles from "./Bulksessionspage.module.css";
 import { useStartSession } from "../../api/useStartSession";
 import { useSendInvites } from "../../api/useSendInvites";

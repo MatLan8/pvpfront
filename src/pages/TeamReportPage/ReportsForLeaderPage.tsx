@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import ReportLoadingPage from "../../components/ReportLoadingPage/ReportLoadingPage";
-import Header from "../../components/Headers/LoggedInHeader";
+import Header from "../../components/Headers/AppHeader";
 import TeamTab from "../../components/ReportTabs/TeamTab";
 import PlayerTab from "../../components/ReportTabs/PlayerTab";
 import { useSessionReportPage } from "../../hooks/useSessionReportPage";

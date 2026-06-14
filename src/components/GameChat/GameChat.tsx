@@ -19,7 +19,7 @@ export default function GameChat({ sessionCode, playerId }: GameChatProps) {
   const [input, setInput] = useState("");
   const [error, setError] = useState("");
 
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const messagesContainerRef = useRef<HTMLDivElement | null>(null);
 
   const storageKey = useMemo(
     () => `chatMessages_${sessionCode}`,
@@ -96,7 +96,9 @@ export default function GameChat({ sessionCode, playerId }: GameChatProps) {
   }, [sessionCode]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const container = messagesContainerRef.current;
+    if (!container) return;
+    container.scrollTo({ top: container.scrollHeight, behavior: "smooth" });
   }, [messages]);
 
   const sendMessage = async () => {
@@ -138,7 +140,7 @@ export default function GameChat({ sessionCode, playerId }: GameChatProps) {
       </div>
       <div className={styles.line}></div>
 
-      <div className={styles.messages}>
+      <div className={styles.messages} ref={messagesContainerRef}>
         {messages.length === 0 ? (
           <p className={styles.empty}>No messages yet.</p>
         ) : (
@@ -188,8 +190,6 @@ export default function GameChat({ sessionCode, playerId }: GameChatProps) {
             );
           })
         )}
-
-        <div ref={messagesEndRef} />
       </div>
 
       <div className={styles.inputArea}>

@@ -12,9 +12,8 @@ import {
 } from "lucide-react";
 import eulaText from "./EULA_AI_RUST_VERSION.txt?raw";
 import styles from "./MainPage.module.css";
-import LoginModal from "../../components/modals/LoginModal";
-import RegisterModal from "../../components/modals/RegisterModal";
 import JoinSessionModal from "../../components/modals/JoinSessionModal";
+import AppHeader from "../../components/Headers/AppHeader";
 
 export function TryButton() {
   const navigate = useNavigate();
@@ -41,8 +40,6 @@ export default function JoinGameScreen() {
   const [, setHasAccepted] = useState<boolean>(false);
   const [canAgree, setCanAgree] = useState<boolean>(false);
 
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [isJoinOpen, setIsJoinOpen] = useState(false);
   const [lightboxImg, setLightboxImg] = useState<string | null>(null);
 
@@ -139,30 +136,7 @@ export default function JoinGameScreen() {
         <div className={styles.ambientGlowBottom} />
 
         {/* Header */}
-        <header className={styles.header}>
-          <div className={styles.logoArea}>
-            <img
-              src="/assets/brand/logo.png"
-              alt="TeamLens Logo"
-              className={styles.logoImg}
-            />
-            <span className={styles.logoText}>TeamLens</span>
-          </div>
-          <div className={styles.navArea}>
-            <button
-              onClick={() => setIsLoginOpen(true)}
-              className={styles.navBtn}
-            >
-              Login
-            </button>
-            <button
-              className={styles.btnSecondary}
-              onClick={() => setIsRegisterOpen(true)}
-            >
-              Register
-            </button>
-          </div>
-        </header>
+        <AppHeader />
 
         {/* Hero */}
         <section className={styles.hero}>
@@ -414,24 +388,6 @@ export default function JoinGameScreen() {
           </div>
         </section>
       </div>
-
-      <LoginModal
-        isOpen={isLoginOpen}
-        onClose={() => setIsLoginOpen(false)}
-        openRegister={() => {
-          setIsLoginOpen(false);
-          setIsRegisterOpen(true);
-        }}
-      />
-
-      <RegisterModal
-        isOpen={isRegisterOpen}
-        onClose={() => setIsRegisterOpen(false)}
-        openLogin={() => {
-          setIsRegisterOpen(false);
-          setIsLoginOpen(true);
-        }}
-      />
 
       {/* <JoinSessionModal
         isOpen={isJoinOpen}
